@@ -82,7 +82,6 @@ Postgresql::
 
    docker run -d --name serviceform-db \
             --env-file $SERVICEFORM_ENV_FILE \
-            --volume $(pwd)/init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro \
             --volume serviceform-db:/var/lib/postgresql \
             postgres:9.6.2
 
@@ -160,9 +159,9 @@ App::
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --env-file $SERVICEFORM_ENV_FILE \
-            --volume serviceform-static:/code/static \
+            --volume serviceform-static:/code/static:ro \
             --volume serviceform-media:/code/media \
-            tuomasairaksinen/serviceform:lates app
+            tuomasairaksinen/serviceform:latest app
 
 
 Web server::
@@ -177,6 +176,19 @@ Web server::
 
 With this configuration serviceform will listen HTTP connections to port 8038.
 Now you need to set up your web server (https) to redirect connections to this port.
+
+Shutting down::
+
+    docker stop serviceform-nginx serviceform-app serviceform-send-emails \
+                serviceform-task-processor serviceform-celery-beat serviceform-celery \
+                serviceform-redis serviceform-db
+
+Starting again (set this into your system startup)::
+
+    docker start serviceform-db serviceform-redis serviceform-celery serviceform-celery-beat \
+                 serviceform-task-processor serviceform-send-emails serviceform-app \
+                 serviceform-nginx
+
 
 Shells
 ------
