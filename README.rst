@@ -60,7 +60,7 @@ For the following commands set first environment variable
 
 export SERVICEFORM_ENV_FILE=/path_to/serviceform-env.list
 
-
+.. _external:
 External services
 -----------------
 
@@ -94,9 +94,11 @@ Or alternatively, pull it from the repository::
 
     docker pull tuomasairaksinen/serviceform:latest
 
+.. _upgrade:
+Initialization / upgrade.
+-------------------------
 
-Initialization / upgrade. This migrates database
-and (re-)creates static files in shared volume (for nginx)::
+This migrates database and (re-)creates static files in shared volume (for nginx)::
 
     docker run --rm -u root \
             --link serviceform-db:db \
@@ -107,6 +109,12 @@ and (re-)creates static files in shared volume (for nginx)::
             --volume serviceform-nginx-config:/nginx-config \
             --volume serviceform-celery-beat-store:/celery-beat-store \
             tuomasairaksinen/serviceform:latest upgrade
+
+Command can be safely run multiple times.
+
+.. _services:
+Serviceform services
+--------------------
 
 Celery::
 
@@ -151,6 +159,9 @@ App::
             --volume serviceform-media:/code/media \
             tuomasairaksinen/serviceform:latest app
 
+.. _http_server:
+HTTP server
+-----------
 
 Web server::
 
@@ -165,21 +176,45 @@ Web server::
 With this configuration serviceform will listen HTTP connections to port 8038.
 Now you need to set up your web server (https) to redirect connections to this port.
 
+.. _restarting:
+Shutting down and starting (system reboot procedures)
+-----------------------------------------------------
+
 Shutting down::
 
     docker stop serviceform-nginx serviceform-app serviceform-send-emails \
                 serviceform-task-processor serviceform-celery-beat serviceform-celery \
                 serviceform-redis serviceform-db
 
-Starting again (set this into your system startup)::
+Starting again (set this into your system startup). Notice order.::
 
     docker start serviceform-db serviceform-redis serviceform-celery serviceform-celery-beat \
                  serviceform-task-processor serviceform-send-emails serviceform-app \
                  serviceform-nginx
 
+.. _upgrading:
+Upgrading system
+----------------
 
-Shells
-------
+Simple upgrade procedure::
+
+    docker pull tuomasairaksinen/serviceform:latest
+    docker stop serviceform-nginx serviceform-app serviceform-send-emails \
+            serviceform-task-processor serviceform-celery-beat serviceform-celery
+
+Run upgrade_ command.
+If that is fine, we can remove old containers::
+
+    docker rm serviceform-nginx serviceform-app serviceform-send-emails \
+            serviceform-task-processor serviceform-celery-beat serviceform-celery
+
+Then run all docker run all services_ and http_server_.
+
+Zero-downtime upgrade method is planned in the future.
+
+.. _troubleshooting:
+Troubleshooting
+---------------
 
 To investigate problems these shell commands might prove usefull.
 
@@ -214,26 +249,6 @@ Bash shell (to investigate/edit volumes etc.)::
             --env-file $SERVICEFORM_ENV_FILE \
             tuomasairaksinen/serviceform:latest bash
 
-Upgrading system
-----------------
-
- - Pull (or build) new docker image(s)
- - Stop affected service(s), not all necessary
-    - docker stop serviceform-nginx
-    - docker stop serviceform-app
-    - docker stop serviceform-send-emails
-    - docker stop serviceform-task-processor
-    - docker stop serviceform-celery
-    - docker stop serviceform-celery-beat
-    - docker stop serviceform-redis (if redis upgrade)
-    - docker stop serviceform-db (if db upgrade)
-
- - If upgrading redis or postgres, start them again
- - Run upgrade command
- - Start applications again
- - Start services
-
-No-downtime upgrade is planned in the future.
 
 Development
 ===========
