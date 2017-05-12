@@ -51,7 +51,7 @@ case "$1" in
   ;;
   'tests')
     wait_redis
-    py.test -v tests/ #--cov serviceform/ tests/
+    py.test --cov serviceform/ tests/
   ;;
   'bash')
     bash
