@@ -52,6 +52,9 @@ Put environment variables in file serviceform-env.list::
     SERVER_EMAIL=noreply@yourhost.com
     # This code is used to generate unpredictable id, choose 5 random letters here
     CODE_LETTERS=ABCDE
+    # Available: en, fi
+    LANGUAGE_CODE=fi
+    TIME_ZONE=Europe/Helsinki
 
 For the following commands set first environment variable
 

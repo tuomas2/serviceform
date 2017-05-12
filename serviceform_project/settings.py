@@ -26,6 +26,8 @@ ADMIN_NAME = os.getenv('ADMIN_NAME', 'Unknown Admin')
 ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'no@email.set')
 SERVER_EMAIL = os.getenv('SERVER_EMAIL', f'noreply@{SERVICEFORM_HOST}')
 CODE_LETTERS = os.getenv('CODE_LETTERS', 'ABCDE')
+LANGUAGE_CODE = os.getenv('LANGUAGE_CODE', 'fi')
+TIME_ZONE = os.getenv('TIME_ZONE', 'Europe/Helsinki')
 
 
 ALLOWED_HOSTS = [SERVICEFORM_HOST]
@@ -269,9 +271,6 @@ COMPRESS_OFFLINE = True
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
-LANGUAGE_CODE = 'fi'
-
-TIME_ZONE = 'Europe/Helsinki'
 
 USE_I18N = True
 
