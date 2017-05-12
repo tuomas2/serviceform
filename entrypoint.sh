@@ -56,9 +56,9 @@ case "$1" in
   ;;
   'travis-tests')
     wait_redis
+    cd $2
     ./manage.py collectstatic --noinput
     ./manage.py compress
-    cd $2
     py.test -v --cov serviceform/ tests/
   ;;
   'bash')
