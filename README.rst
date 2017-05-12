@@ -80,16 +80,16 @@ Docker commands to start external services needed by Serviceform
 
 Postgresql::
 
-   docker run --rm -d --name serviceform-db \
+   docker run -d --name serviceform-db \
             --env-file $SERVICEFORM_ENV_FILE \
-            --volume ./init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro \
+            --volume $(pwd)/init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro \
             --volume serviceform-db:/var/lib/postgresql \
             postgres:9.6.2
 
 
 Redis::
 
-   docker run --rm -d --name serviceform-redis \
+   docker run -d --name serviceform-redis \
             --volume serviceform-redis:/data \
             redis:3.2.8-alpine
 
@@ -101,7 +101,11 @@ Docker commands to start services bundled within serviceform docker image.
 
 Build serviceform docker image first::
 
-  docker build -t tuomasairaksinen/serviceform:latest .
+    docker build -t tuomasairaksinen/serviceform:latest .
+
+Or alternatively, pull it from the repository::
+
+    docker pull tuomasairaksinen/serviceform:latest
 
 
 Initialization / upgrade. This migrates database
@@ -118,7 +122,7 @@ and (re-)creates static files in shared volume (for nginx)::
 
 Celery::
 
-   docker run --rm -d --name serviceform-celery \
+   docker run -d --name serviceform-celery \
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --env-file $SERVICEFORM_ENV_FILE \
@@ -127,7 +131,7 @@ Celery::
 
 Celery-beat::
 
-    docker run --rm -d --name serviceform-celery-beat \
+    docker run -d --name serviceform-celery-beat \
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --env-file $SERVICEFORM_ENV_FILE \
@@ -135,7 +139,7 @@ Celery-beat::
 
 Task-processor::
 
-   docker run --rm -d --name serviceform-task-processor \
+   docker run -d --name serviceform-task-processor \
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --env-file $SERVICEFORM_ENV_FILE \
@@ -143,14 +147,14 @@ Task-processor::
 
 Send-emails::
 
-    docker run --rm -d --name serviceform-send-emails \
+    docker run -d --name serviceform-send-emails \
             --link serviceform-db:db \
             --env-file $SERVICEFORM_ENV_FILE \
             tuomasairaksinen/serviceform:latest send-emails
 
 App::
 
-    docker run --rm -d --name serviceform-app \
+    docker run -d --name serviceform-app \
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --env-file $SERVICEFORM_ENV_FILE \
@@ -161,7 +165,7 @@ App::
 
 Web server::
 
-    docker run --rm -d --name serviceform-nginx \
+    docker run -d --name serviceform-nginx \
             --publish 8038:80 \
             --link serviceform-app:app \
             --volume serviceform-static:/serviceform-static:ro \
