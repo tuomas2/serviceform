@@ -51,7 +51,13 @@ case "$1" in
   ;;
   'tests')
     wait_redis
-    py.test --cov serviceform/ tests/
+    py.test -v tests/
+  ;;
+  'travis-tests')
+    wait_redis
+    ./manage.py collectstatic --noinput
+    ./manage.py compress
+    py.test -v --cov serviceform/ tests/
   ;;
   'bash')
     bash

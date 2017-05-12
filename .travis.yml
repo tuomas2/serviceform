@@ -1,21 +1,22 @@
 sudo: required
 language: python
-python:
-  - "3.6"
+#python:
+#  - "3.6"
 
 services:
   - docker
 
 before_install:
- - docker build -t serviceform .
  - docker run -d --name redis redis:3.2.8-alpine
  - docker run -d --name postgres -e "POSTGRES_USER=serviceform" -e "POSTGRES_DB=test_serviceform" -e "POSTGRES_PASSWORD=django" postgres:9.6.2
+ - docker ps -a
 
-# command to install dependencies
 install:
+ - docker build -t serviceform .
+ - docker ps -a
 
 # command to run tests
 script:
- - docker run -u root --link redis:redis --link postgres:db --volume $(pwd)/:/code serviceform tests
+ - docker run -u root --link redis:redis --link postgres:db --volume $(pwd)/:/code serviceform travis-tests
 
 after_success: coveralls
