@@ -115,9 +115,10 @@ and (re-)creates static files in shared volume (for nginx)::
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --env-file $SERVICEFORM_ENV_FILE \
-            --volume serviceform-media:/code/media:ro \
+            --volume serviceform-media:/code/media \
             --volume serviceform-static:/code/static \
             --volume serviceform-nginx-config:/nginx-config \
+            --volume serviceform-celery-beat-store:/celery-beat-store \
             tuomasairaksinen/serviceform:latest upgrade
 
 Celery::
@@ -134,6 +135,7 @@ Celery-beat::
     docker run -d --name serviceform-celery-beat \
             --link serviceform-db:db \
             --link serviceform-redis:redis \
+            --volume serviceform-celery-beat-store:/store \
             --env-file $SERVICEFORM_ENV_FILE \
             tuomasairaksinen/serviceform:latest celery-beat
 

@@ -17,7 +17,7 @@ services:
         - "5432:5432"
      volumes:
       - /var/lib/postgresql
-      - ./init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+      #- ./init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
      environment:
       - POSTGRES_USER=serviceform
       - POSTGRES_DB=serviceform

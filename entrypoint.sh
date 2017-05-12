@@ -25,6 +25,7 @@ case "$1" in
     cd ..
     # Set media volume permissions
     chown -R web /code/media
+    chown -R web /celery-beat-store
     # Update static files
     ./manage.py collectstatic --noinput
     ./manage.py compress
