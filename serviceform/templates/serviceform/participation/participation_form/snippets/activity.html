@@ -1,0 +1,55 @@
+{% load i18n serviceform_tags %}
+{% if activity.error %}
+  <div class="activity-row form-error">
+    <div class="col-xs-7 col-xs-offset-1">
+      {{ activity.error }}
+    </div>
+  </div>
+{% endif %}
+<div class="activity" id="SRV_ACTIVITY_{{ activity.pk }}">
+  <div class="activity-row {%if forloop.last and forloop.parentloop.last and not activity.has_choices %}last-row{%endif%}" {% color_style cat 1 %}>
+    <div class="activity-checkbox-column">
+      <div class="activity-title">
+        <div class="checkbox checkbox-primary">
+          <span class="activity-choice-id">{{ activity.id_display }}.</span>
+          {% if activity.show_checkbox %}
+            <input type="checkbox" class="activity-input" name="SRV_ACTIVITY_{{ activity.pk }}"
+                   {% if activity.selected %}checked{% endif %}>
+            <label for="ACTIVITY_{{ activity.pk }}"></label>
+          {% endif %}
+          {{ activity.name }}
+        </div>
+      </div>
+    </div>
+    <!--div class="activity-title-column">
+    </div-->
+    <div class="info-column">
+      <a href="#ACTIVITY_EXTRA_{{ activity.pk }}" data-toggle="collapse">
+        {% if activity.description %}
+          <span class="fa fa-info"></span>
+        {% endif %}
+        {% if not activity.has_choices %}
+          <span class="fa fa-pencil"></span>
+        {% endif %}
+      </a>
+    </div>
+    <div class="responsible-column">
+      {% if activity.responsibles_display %}
+      {{ activity.responsibles_display }}
+        {% if activity.responsible %}
+          <a href="#ACTIVITY_EXTRA_{{ activity.pk }}" data-toggle="collapse">
+        <span class="fa fa-at"></span>
+        </a>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+  {% include "serviceform/participation/participation_form/snippets/extra_info.html" with item=activity item_type="ACTIVITY" hide_extra_info=activity.has_choices %}
+  {% if activity.has_choices %}
+    <div class="activity-choices">
+      {% for choice in activity.sub_items %}
+        {% include "serviceform/participation/participation_form/snippets/choice.html" with cat=cat %}
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>

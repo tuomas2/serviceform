@@ -1,0 +1,62 @@
+{% load static i18n compress %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>{% block title %}{% trans "Service form" %}{% endblock %}</title>
+  {% block css %}
+    {% compress css %}
+      <link href="{% static "serviceform/serviceform.scss" %}" type="text/x-scss" rel="stylesheet">
+    {% endcompress %}
+  {% endblock %}
+</head>
+
+<body>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xs-12 main">
+      {% block navbar %}
+      {% endblock %}
+      <h1 class="serviceform-title">
+        {%block serviceform-title%}
+        serviceform-title
+        {%endblock %}
+      </h1>
+      {% block messages %}
+        {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+              <div{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>{{ message }}</div>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endblock %}
+      {% block content %}
+        Bla Bla Base
+      {% endblock %}
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="{% static "assets/javascripts/bootstrap.min.js" %}"></script>
+<script src="{% static "serviceform/serviceform.js" %}"></script>
+<script src="{% static "jquery.are-you-sure.js"%}"></script>
+<script>
+  $(function() {
+    {% block javascript %}
+    {% endblock %}
+  });
+</script>
+</body>
+</html>

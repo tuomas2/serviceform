@@ -1,0 +1,43 @@
+{%load i18n serviceform_tags %}
+{% if cat.name %}
+  <div class="level-{{ level }}-category-row" {% color_style cat %}>
+    <div class="level-{{level}}-category-column">
+      <span class="category-{{ level }}-title">{{ cat.id_display }} {{ cat.name }}</span>
+    </div>
+    <div class="info-column">
+
+    </div>
+
+      <div class="category-responsible-column">
+        {% if cat.responsibles_display %}
+        {{cat.responsibles_display}}
+      <a href="#CAT-{{level}}_EXTRA_{{ cat.pk }}" data-toggle="collapse">
+        {% if cat.responsibles_display %}
+          <span class="fa fa-at"></span>
+        {% endif %}
+      </a>
+        {% endif %}
+      </div>
+  </div>
+
+
+  <div class="row collapse extra-info-row" id="CAT-{{level}}_EXTRA_{{ cat.pk }}" {% color_style cat 2 %}>
+  <div class="extra-info-column">
+    {% for resp in cat.responsibles.all %}
+      {% if forloop.first %}<b>{% trans "Responsible contact person(s)" %}: </b>{%endif %}
+      {% include "serviceform/participation/participation_form/snippets/responsible_contact_person.html" with c=resp %}
+    {% endfor %}
+  </div>
+  <div class=col-xs-2></div>
+</div>
+
+
+  {% if cat.description %}
+  <div class="row level-{{ level }}-category-row" {%color_style cat %}>
+    <div class="level-{{level}}-category-description-column">
+
+      {{ cat.description|urlize|url_target_blank|linebreaks }}
+    </div>
+  </div>
+  {% endif %}
+{% endif %}

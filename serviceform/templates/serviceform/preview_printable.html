@@ -1,0 +1,43 @@
+{% extends "serviceform/form_base.html" %}
+{% block content %}
+  {% load i18n %}
+  <h1>{{ form.name }}</h1>
+  <p>
+    {{ form.description|linebreaksbr }}
+  </p>
+  {# HEADER ROW #}
+
+  {% for level1cat in form.sub_items %}
+    {# LEVEL 1 CATEGORY #}
+    <h2>{{ level1cat.id_display }} {{ level1cat.name }}</h2>
+    {% if level1cat.description %}
+      <p>
+        {{ level1cat.description|linebreaksbr }}
+      </p>
+    {% endif %}
+    {% for level2cat in level1cat.sub_items %}
+      {# LEVEL 2 CATEGORY #}
+      <h3>{{ level2cat.id_display }} {{ level2cat.name }}</h3>
+      {% if level2cat.description %}
+        <p>
+          {{ level2cat.description|linebreaksbr }}
+        </p>
+      {% endif %}
+      {# ACTIVITIES #}
+      <ol>
+        {% for activity in level2cat.sub_items %}
+          <li value="{{ activity.id_display }}">  {{ activity.name }} {% if activity.responsible %} ({{ activity.responsible }}){% endif %}</li>
+
+          {% if activity.has_choices %}
+            <ol type="a">
+              {% for choice in activity.sub_items %}
+                <li>{{ choice.name }}{% if choice.responsible %} ({{ choice.responsible }}){% endif %}</li>
+              {% endfor %}
+            </ol>
+          {% endif %}
+        {% endfor %}
+      </ol>
+    {% endfor %}
+  {% endfor %}
+
+{% endblock %}

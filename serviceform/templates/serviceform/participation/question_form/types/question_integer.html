@@ -1,0 +1,11 @@
+<div class="form-group">
+  <label for="SRV_QUESTION_{{ question.pk }}"
+         class="control-label questions-label-column {% if question.required %} requiredField{% endif %}">
+    {{ question.question }}
+    {% if question.required %} <span class="asteriskField">*</span>{% endif %}
+  </label>
+  <div class="controls questions-field-column">
+    <input class="textinput textInput form-control" id="SRV_QUESTION_{{ question.pk }}"
+           maxlength="1024" name="SRV_QUESTION_{{ question.pk }}" type="number" value="{{ question.answer }}"/>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+{% extends "serviceform/reports/base/report_base.html" %}
+{% load compress static serviceform_tags %}
+{% block css %}
+  {% compress css %}
+    <link href="{% static "awesome-bootstrap-checkbox.scss" %}" type="text/x-scss" rel="stylesheet">
+  {% endcompress %}
+  {{ block.super }}
+{% endblock %}
+
+{% load i18n serviceform_tags %}
+{% block content %}
+
+  <h2>{% trans "Responsible person contact details" %}</h2>
+  <div class="responsible-contact-details">
+    {{ responsible.contact_display|linebreaks }}
+    {% trans "Can see full report" %}: {{responsible.show_full_report|translate_bool}}
+  </div>
+
+  {% include "serviceform/reports/snippets/_help.html" %}
+  <h2>{% trans "Configuration" %}</h2>
+  <div class="responsible-configuration">
+    <div class="checkbox">
+      <input id="expand-all-info" type="checkbox">
+      <label for="expand-all-info">{% trans "Expand all info" %}</label>
+    </div>
+  </div>
+  {% include "serviceform/reports/contents/_responsible_contents.html" %}
+{% endblock %}
+

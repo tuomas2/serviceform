@@ -1,0 +1,71 @@
+{% load i18n serviceform_tags %}
+<h2>{% trans "Participation to activities" %}</h2>
+{% for c1 in service_form.sub_items %}
+  {% has_responsible c1 responsible as c1_hr %}
+  {% if c1_hr %}
+    <div id="c1-{{c1_hr.id}}" class="report-category-1-title" {% color_style c1%}>{{ c1.id_display }} {{ c1.name }} {% responsible_link c1 %}</div>
+    {% for c2 in c1.sub_items %}
+      {% has_responsible c2 responsible as c2_hr %}
+      {% if c2_hr %}
+        <div id="c2-{{c2.id}}" class="report-category-2-title" {% color_style c2 %}>{{ c2.id_display }} {{ c2.name }} {% responsible_link c2 %}</div>
+        {% for a in c2.sub_items %}
+          {% has_responsible a responsible as a_hr %}
+          {% if a_hr %}
+            <div id="a-{{a.id}}" class="report-activity-title" {% color_style a %}>{{ a.id_display }}. {{ a.name }} {% responsible_link a %}
+              {% if not a.has_choices %}({{ a.participation_items|length }}{%if a.people_needed%}/{{ a.people_needed }}{%endif%}){% endif %}</div>
+            {% if a.has_choices %}
+              {% for c in a.sub_items %}
+                {% has_responsible c responsible as c_hr %}
+                {% if c_hr %}
+                  <div class="report-choice-title" {% color_style a 1%}>{{ c.id_display }}. {{ c.name }} {% responsible_link c %}
+                    ({{ c.participation_items|length }}{%if c.people_needed%}/{{ c.people_needed }}{%endif%})
+                  </div>
+                  {% for pc in c.participation_items %}
+                    {% include "serviceform/reports/snippets/_participant_row.html" with item=pc participant=pc.cached_participant %}
+                  {% endfor %}
+                  {% for pc in c.old_participation_items %}
+                    <div class="old">
+                      {% include "serviceform/reports/snippets/_participant_row.html" with item=pc participant=pc.cached_participant %}
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              {% for pa in a.participation_items %}
+                {% include "serviceform/reports/snippets/_participant_row.html" with item=pa participant=pa.cached_participant %}
+              {% endfor %}
+              <div class="old">
+                {% for pa in a.old_participation_items %}
+                  {% include "serviceform/reports/snippets/_participant_row.html" with item=pa participant=pa.cached_participant %}
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+
+<h2>{% trans "Answers to questions" %}</h2>
+{% for q in service_form.questions %}
+  {% if q.responsible == responsible %}
+    <div class="report-question-title">{{ q.id_display }} {{ q.question }}</div>
+    <ul>
+      {% for pq in q.questionanswers %}
+        {% if pq.answer %}
+          <li><a href="{% url "view_user" pq.participant.pk %}">{{ pq.participant }}</a>:
+          {% if pq.question.answer_type == 'boolean' %}
+            {% if pq.answer %}
+              {% trans "Yes" %}
+            {% else %}
+              {% trans "No" %}
+            {% endif %}
+          {% else %}
+            {{ pq.answer|linebreaksbr }}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endfor %}

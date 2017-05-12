@@ -1,0 +1,14 @@
+{% extends "serviceform/form_base.html" %}
+{% load i18n serviceform_tags %}
+{% block serviceform-title %}
+  {% trans "Report for" %} {{ block.super }}
+{% endblock %}
+{% block navbar %}
+{% include "serviceform/navbar/navbar_base.html" with navbar_name="anonymous_report" %}
+{% endblock %}
+{% block base_content %}
+{{block.super}}
+{% endblock %}
+{% block content %}
+{% endblock %}
+

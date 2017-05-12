@@ -1,0 +1,39 @@
+{% load i18n serviceform_tags %}
+<div class="row">
+  <div class="col-xs-12 col-lg-9">
+    <h2>{% trans "All activities" %}</h2>
+    {% for c1 in service_form.sub_items %}
+      <div id="c1-{{ c1.id }}"
+           class="report-category-1-title" {% color_style c1 %}>{{ c1.id_display }} {{ c1.name }} {% responsible_link c1 %}</div>
+      {% for c2 in c1.sub_items %}
+        <div id="c2-{{ c2.id }}"
+             class="report-category-2-title" {% color_style c2 %}>{{ c2.id_display }} {{ c2.name }} {% responsible_link c2 %}</div>
+        {% for a in c2.sub_items %}
+          <div id="a-{{ a.id }}"
+               class="report-activity-title" {% color_style a %}>{{ a.id_display }}. {{ a.name }} {% responsible_link a %}
+            {% if not a.has_choices %}
+              {% participation_items a as p_items %}
+              ({{ p_items|length }}{%if a.people_needed%}/{{ a.people_needed }}{%endif%})
+            {% endif %}
+          </div>
+          {% if a.has_choices %}
+            {% for c in a.sub_items %}
+              {% participation_items c as p_items %}
+              <div class="report-choice-title" {% color_style a 1 %}>{{ c.id_display }}. {{ c.name }} {% responsible_link c %}
+                ({{ p_items|length }}{%if c.people_needed%}/{{ c.people_needed }}{%endif%})
+              </div>
+              {% for pc in p_items %}
+                {% include "serviceform/reports/snippets/_participant_row.html" with item=pc participant=pc.cached_participant %}
+              {% endfor %}
+            {% endfor %}
+          {% else %}
+            {% for pa in p_items %}
+              {% include "serviceform/reports/snippets/_participant_row.html" with item=pa participant=pa.cached_participant %}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    {% endfor %}
+  </div>
+  {% include "serviceform/reports/contents/_report_sidebar.html" %}
+</div>

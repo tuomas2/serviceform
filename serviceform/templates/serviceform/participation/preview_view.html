@@ -1,0 +1,116 @@
+{% extends "serviceform/participation/participation_flow_base.html" %}
+{% load i18n crispy_forms_tags %}
+{% block content %}
+  {{block.super}}
+  {# Contact details #}
+    <div class="helptext">{% trans "Please check that the given data is correct " %}</div>
+  <div class="preview-contactdetails">
+    <h3>{% blocktrans %}Contact details{% endblocktrans %}:</h3>
+
+    {% for detail, data in participant.contact_details %}
+      <div class="row activity-preview-row">
+        <div class="col-xs-4">
+          {{ detail }}
+        </div>
+        <div class="col-xs-8">
+          {{ data|linebreaks }}
+        </div>
+      </div>
+    {% endfor %}
+
+      <div class="row activity-preview-row">
+        <div class="activity-btn">
+          <a class="btn btn-warning"
+             href="{% url "contact_details" %}">{% trans "Change contact details" %}</a>
+        </div>
+      </div>
+  </div>
+  {# Activities and their choices #}
+  <div class="preview-activities">
+    <h3>{% blocktrans %}I am wishing to participate in the following activities{% endblocktrans %}:</h3>
+    <div class="row activity-preview-header-row">
+      <div class="col-xs-4">
+        {% trans "Activity" %}
+      </div>
+      <div class="col-xs-8">
+        {% trans "Additional info" %}
+      </div>
+    </div>
+
+    {% for a in participant.activities %}
+      <div class="row activity-preview-row">
+        <div class="col-xs-4">
+          {{ a.activity.name }}
+        </div>
+        <div class="col-xs-8">
+          {{ a.additional_info_display|linebreaks }}
+        </div>
+      </div>
+      {% for c in a.choices %}
+        <div class="row">
+          <div class="col-xs-3 col-xs-offset-1">
+            {{ c.activity_choice.name }}
+          </div>
+          <div class="col-xs-8">
+            {{ c.additional_info_display|linebreaks }}
+          </div>
+        </div>
+      {% endfor %}
+    {% endfor %}
+      <div class="row activity-preview-row">
+        <div class="activity-btn">
+          <a class="btn btn-warning"
+             href="{% url "participation" %}">{% trans "Adjust participation information" %}</a>
+        </div>
+      </div>
+  </div>
+  {# question answers #}
+  {% if service_form.questions %}
+    <div class="preview-questions">
+      <h3>{% blocktrans %}Answers to questions{% endblocktrans %}:</h3>
+      <div class="row activity-preview-header-row">
+        <div class="col-xs-4">
+          {% trans "Question" %}
+        </div>
+        <div class="col-xs-8">
+          {% trans "Answer" %}
+        </div>
+      </div>
+      {% for q in participant.questions %}
+        <div class="row activity-preview-row">
+          <div class="col-xs-4">
+            {{ q.question.question }}
+          </div>
+          <div class="col-xs-8">
+            {% if q.question.answer_type == 'boolean' %}
+              {% if q.answer %}
+                {% trans "Yes" %}
+              {% else %}
+                {% trans "No" %}
+              {% endif %}
+            {% else %}
+              {{ q.answer|linebreaks }}
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+        <div class="row activity-preview-row">
+          <div class="activity-btn">
+            <a class="btn btn-warning"
+               href="{% url "questions" %}">{% trans "Modify question answers" %}</a>
+          </div>
+        </div>
+    </div>
+  {% endif %}
+    <div class="preview-submitform">
+      <h3>{% trans "Are you ready to send data?" %}</h3>
+      <form action="" method="post">
+        {% csrf_token %}
+        <div class="row">
+          <div class="activity-btn">
+            <input class="btn btn-danger" type="submit" name="submit" value="{% trans "Send data!" %}"/>
+          </div>
+        </div>
+      </form>
+    </div>
+{% endblock %}

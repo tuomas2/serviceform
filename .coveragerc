@@ -1,0 +1,9 @@
+[run]
+branch=True
+omit=
+ */migrations/*
+ */tests/*
+[paths]
+source=
+    serviceform/
+    tasks/

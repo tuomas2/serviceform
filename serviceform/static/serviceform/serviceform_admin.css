@@ -1,0 +1,12 @@
+.field-description > textarea {
+    height: 25px;
+    width: 200px;
+}
+
+.field-name > input {
+    width: 200px;
+}
+
+.field-people_needed > input {
+    width: 50px;
+}

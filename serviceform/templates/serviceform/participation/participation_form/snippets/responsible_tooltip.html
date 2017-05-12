@@ -1,0 +1,16 @@
+{% load i18n%}
+{% if responsible %}
+{{responsible}}
+{% endif %}
+{% if 0 %} {# Commented out #}
+<a class="tooltip-only" data-toggle="tooltip"
+title="{% trans "Contact details"%}:
+
+{{responsible.forenames}} {{responsible.surname}}
+{% if responsible.email %}{% trans "Email"%}: {{responsible.email}}
+{%endif%}{% if responsible.phone_number %}{% trans "Phone" %}: {{responsible.phone_number}}
+{%endif%}{%if responsible.address%}
+{%trans "Address"%}:
+{{responsible.address}}{%endif%}
+">{{responsible}}</a>
+{% endif %}

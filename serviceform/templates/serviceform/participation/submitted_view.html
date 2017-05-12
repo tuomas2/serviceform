@@ -1,0 +1,12 @@
+{% extends "serviceform/form_base.html" %}
+{% load i18n%}
+{%block content %}
+<div class="helptext">
+<h2>{%trans "Thank you!"%} </h2>
+<ul>
+<li>{% trans "Your data was saved into the system and related responsibles will be informed about your participation."%} </li>
+<li>{% trans "You will receive also email that contains a link that you can use to edit your participation."%}</li>
+</ul>
+</div>
+<a href="{%url "password_login" service_form.slug %}"><span class="fa fa-long-arrow-right"></span> {% trans "Fill a new form" %}</a>
+{% endblock%}

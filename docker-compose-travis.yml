@@ -1,0 +1,18 @@
+# Compose file to set up environment for tests in travis
+
+version: "2"
+
+services:
+  redis:
+    image: redis:3.2.8-alpine
+    ports:
+      - "6379:6379"
+
+  db:
+     image: postgres:9.6.2
+     ports:
+        - "5432:5432"
+     environment:
+      - POSTGRES_USER=serviceform
+      - POSTGRES_DB=test_serviceform
+      - POSTGRES_PASSWORD=django

@@ -1,0 +1,21 @@
+{% load i18n %}
+  <h2>{% trans "Answers to questions" %}</h2>
+  {% for q in service_form.questions %}
+    <div class="report-question-title">{{ q.id_display }} {{ q.question }}</div>
+    <ul>
+      {% for pq in q.questionanswers %}
+        {% if pq.answer %}
+          <li><a href="{% url "view_user" pq.participant.pk %}">{{ pq.cached_participant }}</a>:
+          {% if pq.question.answer_type == 'boolean' %}
+            {% if pq.answer %}
+              {% trans "Yes" %}
+            {% else %}
+              {% trans "No" %}
+            {% endif %}
+          {% else %}
+            {{ pq.answer|linebreaksbr }}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    </ul>
+  {% endfor %}

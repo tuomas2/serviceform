@@ -1,0 +1,23 @@
+ <nav class="col-sm-3 bs-docs-sidebar hidden-xs hidden-sm hidden-md">
+    <ul id="sidebar" class="nav nav-stacked" data-spy="affix" data-offset-top="500" data-offset-bottom="0">
+      {% for c1 in service_form.sub_items %}
+        <li>
+          <a href="#c1-{{ c1.id }}">{{ c1.id_display }} {{ c1.name }}</a>
+          <ul class="nav nav-stacked">
+            {% for c2 in c1.sub_items %}
+              <li>
+                <a href="#c2-{{ c2.id }}">{{ c2.id_display }} {{ c2.name }}</a>
+                <ul class="nav nav-stacked">
+                  {% for a in c2.sub_items %}
+                    <li>
+                      <a href="#a-{{ a.id }}">{{ a.id_display }} {{ a.name }}</a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </li>
+            {% endfor %}
+          </ul>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>

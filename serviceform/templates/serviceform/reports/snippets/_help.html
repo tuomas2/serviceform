@@ -1,0 +1,17 @@
+{% load i18n %}
+<div class="helptext">
+<h2>{% trans "Each participant rows contains the following data"%} </h2>
+<ul>
+<li>{% trans "Name"%}</li>
+  <li>{% trans "Phone number"%}</li>
+  <li>{% trans "Email address"%}</li>
+  <li>{% trans "Age"%}</li>
+  <li>{% trans "Number of activities; colors from green (1 activity) to red (10 or more activities)."%}</li>
+<li>{% trans "Information buttons; pushing button will give more information"%}:
+<ul>
+<li><span class="fa fa-info"></span>: {%trans "More information is given"%}</li>
+<li><span class="fa fa-at"></span>: {% trans "Address"%}</li>
+<li><span class="fa fa-list"></span>: {% trans "Notes have been entered"%}</li>
+</ul></li>
+</ul>
+</div>

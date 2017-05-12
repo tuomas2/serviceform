@@ -1,0 +1,25 @@
+sudo: required
+language: python
+python:
+  - "3.6"
+
+services:
+  - docker
+
+before_install:
+ - docker-compose up -f docker-compose-travis.yml -d
+# - docker run --rm -d --name myredis --publish 0.0.0.0:6379:6379 redis:3.2.8-alpine
+# - docker run --rm -d --name postgres --publish 0.0.0.0:5432:5432 -e "POSTGRES_USER=serviceform" -e "POSTGRES_DB=serviceform_test" -e "POSTGRES_PASSWORD=django" postgres:9.6.2
+
+# command to install dependencies
+install:
+ - pip install -r requirements.txt
+ - pip install -e .
+
+# command to run tests
+script:
+ - while ! `nc -z localhost 5432`; do echo 'Waiting for db';  sleep 2; done
+ - while ! `nc -z localhost 6379`; do echo 'Waiting for redis'; sleep 2; done
+ - py.test --cov serviceform/
+
+after_success: coveralls

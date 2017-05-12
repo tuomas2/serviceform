@@ -1,0 +1,11 @@
+{# LEVEL 1 CATEGORY #}
+{% include "serviceform/participation/participation_form/snippets/category.html" with cat=level1cat level=1 %}
+{% for level2cat in level1cat.sub_items %}
+  {# LEVEL 2 CATEGORY #}
+  <div class="categories-2">
+    {% include "serviceform/participation/participation_form/snippets/category.html" with cat=level2cat level=2 %}
+    {% for activity in level2cat.sub_items %}
+      {% include "serviceform/participation/participation_form/snippets/activity.html" with activity=activity cat=level2cat %}
+    {% endfor %}
+  </div>
+{% endfor %}

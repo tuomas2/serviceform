@@ -1,0 +1,25 @@
+{% load i18n %}
+{% if participation.errors %}
+  <div class="row activity-row form-error">
+    <div class="col-xs-7 col-xs-offset-1">
+      {% trans "Please fix errors below" %}
+    </div>
+  </div>
+{% endif %}
+
+{% for question in participant.form.questions %}
+  {% if question.error %}
+    <div class="row">
+      <div class="questions-label-column">
+      </div>
+      <div class="questions-field-column form-error">
+        {{ question.error }}
+      </div>
+    </div>
+    <div class="has-error">
+  {% else %}
+    <div>
+  {% endif %}
+  {{ question.render }}
+</div>
+{% endfor %}

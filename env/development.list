@@ -1,0 +1,4 @@
+POSTGRES_USER=serviceform
+POSTGRES_DB=serviceform
+POSTGRES_PASSWORD=django
+SERVICEFORM_HOST=localhost

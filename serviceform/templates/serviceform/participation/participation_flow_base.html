@@ -1,0 +1,32 @@
+{% extends "serviceform/form_base.html" %}
+{% load compress static i18n serviceform_tags %}
+{% block css %}
+  {% if not bootstrap_checkbox_disabled %}
+    {% compress css %}
+      <link href="{% static "awesome-bootstrap-checkbox.scss" %}" type="text/x-scss" rel="stylesheet">
+    {% endcompress %}
+  {% endif %}
+  {{ block.super }}
+{% endblock %}
+{% block navbar %}
+  {% if not readonly %}
+  <div class="participation-flow-nav">
+    <ul>
+      {% participant_flow_menu_items as m_items %}
+      {% for m in m_items %}
+        <li role="presentation" class="
+        {% if m.attrs.greyed %}disabled{%endif%}
+        {% if m.attrs.disabled %}{%endif%}
+        {% if m.attrs.current %}active{%endif%}
+        ">
+        {% if m.attrs.disabled %}
+        <a href="#">{{ m.title }}</a>
+        {% else %}
+        <a href="{{ m.target }}">{{ m.title }}</a>
+        {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+    </div>
+  {% endif %}
+{% endblock %}

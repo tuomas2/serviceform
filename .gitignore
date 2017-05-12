@@ -1,0 +1,10 @@
+/.idea/
+__pycache__
+*.sqlite3
+/static
+*.log
+/backup/
+*.sql
+/coverage_report/
+/.cache/
+/.coverage

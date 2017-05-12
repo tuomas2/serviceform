@@ -1,0 +1,76 @@
+{% load serviceform_tags i18n %}
+<div class="row-report-participant">
+  {% all_revisions as is_all_revisions %}
+  {% if is_all_revisions and not is_responsible %}
+  <div class="col-report-revision">
+    {{ participant.form_revision }}
+  </div>
+  {% endif %}
+  <div class="col-report-participant">
+    {% if anonymous_hide_details %}
+      {{ participant }}
+    {% else %}
+      {% if is_responsible %}
+        <a href="{% url "view_responsible" participant.pk %}">{{ participant }}</a>
+      {% else %}
+      <a href="{% url "view_user" participant.pk %}">{{ participant }}</a>
+      {% endif %}
+    {% endif %}
+  </div>
+  <div class="col-report-phone">
+    {{ participant.phone_number }}
+  </div>
+  <div class="col-report-email">
+    {{ participant.email }}
+  </div>
+  <div class="col-items">
+    <div class="row">
+    <div class="col-age">
+        {{ participant.age }}
+    </div>
+    <div class="col-report-count">
+      <a class="tooltip-only" data-toggle="tooltip" title="{% trans "Number of activities" %}">
+      {{ participant.item_count|count_color }}
+      </a>
+    </div>
+
+    <div class="col-report-extra-link">
+      {% if item.additional_info or participant.address or participant.log %}
+        <a href="#item-{{participant.pk}}-{{ item.pk }}-extra" data-toggle="collapse">
+        {% if item.additional_info %}
+          <span class="fa fa-info"></span>
+        {% endif %}
+        {% if participant.address %}
+          <span class="fa fa-at"></span>
+        {% endif %}
+        {% if participant.log %}
+          <span class="fa fa-list"></span>
+        {% endif %}
+        </a>
+      {% endif %}
+    </div>
+    </div>
+  </div>
+</div>
+{% if item.additional_info or participant.address or participant.log %}
+  <div id="item-{{participant.pk}}-{{ item.pk }}-extra" class="row-report-extra collapse">
+    <div class="col-report-extra">
+      {% if item.additional_info %}
+        <b>{% trans "Additional info" %}</b><br>
+        {{ item.additional_info|linebreaksbr }}
+        <br>
+      {% endif %}
+      {% if participant.log %}
+        <b>{% trans "Log" %}</b>
+        <ul>
+          {% for l in participant.log %}
+            <li>{{ l.created_at }} {{ l.written_by }}: {{ l.message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+  <div class="col-report-address">
+    {{ participant.address|linebreaks }}
+  </div>
+  </div>
+{% endif %}

@@ -1,0 +1,75 @@
+{% extends "serviceform/participation/participation_flow_base.html" %}
+{% load i18n serviceform_tags static %}
+{% block navbar %}
+  {{ block.super }}
+{% endblock %}
+
+{% block content %}
+  {{ block.super }}
+
+  {# HEADER ROW #}
+  <div class="helptext">
+    <div class="serviceform-description">
+      {{ service_form.description|linebreaks }}
+    </div>
+    {% if form.instructions %}{{ form.instructions|safe }}{% else %}
+      <span class="title">{% trans "Instructions" %}:</span>
+      <ul>
+        <li>
+          {% trans "Select all activities that you would like to participate by ticking boxes below." %}
+        </li>
+        <li>
+          {% trans "You can get more information about activity by pressing <span class='fa fa-info'></span> button." %}
+        </li>
+        <li>
+          {% blocktrans %}
+            If you wish to give some extra information about your participation
+            (such as when and how often you would like to participate), you can type
+            extra details to the textbox that appears when you press <span class="fa fa-pencil"></span> button.
+          {% endblocktrans %}
+        </li>
+      </ul>
+    {% endif %}
+  </div>
+
+  {% if service_form.flow_by_categories and not readonly %}
+    <ul class="category-nav">
+      {% participant_flow_categories as m_items %}
+      {% for m in m_items %}
+        <li role="presentation" class="
+              {% if m.attrs.greyed %}disabled{% endif %}
+              {% if m.attrs.disabled %}{% endif %}
+              {% if m.attrs.current %}active{% endif %}
+            ">
+            <a class="
+          {% if m.attrs.disabled %}
+            disabled
+            {% endif%}"
+            {% if m.attrs.current%}
+              {% color_style m.attrs.category 0%}
+            {%else%}
+              {% color_style m.attrs.category 2 %}
+            {%endif%}
+
+            href="{%if m.attrs.disabled%}#{%else%}{{m.target}}{%endif%}">
+              {{m.id_display}} {{ m.title }}
+           </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  <form id="participationform" action="" method="post">
+    {% csrf_token %}
+    {{ form }}
+    {% if readonly %}
+      <a class="report-go-to-btn"
+         href="{% url "admin:serviceform_serviceform_changelist" %}">{% trans "Go to admin" %}</a>
+    {% else %}
+      <input class="btn-participation-continue" type="submit" name="submit" value="{% trans "Save and continue" %}"/>
+    {% endif %}
+  </form>
+{% endblock %}
+
+{% block javascript %}
+  $('#participationform').areYouSure({message: '{% trans "Are you sure you want to leave form unsaved?" %}'});
+{% endblock %}

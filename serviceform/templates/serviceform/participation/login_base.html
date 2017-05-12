@@ -1,0 +1,14 @@
+{% extends "serviceform/form_base.html" %}
+{% load i18n crispy_forms_tags %}
+{% block navbar %}
+{% include "serviceform/login/_login_navbar.html" with navbar_name="login" %}
+{% endblock %}
+{% block content %}
+  <br>
+  {% if service_form.is_published %}
+    {% block login-content %}
+    {% endblock %}
+  {% else %}
+    <h2>{% trans "Form is not public at the moment." %}</h2>
+  {% endif %}
+{% endblock %}

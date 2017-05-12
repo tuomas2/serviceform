@@ -1,0 +1,7 @@
+{% extends "serviceform/reports/base/report_base.html" %}
+{% load i18n serviceform_tags %}
+{% block content %}
+  {% include "serviceform/reports/snippets/_help.html" %}
+  {% participants as ps %}
+  {% include "serviceform/reports/contents/_all_participants.html"%}
+{% endblock %}

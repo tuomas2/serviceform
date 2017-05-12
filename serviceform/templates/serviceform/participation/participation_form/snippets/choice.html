@@ -1,0 +1,44 @@
+{% load i18n serviceform_tags %}
+<div class="activity-choices-row {% if forloop.last and forloop.parentloop.last and forloop.parentloop.parentloop.last %}last-row{% endif %}" {% color_style cat 1 %}>
+  <div class="choices-column">
+    <div class="activity-choice-title">
+      <div
+              {% if activity.multiple_choices_allowed %}
+                class="choices checkbox checkbox-primary">
+                <span class="activity-choice-id">{{ choice.id_display }}.</span>
+                <input type="checkbox" class="choice-input group-SRV_ACTIVITY_{{ activity.pk }}"
+                       name="SRV_CHOICE_{{ choice.pk }}" {% if choice.selected %}checked{% endif %}>
+              {% else %}
+                class="radio radio-primary">
+                <span class="choices activity-choice-id">{{ choice.id_display }}.</span>
+                <input type="radio" class="choice-radio-input group-SRV_ACTIVITY_{{ activity.pk }}"
+                       name="SRV_ACTIVITYCHOICE_{{ activity.pk }}"
+                       value="{{ choice.pk }}" data-activity_id="{{ activity.pk }}"
+                       data-choice="SRV_CHOICE_{{ choice.pk }}"
+                       {% if choice.selected %}checked{% endif %}>
+              {% endif %}
+      <label for="ACTIVITY_{{ choice.pk }}">
+      </label>
+      {{ choice.name }}
+      </div>
+    </div>
+  </div>
+  <div class="info-column">
+    <a href="#CHOICE_EXTRA_{{ choice.pk }}" data-toggle="collapse">
+      {% if choice.description %}
+        <i class="fa fa-info"></i>
+      {% endif %}
+      <i class="fa fa-pencil"></i>
+    </a>
+  </div>
+  <div class="responsible-column">
+    {% if choice.responsibles_display %}
+      {{ choice.responsibles_display }}
+      <a href="#CHOICE_EXTRA_{{ choice.pk }}" data-toggle="collapse">
+        <i class="fa fa-at"></i>
+      </a>
+    {% endif %}
+  </div>
+</div>
+{% include "serviceform/participation/participation_form/snippets/extra_info.html" with item=choice item_type="CHOICE" %}
+

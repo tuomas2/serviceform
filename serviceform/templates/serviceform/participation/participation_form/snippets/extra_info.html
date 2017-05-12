@@ -1,0 +1,28 @@
+{% load i18n serviceform_tags %}
+<div class="row collapse extra-info-row {% if item.extra %}in{% endif %}" id="{{ item_type }}_EXTRA_{{ item.pk }}" {% color_style item 1 %}>
+  <div class="extra-info-column">
+    {% if item.description %}
+      <b>
+        {% trans "Description" %}:
+      </b>
+      <p>
+        {{ item.description|urlize|url_target_blank|linebreaksbr }}
+      </p>
+    {% endif %}
+    {% for resp in item.responsibles.all %}
+        {% if forloop.first %}
+        <b>{% trans "Responsible contact person(s)" %}: </b>
+        {%endif %}
+      {% include "serviceform/participation/participation_form/snippets/responsible_contact_person.html" with c=resp %}
+    {% endfor %}
+    {% if not hide_extra_info %}
+      <div class="form-group">
+        <label for="{{ item_type }}_EXTRA_{{ item.pk }}">{% trans "Please give additional information if needed" %}: </label>
+        <textarea name="SRV_{{ item_type }}_EXTRA_{{ item.pk }}"
+                  class="extra-{{item_type}}-textarea group-SRV_ACTIVITY_{{ activity.pk }} {% if item_type == 'CHOICE' %}extra-SRV_CHOICE_{{ item.pk }}{% endif %} form-control"
+                  rows="3">{% if item.extra %}{{ item.extra }}{% endif %}</textarea>
+      </div>
+    {% endif %}
+  </div>
+  <div class=col-xs-2></div>
+</div>

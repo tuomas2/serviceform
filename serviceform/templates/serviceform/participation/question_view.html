@@ -1,0 +1,16 @@
+{% extends "serviceform/participation/participation_flow_base.html" %}
+{% load i18n%}
+{%block content %}
+{{block.super}}
+<div class="helptext">
+{% trans "Please answer following questions."%}
+</div>
+ <form id="questionform" class="form-horizontal" action="" method="post">
+    {% csrf_token %}
+    {{ form }}
+   <input class="btn-participation-continue" type="submit" name="submit" value="{% trans "Save and continue" %}"/>
+</form>
+{% endblock%}
+{% block javascript %}
+$('#questionform').areYouSure({message: '{% trans "Are you sure you want to leave form unsaved?" %}'});
+{% endblock %}

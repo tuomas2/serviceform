@@ -1,0 +1,11 @@
+<div class="form-group" xmlns="http://www.w3.org/1999/html">
+  <label for="SRV_QUESTION_{{ question.pk }}"
+         class="control-label questions-label-column{% if question.required %} requiredField{% endif %}">
+    {{ question.question }}
+    {% if question.required %} <span class="asteriskField">*</span>{% endif %}
+  </label>
+  <div class="controls questions-field-column">
+    <textarea class="textinput textInput form-control" id="SRV_QUESTION_{{ question.pk }}"
+           name="SRV_QUESTION_{{ question.pk }}" rows="3">{{ question.answer }}</textarea>
+  </div>
+</div>

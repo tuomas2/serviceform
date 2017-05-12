@@ -1,0 +1,18 @@
+{% load i18n %}
+
+<p>
+  {{ c.forenames }} {{ c.surname }}<br>
+  {% if not c.hide_contact_details %}
+    {% if c.email %}
+      <b>{% trans "Email" %}:</b> {{ c.email }}<br>
+    {% endif %}
+    {% if not service_form.hide_contact_details %}
+      {% if c.phone_number %}
+        <b>{% trans "Phone" %}:</b> {{ c.phone_number }}<br>
+      {% endif %}
+      {% if c.address %}
+        <b>{% trans "Address" %}:</b> <br>{{ c.address|linebreaksbr }}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+</p>

@@ -1,0 +1,13 @@
+{% extends "serviceform/reports/base/report_base.html" %}
+{% load i18n serviceform_tags %}
+{% block content %}
+  {{ block.super }}
+  {% include "serviceform/reports/contents/_all_responsibles.html" %}
+  {% participants as ps %}
+
+  {% include "serviceform/reports/contents/_all_participants.html"%}
+  {% include "serviceform/reports/contents/_all_activities.html"%}
+  {% include "serviceform/reports/contents/_all_questions.html"%}
+
+{% endblock %}
+
