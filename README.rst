@@ -187,7 +187,7 @@ Django shell::
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --env-file $SERVICEFORM_ENV_FILE \
-            tuomasairaksinen/serviceform:lates shell
+            tuomasairaksinen/serviceform:latest shell
 
 Postgresql root shell::
 
@@ -199,7 +199,7 @@ Same with Django's credentials::
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --env-file $SERVICEFORM_ENV_FILE \
-            tuomasairaksinen/serviceform:lates dbshell
+            tuomasairaksinen/serviceform:latest dbshell
 
 Bash shell (to investigate/edit volumes etc.)::
 
