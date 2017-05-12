@@ -6,21 +6,6 @@ RELEASE IS STILL WORK IN PROGRESS. PLEASE WAIT...
 
 Web application for collecting data from volunteers of willingness to participate.
 
-Docker
-======
-
-To run whole serviceform in docker (development environment)::
-
-    cd serviceform-docker
-    docker-compose -f docker-compose-dev.yml up
-
-Optionally, to run within docker in an environment more closely imitating production::
-
-    docker-compose up
-
-Then go to http://localhost:8080
-Admin login: admin, password: asdf
-
 
 Running tests with docker
 -------------------------
