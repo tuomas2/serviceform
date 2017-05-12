@@ -58,6 +58,7 @@ case "$1" in
     wait_redis
     ./manage.py collectstatic --noinput
     ./manage.py compress
+    cd $2
     py.test -v --cov serviceform/ tests/
   ;;
   'bash')

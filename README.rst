@@ -1,3 +1,8 @@
+.. image:: https://travis-ci.org/tuomas2/serviceform.svg?branch=master
+    :target: https://travis-ci.org/tuomas2/serviceform
+
+
+
 ===========
 Serviceform
 ===========

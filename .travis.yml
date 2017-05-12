@@ -17,6 +17,6 @@ install:
  - pip install coveralls
 
 script:
- - docker run -u root --link redis:redis --link postgres:db --volume $(pwd)/:/code serviceform travis-tests
+ - docker run -u root --link redis:redis --link postgres:db --volume $(pwd):$(pwd) serviceform travis-tests $(pwd)
 
 after_success: coveralls
