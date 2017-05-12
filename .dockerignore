@@ -2,11 +2,13 @@
 sql
 .idea
 static
+*/*.secret
+env
 */__pycache__
 *.sqlite3
 static
-*.log
+*/*.log
 backup
-*.sql
+*/*.sql
 .cache
 .coverage
