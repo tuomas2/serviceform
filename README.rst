@@ -101,7 +101,7 @@ Docker commands to start services bundled within serviceform docker image.
 
 Build serviceform docker image first::
 
-  docker build -t serviceform .
+  docker build -t tuomasairaksinen/serviceform:latest .
 
 
 Initialization / upgrade. This migrates database
@@ -114,7 +114,7 @@ and (re-)creates static files in shared volume (for nginx)::
             --volume serviceform-media:/code/media:ro \
             --volume serviceform-static:/code/static \
             --volume serviceform-nginx-config:/nginx-config \
-            serviceform upgrade
+            tuomasairaksinen/serviceform:latest upgrade
 
 Celery::
 
@@ -122,7 +122,7 @@ Celery::
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --env-file $SERVICEFORM_ENV_FILE \
-            serviceform celery
+            tuomasairaksinen/serviceform:latest celery
 
 
 Celery-beat::
@@ -131,7 +131,7 @@ Celery-beat::
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --env-file $SERVICEFORM_ENV_FILE \
-            serviceform celery-beat
+            tuomasairaksinen/serviceform:latest celery-beat
 
 Task-processor::
 
@@ -139,14 +139,14 @@ Task-processor::
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --env-file $SERVICEFORM_ENV_FILE \
-            serviceform task-processor
+            tuomasairaksinen/serviceform:latest task-processor
 
 Send-emails::
 
     docker run --rm -d --name serviceform-send-emails \
             --link serviceform-db:db \
             --env-file $SERVICEFORM_ENV_FILE \
-            serviceform send-emails
+            tuomasairaksinen/serviceform:latest send-emails
 
 App::
 
@@ -156,7 +156,7 @@ App::
             --env-file $SERVICEFORM_ENV_FILE \
             --volume serviceform-static:/code/static \
             --volume serviceform-media:/code/media \
-            serviceform app
+            tuomasairaksinen/serviceform:lates app
 
 
 Web server::
@@ -183,7 +183,7 @@ Django shell::
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --env-file $SERVICEFORM_ENV_FILE \
-            serviceform shell
+            tuomasairaksinen/serviceform:lates shell
 
 Postgresql root shell::
 
@@ -195,7 +195,7 @@ Same with Django's credentials::
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --env-file $SERVICEFORM_ENV_FILE \
-            serviceform dbshell
+            tuomasairaksinen/serviceform:lates dbshell
 
 Bash shell (to investigate/edit volumes etc.)::
 
@@ -206,7 +206,7 @@ Bash shell (to investigate/edit volumes etc.)::
             --volume serviceform-static:/code/static \
             --volume serviceform-nginx-config:/nginx-config \
             --env-file $SERVICEFORM_ENV_FILE \
-            serviceform bash
+            tuomasairaksinen/serviceform:latest bash
 
 Upgrading system
 ----------------
