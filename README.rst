@@ -1,6 +1,8 @@
 .. image:: https://travis-ci.org/tuomas2/serviceform.svg?branch=master
-    :target: https://travis-ci.org/tuomas2/serviceform
+   :target: https://travis-ci.org/tuomas2/serviceform
 
+.. image:: https://coveralls.io/repos/github/tuomas2/serviceform/badge.svg?branch=master
+   :target: https://coveralls.io/github/tuomas2/serviceform?branch=master
 
 
 ===========
