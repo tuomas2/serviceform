@@ -1,6 +1,9 @@
 Serviceform
 ===========
 
+RELEASE IS STILL WORK IN PROGRESS. PLEASE WAIT...
+
+
 Web application for collecting data from volunteers of willingness to participate.
 
 Docker
