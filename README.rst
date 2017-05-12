@@ -1,3 +1,4 @@
+===========
 Serviceform
 ===========
 
@@ -7,18 +8,12 @@ RELEASE IS STILL WORK IN PROGRESS. PLEASE WAIT...
 Web application for collecting data from volunteers of willingness to participate.
 
 
-Running tests with docker
--------------------------
-
-Run::
-
-    docker-compose -f docker-compose-tests.yml run tests
-
+================
 Production guide
 ================
 
 Requirements
-------------
+============
 
  - Machine that runs docker
  - Your own web server with SSL sertificates and associated domain name
@@ -28,7 +23,7 @@ Requirements
 
 
 Docker environment file
------------------------
+=======================
 
 Put environment variables in file serviceform-env.list::
 
@@ -62,7 +57,7 @@ export SERVICEFORM_ENV_FILE=/path_to/serviceform-env.list
 
 .. _external:
 External services
------------------
+=================
 
 Docker commands to start external services needed by Serviceform
 
@@ -82,7 +77,7 @@ Redis::
 
 
 Django services
----------------
+===============
 
 Docker commands to start services bundled within serviceform docker image.
 
@@ -178,7 +173,7 @@ Now you need to set up your web server (https) to redirect connections to this p
 
 .. _restarting:
 Shutting down and starting (system reboot procedures)
------------------------------------------------------
+=====================================================
 
 Shutting down::
 
@@ -194,7 +189,7 @@ Starting again (set this into your system startup). Notice order.::
 
 .. _upgrading:
 Upgrading system
-----------------
+================
 
 Simple upgrade procedure::
 
@@ -213,8 +208,8 @@ Then run all docker run all services_ and http_server_.
 Zero-downtime upgrade method is planned in the future.
 
 .. _troubleshooting:
-Troubleshooting
----------------
+Troubleshooting / shell access
+==============================
 
 To investigate problems these shell commands might prove usefull.
 
@@ -250,8 +245,17 @@ Bash shell (to investigate/edit volumes etc.)::
             tuomasairaksinen/serviceform:latest bash
 
 
+===========
 Development
 ===========
+
+Running tests with docker
+=========================
+
+Run::
+
+    docker-compose -f docker-compose-tests.yml run tests
+
 
 How to set things up and run your local development environment:
 ----------------------------------------------------------------
@@ -301,7 +305,7 @@ Then open browser in http://localhost:8000 and use your initial superuser accoun
 
 
 Dumping and loading database in development environment
--------------------------------------------------------
+=======================================================
 
 Database can be dumped with the following command::
 
@@ -319,7 +323,7 @@ Dump data in json format for tests::
 
 
 Translations
-------------
+============
 
 If changes to translatable strings are made, run::
 
@@ -333,7 +337,7 @@ Then commit your changes (.po and .mo files) to repository.
 
 
 
-
+=======
 LICENCE
 =======
 
