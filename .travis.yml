@@ -10,9 +10,9 @@ before_install:
  - docker run -d --name redis redis:3.2.8-alpine
  - docker run -d --name postgres -e "POSTGRES_USER=serviceform" -e "POSTGRES_DB=test_serviceform" -e "POSTGRES_PASSWORD=django" postgres:9.6.2
  - docker ps -a
- - ln -s $(pwd) /code
 
 install:
+ - ln -s $(pwd) /code
  - docker build -t serviceform .
  - docker ps -a
  - pip install coveralls
