@@ -197,13 +197,13 @@ Simple upgrade procedure::
     docker stop serviceform-nginx serviceform-app serviceform-send-emails \
             serviceform-task-processor serviceform-celery-beat serviceform-celery
 
-Run upgrade_ command.
+Run `upgrade`_ command.
 If that is fine, we can remove old containers::
 
     docker rm serviceform-nginx serviceform-app serviceform-send-emails \
             serviceform-task-processor serviceform-celery-beat serviceform-celery
 
-Then run all docker run all services_ and http_server_.
+Then run all docker run all `services`_ and `http_server`_.
 
 Zero-downtime upgrade method is planned in the future.
 
