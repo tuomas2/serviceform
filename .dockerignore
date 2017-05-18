@@ -6,7 +6,6 @@ static
 env
 */__pycache__
 *.sqlite3
-static
 */*.log
 backup
 */*.sql
