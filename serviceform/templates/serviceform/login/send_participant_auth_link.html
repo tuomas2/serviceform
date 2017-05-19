@@ -1,6 +1,10 @@
 {% extends "serviceform/participation/login_base.html" %}
 {% load i18n crispy_forms_tags %}
 {% block login-content %}
-    <p>{% trans "If you have filled this form already in the past, please give your email below so we can send you a personal link to update your participation information." %}</p>
-    {% crispy email_form %}
+  <p>
+  {% blocktrans %}If you have filled this form already in the past, please give your email
+  below so we can send you a personal link to update your participation information.
+  {% endblocktrans %}
+  </p>
+  {% crispy email_form %}
 {% endblock %}

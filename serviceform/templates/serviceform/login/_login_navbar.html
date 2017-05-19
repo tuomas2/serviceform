@@ -2,22 +2,25 @@
 {% load i18n serviceform_tags %}
 {% block navbar-right %}
   {% menu_items navbar_name as m_items %}
-      <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle"
-                      data-toggle="dropdown"
-                      role="button"
-                      aria-haspopup="true"
-                      aria-expanded="false"><span class="fa fa-lock"></span> <span class="visible-xs-inline">{%trans "Admin" %}</span> <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            {% for page in m_items.right %}
-              {% if page.is_active %}
-                <li class="active"><a href="{{page.url}}">{{page.title}} <span class="sr-only">({% trans "current"%})</span></a></li>
-              {% else %}
-                <li><a href="{{page.url}}">{{page.title}}</a></li>
-              {% endif %}
-            {% endfor %}
-          </ul>
-        </li>
+  <ul class="nav navbar-nav navbar-right">
+    <li class="dropdown">
+      <a href="#" class="dropdown-toggle"
+         data-toggle="dropdown"
+         role="button"
+         aria-haspopup="true"
+         aria-expanded="false"><span class="fa fa-lock"></span>
+        <span class="visible-xs-inline">{% trans "Admin" %}</span>
+        <span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        {% for page in m_items.right %}
+          {% if page.is_active %}
+            <li class="active"><a href="{{ page.url }}">{{ page.title }} <span
+                    class="sr-only">({% trans "current" %})</span></a></li>
+          {% else %}
+            <li><a href="{{ page.url }}">{{ page.title }}</a></li>
+          {% endif %}
+        {% endfor %}
       </ul>
+    </li>
+  </ul>
 {% endblock %}

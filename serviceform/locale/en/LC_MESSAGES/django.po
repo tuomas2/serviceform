@@ -3,94 +3,93 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-19 12:57+0300\n"
-"PO-Revision-Date: 2017-05-19 12:57+0300\n"
-"Last-Translator: Tuomas Airaksinen <tuomas.airaksinen@qvantel.com>\n"
-"Language-Team: \n"
-"Language: fi\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.8.7.1\n"
 
 #. Translators: This appears after "Changed" and is joined with "and"
 #: admin.py:106
 #, python-brace-format
 msgid " {label} to {new_value} (was {old_value}) "
-msgstr " {label} muutettiin arvoksi {new_value} (oli {old_value}) "
+msgstr ""
 
 #: admin.py:107
 msgid "and"
-msgstr "ja"
+msgstr ""
 
 #: admin.py:115
 #, python-format
 msgid "Changed %s."
-msgstr "Muokattu %s."
+msgstr ""
 
 #: admin.py:124
 #, python-format
 msgid "Added %(name)s \"%(object)s\"."
-msgstr "Lisätty %(name)s \"%(object)s\"."
+msgstr ""
 
 #: admin.py:130
 #, python-format
 msgid "Changed %(list)s for %(name)s \"%(object)s\"."
-msgstr "Muokattu %(list)s kohteelle %(name)s \"%(object)s\"."
+msgstr ""
 
 #: admin.py:136
 #, python-format
 msgid "Deleted %(name)s \"%(object)s\"."
-msgstr "Poistettu %(name)s \"%(object)s\"."
+msgstr ""
 
 #: admin.py:140
 msgid "No fields changed."
-msgstr "Ei muutoksia kenttiin."
+msgstr ""
 
 #: admin.py:260 admin.py:268
 msgid "Basic information"
-msgstr "Perustiedot"
+msgstr ""
 
 #: admin.py:261
 msgid "Ownership"
-msgstr "Omistajuus"
+msgstr ""
 
 #: admin.py:262
 msgid "Email settings"
-msgstr "Sähköpostiasetukset"
+msgstr ""
 
 #: admin.py:263
 msgid "Customization"
-msgstr "Lomakkeen asetukset"
+msgstr ""
 
 #: admin.py:264
 msgid "Ask details from participants"
-msgstr "Kysy nämä tiedot osallistujilta"
+msgstr ""
 
 #: admin.py:265
 msgid "Require details from participants"
-msgstr "Vaadi nämä tiedot osallistujilta"
+msgstr ""
 
 #: admin.py:289
 msgid "Copy form as a new"
-msgstr "Kopioi lomake uudeksi"
+msgstr ""
 
 #: admin.py:295
 msgid "Bulk email former participants now!"
-msgstr "Lähetä massasähköpostia aikaisemmille osallistujille nyt!"
+msgstr ""
 
 #: admin.py:301
 msgid "Bulk email responsibility persons now!"
-msgstr "Lähetä massasähköpostia vastuuhenkilöille nyt!"
+msgstr ""
 
 #: admin.py:307
 msgid "Shuffle participant data"
-msgstr "Sekoita henkilötiedot"
+msgstr ""
 
 #: admin.py:342
 msgid ""
@@ -98,18 +97,14 @@ msgid ""
 "categories are used, if form flow is split to categories, so that form is "
 "rendered correctly."
 msgstr ""
-"Sinulla on {} tason 1 kategoriaa. Jotta lomake näkyisi oikein, "
-"suosittelemme, että käytät maksimissaan 7 tason 1 kategoriaa, jos \"Jaa "
-"osallistumislomake tason 1 kategorioiden mukaisesti osiin\" -toiminto on "
-"käytössä."
 
 #: admin.py:363
 msgid "Send mail"
-msgstr "Lähetä sähköpostia"
+msgstr ""
 
 #: apps.py:25
 msgid "Service form application"
-msgstr "Palvelulomake"
+msgstr ""
 
 #: emails.py:21
 msgid ""
@@ -131,21 +126,6 @@ msgid ""
 "Contact person:\n"
 "{{contact}}"
 msgstr ""
-"Hei {{responsible}}, \n"
-"\n"
-"Osallistumistiedot lomakkeelle {{form}} ovat nyt tarkasteltavissa "
-"osoitteessa \n"
-"{{url}}\n"
-"Tästä lähtien saat ilmoituksen aina kun uusi osallistuja ilmoittautuu niihin "
-"vastuualueesi tehtäviin. \n"
-"Voit myös muokata yhteystietojasi sekä sähköposti-ilmoitusten asetuksia "
-"samasta osoitteesta\n"
-"\n"
-"Parhain terveisin,\n"
-"Palvelulomakejärjestelmän ylläpito\n"
-"\n"
-"Yhteyshenkilö: \n"
-"{{contact}}"
 
 #: emails.py:37
 msgid ""
@@ -160,16 +140,6 @@ msgid ""
 "Contact person:\n"
 "{{contact}}"
 msgstr ""
-"Hei {{participant}},\n"
-"\n"
-"Sinut on kutsuttu täyttämään lomake \"{{form}}\".\n"
-"Voit kertoa halukkuudestasi osallistua {{url}}.\n"
-"\n"
-"Parhain terveisin,\n"
-"Palvelulomakejärjestelmän ylläpito\n"
-"\n"
-"Yhteyshenkilö:\n"
-"{{contact}}"
 
 #: emails.py:48
 msgid ""
@@ -188,21 +158,6 @@ msgid ""
 "Contact person:\n"
 "{{contact}}"
 msgstr ""
-"Hei {{responsible}}, \n"
-"\n"
-"Uusi osallistujatieto henkilöltä {{participant}} on tallennettu lomakkeeseen "
-"{{form}}. \n"
-"Voit tarkastella osallistujatietoja niihin tehtäviin joista olet vastuussa "
-"osoitteessa:\n"
-"{{url}}\n"
-"Voit myös muokata yhteystietojasi sekä sähköposti-ilmoitusten asetuksia "
-"samasta osoitteesta\n"
-"\n"
-"Parhain terveisin,\n"
-"Palvelulomakejärjestelmän ylläpito\n"
-"\n"
-"Yhteyshenkilö: \n"
-"{{contact}}"
 
 #: emails.py:61
 msgid ""
@@ -217,16 +172,6 @@ msgid ""
 "Contact person:\n"
 "{{contact}}"
 msgstr ""
-"Hei {{participant}},\n"
-"\n"
-"Uusi versio lomakkeesta \"{{form}}\" on julkaistu.\n"
-"Päivitä osallistumistietosi osoitteessa {{url}}.\n"
-"\n"
-"Parhain terveisin,\n"
-"Palvelulomakejärjestelmän ylläpito\n"
-"\n"
-"Yhteyshenkilö:\n"
-"{{contact}}"
 
 #: emails.py:72 emails.py:83
 msgid ""
@@ -241,16 +186,6 @@ msgid ""
 "Contact person:\n"
 "{{contact}}"
 msgstr ""
-"Hei {{participant}},\n"
-"\n"
-"Lähetit tiedot lomakkeeseen \"{{form}}\" ajankohtana {{last_modified}}.\n"
-"Jos haluat muuttaa antamiasi tietoja, voit mennä osoitteeseen {{url}}.\n"
-"\n"
-"Parhain terveisin,\n"
-"Palvelulomakejärjestelmän ylläpito\n"
-"\n"
-"Yhteyshenkilö:\n"
-"{{contact}}"
 
 #: emails.py:94
 msgid ""
@@ -266,16 +201,6 @@ msgid ""
 "Contact person:\n"
 "{{contact}}"
 msgstr ""
-"Hei {{participant}},\n"
-"\n"
-"Päivitit tietojasi lomakkeeseen \"{{form}}\" ajankohtana {{last_modified}}.\n"
-"Jos haluat muuttaa antamiasi tietoja, voit mennä osoitteeseen {{url}}.\n"
-"\n"
-"Parhain terveisin,\n"
-"Palvelulomakejärjestelmän ylläpito\n"
-"\n"
-"Yhteyshenkilö:\n"
-"{{contact}}"
 
 #: emails.py:106
 msgid ""
@@ -291,19 +216,6 @@ msgid ""
 "Contact person:\n"
 "{{contact}}"
 msgstr ""
-"Hei {{responsible}}, \n"
-"\n"
-"Voit tarkastella osallistujatietoja niihin tehtäviin joista olet vastuussa "
-"osoitteessa:\n"
-"{{url}}\n"
-"Voit myös muokata yhteystietojasi sekä sähköposti-ilmoitusten asetuksia "
-"samasta osoitteesta\n"
-"\n"
-"Parhain terveisin,\n"
-"Palvelulomakejärjestelmän ylläpito\n"
-"\n"
-"Yhteyshenkilö: \n"
-"{{contact}}"
 
 #: emails.py:118
 msgid ""
@@ -321,259 +233,232 @@ msgid ""
 "Contact person:\n"
 "{{contact}}"
 msgstr ""
-"Hei {{participant}},\n"
-"\n"
-"Sähköpostiosoitteesi pitää varmentaa. Voit tehdä sen klikkaamalla alla "
-"olevaa linkkiä. Sen jälkeen voit jatkaa\n"
-"lomakkeen täyttämistä.\n"
-"\n"
-"{{url}}.\n"
-"\n"
-"Parhain terveisin,\n"
-"Palvelulomakejärjestelmän ylläpito\n"
-"\n"
-"Yhteyshenkilö:\n"
-"{{contact}}"
 
 #: forms.py:54
 msgid "Revision"
-msgstr "Versio"
+msgstr ""
 
 #: forms.py:65
 msgid "Current"
-msgstr "Nykyinen"
+msgstr ""
 
 #: forms.py:66
 msgid "All"
-msgstr "Kaikki"
+msgstr ""
 
 #: forms.py:72
 msgid "Save settings"
-msgstr "Tallenna asetukset"
+msgstr ""
 
 #: forms.py:86 models.py:525
 msgid "Password"
-msgstr "Salasana"
+msgstr ""
 
 #: forms.py:93
 msgid "Get in"
-msgstr "Sisään!"
+msgstr ""
 
 #: forms.py:98
 msgid "Incorrect password"
-msgstr "Virheellinen salasana"
+msgstr ""
 
 #: forms.py:103 forms.py:138 models.py:111 models.py:119
 #: templates/serviceform/participation/participation_form/snippets/responsible_contact_person.html:7
 #: templates/serviceform/participation/participation_form/snippets/responsible_tooltip.html:10
 msgid "Email"
-msgstr "Sähköposti"
+msgstr ""
 
 #: forms.py:110 forms.py:145
 msgid "Send the link!"
-msgstr "Lähetä linkki!"
+msgstr ""
 
 #: forms.py:121
 msgid "There were no participation with email address {}"
 msgstr ""
-"Lomakkeelle ei löytynyt aikaisempaa osallistumistietoa sähköpostiosoitteella "
-"{}"
 
 #: forms.py:130 forms.py:164
 msgid "Access link sent to email address {}"
-msgstr "Linkki lähetetty sähköpostiosoitteeseen {}"
+msgstr ""
 
 #: forms.py:132 forms.py:166
 msgid "Email could not be sent to email address {}"
-msgstr "Sähköpostia ei voitu lähettää osoitteeseen {}"
+msgstr ""
 
 #: forms.py:155
 msgid "There were no responsible with email address {}"
-msgstr "Lomakkeelle ei löytynyt vastuuhenkilöä sähköpostiosoitteella {}"
+msgstr ""
 
 #: forms.py:189
 msgid "Continue"
-msgstr "Jatka"
+msgstr ""
 
 #: forms.py:192 forms.py:270
 msgid "Save details"
-msgstr "Tallenna tiedot"
+msgstr ""
 
 #: forms.py:207
 msgid "Optional"
-msgstr "Vapaaehtoinen"
+msgstr ""
 
 #: forms.py:226
 msgid "Invalid year of birth"
-msgstr "Virheellinen syntymävuosi"
+msgstr ""
 
 #: forms.py:228
 msgid "You must be at least 10 years old"
-msgstr "Sinun pitää olla vähintään 10 vuotta vanha"
+msgstr ""
 
 #: forms.py:236
 msgid "If sending email is allowed email address need to be given"
 msgstr ""
-"Sähköpostiosoite pitää antaa, mikäli sähköpostin lähetys on asetettu "
-"sallituksi"
 
 #: forms.py:247
 msgid "resend auth link to your email!"
-msgstr "lähetä linkki sähköpostiisi!"
+msgstr ""
 
 #: forms.py:249
 msgid ""
 "There is already participation with this email address. To edit earlier "
 "participation, {}"
 msgstr ""
-"Lomakkeelle on jo annettu osallistujatieto tällä sähköpostiosoitteella. "
-"Muokataksesi aikaisempia osallistumistietoja, {}"
 
 #: forms.py:285
 msgid "Yes I am sure"
-msgstr "Olen varma"
+msgstr ""
 
 #: forms.py:291
 msgid "Delete"
-msgstr "Poista"
+msgstr ""
 
 #: forms.py:391 forms.py:398
 msgid "Invalid activity input data"
-msgstr "Virhe"
+msgstr ""
 
 #: forms.py:401
 msgid "Invalid input data in radio button"
-msgstr "Virhe"
+msgstr ""
 
 #: forms.py:405 forms.py:413
 msgid "Invalid choice input data"
-msgstr "Virhe"
+msgstr ""
 
 #: forms.py:419
 msgid "Invalid input data"
-msgstr "Virhe"
+msgstr ""
 
 #: forms.py:426
 msgid "No choices selected!"
-msgstr "Valitse yksi (tai useampi) vaihtoehdoista."
+msgstr ""
 
 #: forms.py:505
 msgid "Invalid question input data"
-msgstr "Virhe"
+msgstr ""
 
 #: forms.py:511
 msgid "Answer required"
-msgstr "Vastaus on pakollinen"
+msgstr ""
 
 #: forms.py:521
 msgid ""
 "Send invitations also to participants that have participated in older form "
 "versions but not yet this form"
 msgstr ""
-"Lähetä kutsu myös niille henkilöille jotka ovat täyttäneet lomakkeen "
-"aikaisemman version, mutta eivät vielä uusinta"
 
 #: forms.py:524
 msgid "Email addresses, separated by comma, space or enter"
 msgstr ""
-"Sähköpostiosoitteet, erotettuna pilkulla, välilyönnillä tai rivinvaihdolla"
 
 #: forms.py:531
 msgid "Send invites"
-msgstr "Lähetä kutsut"
+msgstr ""
 
 #: forms.py:540
 msgid "Form is not yet published, emails can't be sent"
-msgstr "Lomake ei ole avoinna tällä hetkellä, sähköposteja ei voi lähettää"
+msgstr ""
 
 #: forms.py:547
 msgid "Invalid email: {}"
-msgstr "Virheellinen sähköpostiosoite: {}"
+msgstr ""
 
 #: forms.py:559
 msgid "Invitation sent to {}"
-msgstr "Kutsu lähetetty osoitteeseen {}"
+msgstr ""
 
 #: forms.py:562
 msgid "Invitation was not sent to {} because user already exists"
 msgstr ""
-"Kutsua ei lähetetty osoitteeseen {} koska käyttäjä on jo järjestelmässä"
 
 #: forms.py:565
 msgid "Invitation was not sent to {} because user denied emailing"
 msgstr ""
-"Kutsua ei lähetetty osoitteeseen {} koska käyttäjä on kieltänyt sähköpostien "
-"lähetyksen"
 
 #: models.py:72
 msgid ""
 "Phone number must be entered in the format: '050123123' or '+35850123123'. "
 "Up to 15 digits allowed."
 msgstr ""
-"Puhelinnumeron pitää olla muotoa: '050123123' tai '+35850123123', enintään "
-"15 merkkiä pitkä."
 
 #: models.py:80
 msgid "Enter a valid postal code."
-msgstr "Syötä kunnollinen postinumero"
+msgstr ""
 
 #: models.py:103
 msgid "Forename(s)"
-msgstr "Etunimi"
+msgstr ""
 
 #: models.py:104
 msgid "Surname"
-msgstr "Sukunimi"
+msgstr ""
 
 #: models.py:106 models.py:562 models.py:566
 msgid "Street address"
-msgstr "Katuosoite"
+msgstr ""
 
 #: models.py:108
 msgid "Zip/Postal code"
-msgstr "Postinumero"
+msgstr ""
 
 #: models.py:110
 msgid "City"
-msgstr "Kaupunki"
+msgstr ""
 
 #: models.py:113 models.py:121 models.py:563 models.py:567
 #: templates/serviceform/reports/snippets/_help.html:6
 msgid "Phone number"
-msgstr "Puhelinnumero"
+msgstr ""
 
 #: models.py:117 models.py:144
 #: templates/serviceform/reports/snippets/_help.html:5
 msgid "Name"
-msgstr "Nimi"
+msgstr ""
 
 #: models.py:123
 #: templates/serviceform/participation/participation_form/snippets/responsible_contact_person.html:14
 #: templates/serviceform/participation/participation_form/snippets/responsible_tooltip.html:13
 #: templates/serviceform/reports/snippets/_help.html:13
 msgid "Address"
-msgstr "Osoite"
+msgstr ""
 
 #: models.py:145 models.py:551
 #: templates/serviceform/participation/participation_form/snippets/extra_info.html:6
 msgid "Description"
-msgstr "Kuvaus"
+msgstr ""
 
 #: models.py:195
 msgid "Secret key"
-msgstr "Salainen avain"
+msgstr ""
 
 #: models.py:231
 msgid "Responsibility person"
-msgstr "Vastuuhenkilö"
+msgstr ""
 
 #: models.py:232
 msgid "Responsibility persons"
-msgstr "Vastuuhenkilöt"
+msgstr ""
 
 #: models.py:240
 msgid "Send email notifications"
-msgstr "Lähetä ilmoituksia sähköpostilla"
+msgstr ""
 
 #: models.py:242
 msgid ""
@@ -581,92 +466,82 @@ msgid ""
 "activities is registered. Email contains also has a link that allows "
 "accessing raport of administered activities."
 msgstr ""
-"Lähetä sähköpostilla ilmoistus aina kun uusi henkilö on ilmoittautunut "
-"yhteen niistä tehtävistä, joista olet vastuussa. Sähköposti myös sisältää "
-"linkin, jonka avulla on mahdollista tarkastella henkiön hallinnoimiin "
-"tehtäviin osallistuneiden henkilöiden tietoja."
 
 #: models.py:246
 msgid "Hide contact details in form"
-msgstr "Piilota kaikki yhteystiedot lomakkeessa"
+msgstr ""
 
 #: models.py:247
 msgid "Grant access to full reports"
-msgstr "Myönnä pääsy kaikkiin raportteihin"
+msgstr ""
 
 #: models.py:258 models.py:1087
 msgid "Link to personal report"
-msgstr "Linkki henkilökohtaiseen raporttiin"
+msgstr ""
 
 #: models.py:303
 msgid "Form revision"
-msgstr "Lomakkeen versio"
+msgstr ""
 
 #: models.py:304
 msgid "Form revisions"
-msgstr "Lomakkeen versiot"
+msgstr ""
 
 #: models.py:308
 msgid "Revision name"
-msgstr "Version nimi"
+msgstr ""
 
 #: models.py:309 models.py:421 templates/serviceform/base.html:12
 msgid "Service form"
-msgstr "Palvelulomake"
+msgstr ""
 
 #: models.py:310
 msgid "Valid from"
-msgstr "Voimassa alkaen"
+msgstr ""
 
 #: models.py:312
 msgid "Valid to"
-msgstr "Voimassaolo päättyy"
+msgstr ""
 
 #: models.py:315
 msgid "Send bulk email to participants"
-msgstr "Lähetä sähköpostia osallistujille"
+msgstr ""
 
 #: models.py:316
 msgid ""
 "Send email to participants that filled the form when this revision was "
 "active. Email is sent when new current revision is published."
 msgstr ""
-"Lähetä sähköpostia niille sallistujille jotka täyttivät lomakkeen silloin "
-"kun tämä versio oli aktiivinen. Sähköpostia lähetetään kun uusi versio "
-"lomakkeesta julkaistaan."
 
 #: models.py:320
 msgid "Email sending starts"
-msgstr "Sähköpostin lähetys alkaa"
+msgstr ""
 
 #: models.py:322
 msgid ""
 "Sends bulk email to responsibility persons at specified time, after which it "
 "will send email for each new participation"
 msgstr ""
-"Lähetä ilmoitus vastuuhenkilöille määriteltynä aikana, jonka jälkeen "
-"sähköpostia lähetetään aina kun uusi ilmoittautuminen rekisteröityy "
-"järjestelmään."
 
 #: models.py:351 models.py:407
 msgid "Content"
-msgstr "Sisältö"
+msgstr ""
 
 #: models.py:356 models.py:406
 msgid "Subject"
-msgstr "Otsikko"
+msgstr ""
 
 #: models.py:399
 msgid "Email template"
-msgstr "Sähköpostimalli"
+msgstr ""
 
 #: models.py:400
 msgid "Email templates"
-msgstr "Sähköpostimallit"
+msgstr ""
 
 #: models.py:405
 msgid "Template name"
-msgstr "Mallin nimi"
+msgstr ""
 
 #: models.py:408
 msgid ""
@@ -674,174 +549,149 @@ msgid ""
 "content: {{responsible}}, {{participant}}, {{last_modified}}, {{form}}, "
 "{{url}}, {{contact}}"
 msgstr ""
-"Seuraavat sisältömuuttujat ovat mahdollisesti (riippuen sähköpostin "
-"asiayhteydestä) käytettävissä sekä otsikkoon että sisältöön: "
-"{{responsible}}, {{participant}}, {{last_modified}}, {{form}}, {{url}}, "
-"{{contact}}"
 
 #: models.py:422
 msgid "Service forms"
-msgstr "Palvelulomakkeet"
+msgstr ""
 
 #: models.py:428
 msgid "Name of the serviceform"
-msgstr "Palvelulomakkeen nimi"
+msgstr ""
 
 #: models.py:429
 msgid "Slug"
-msgstr "Nimi URLissa"
+msgstr ""
 
 #: models.py:430
 msgid "This is part of the form url, i.e. form will be located {}/yourslug"
 msgstr ""
-"Tämä on osa lomakkeen osoitetta, ts. lomakkeen osoitteeksi tulee {}/"
-"valitsemasi-nimi-urlissa"
 
 #: models.py:433 models.py:1010
 msgid "Created at"
-msgstr "Luotu"
+msgstr ""
 
 #: models.py:434
 msgid "Last updated"
-msgstr "Viimeksi päivitetty"
+msgstr ""
 
 #: models.py:435
 msgid "Last edited by"
-msgstr "Viimeisin muokkaaja"
+msgstr ""
 
 #: models.py:441 models.py:599
 msgid "Responsible"
-msgstr "Vastuuhenkilö"
+msgstr ""
 
 #: models.py:444
 msgid "Require email verification"
-msgstr "Vaadi sähköpostiosoitteen varmentamista"
+msgstr ""
 
 #: models.py:449
 msgid "Verification email to participant"
-msgstr "Sähköpostin varmennusviesti osallistujalle"
+msgstr ""
 
 #: models.py:451
 msgid ""
 "Email verification message that is sent to participant when filling form, if "
 "email verification is enabled"
 msgstr ""
-"Sähköpostin varmennusviesti joka lähetetään osallistujalle kun tämä täyttää "
-"lomaketta, mikäli sähköpostin varmennus vaaditaan."
 
 #: models.py:458
 msgid "Email to responsibles"
-msgstr "Sähköposti vastuullisille"
+msgstr ""
 
 #: models.py:459
 msgid "Email that is sent to responsibles when new participation is registered"
 msgstr ""
-"Sähköposti, joka lähetetään vastuullisille kun uusi osallistujatieto on "
-"rekisteröity"
 
 #: models.py:464
 msgid "Bulk email to responsibles"
-msgstr "Massasähköposti vastuullisille"
+msgstr ""
 
 #: models.py:465
 msgid "Email that is sent to responsibles when emailing starts"
 msgstr ""
-"Sähköposti, joka lähetetään vastuullisille, kun vastuullisten sähköpostitus "
-"aloitetaan"
 
 #: models.py:472
 msgid "Responsible requests auth link"
-msgstr "Vastuussa oleva yhteyshenkilö pyytää linkkiä raporttiin"
+msgstr ""
 
 #: models.py:474
 msgid "Email that is sent to responsible when he requests auth link"
 msgstr ""
-"Sähköposti, joka lähetetään vastuullisille, kun vastuullinen pyytää "
-"raporttilinkkiä"
 
 #: models.py:483
 msgid "Email to participant, on finish"
-msgstr "Sähköposti osallistujalle, valmis lomake"
+msgstr ""
 
 #: models.py:484
 msgid ""
 "Email that is sent to participant after he has fulfilled his participation"
 msgstr ""
-"Sähköposti joka lähetetään osallistujalle sen jälkeen kun hän on jättänyt "
-"lomakkeen järjestelmään"
 
 #: models.py:489
 msgid "Email to participant, on update"
-msgstr "Sähköposti osallistujalle, päivitetty lomake"
+msgstr ""
 
 #: models.py:490
 msgid ""
 "Email that is sent to participant after he has updated his participation"
 msgstr ""
-"Sähköposti joka lähetetään osallistujalle sen jälkeen kun hän on päivittänyt "
-"tietojansa"
 
 #: models.py:496
 msgid "Resend email to participant"
-msgstr "Sähköposti vastaanottajalle, uudelleenlähetys"
+msgstr ""
 
 #: models.py:497
 msgid "Email that is sent to participant if he requests resending email"
 msgstr ""
-"Sähköposti, joka lähetetään osallistujalle jos hän pyytää sähköpostilinkin "
-"uudelleenlähetystä"
 
 #: models.py:503
 msgid "Bulk email to former participants"
-msgstr "Massasähköpostia aikaisemmille osallistujille"
+msgstr ""
 
 #: models.py:504
 msgid "Email that is sent to former participants when form is published"
 msgstr ""
-"Sähköposti joka lähetetään aikaisemmille osallistujille silloin kun lomake "
-"julkistetaan"
 
 #: models.py:510
 msgid "Invite email"
-msgstr "Kutsusähköposti"
+msgstr ""
 
 #: models.py:512
 msgid ""
 "Email that is sent when user is invited to the form manually via invite form"
-msgstr "Sähköposti joka lähetetään kun käyttäjä on kutsuttu järjestelmään"
+msgstr ""
 
 #: models.py:518
 msgid "Current revision"
-msgstr "Käytössä oleva versio"
+msgstr ""
 
 #: models.py:520
 msgid ""
 "You need to first add a revision to form (see below) and save. Then newly "
 "created revision will appear in the list."
 msgstr ""
-"Lisää ensin lomakkeeseen versio (katso alla) ja tallenna. Sen jälkeen uusi "
-"versio ilmestyy listaan."
 
 #: models.py:526
 msgid "Password that is asked from participants"
-msgstr "Salasana kysellään lomakkeen täyttäjiltä"
+msgstr ""
 
 #: models.py:530
 msgid "Hide contact details (other than email) in form"
-msgstr "Piilota yhteystiedot (muut paitsi sähköposti) lomakkeessa"
+msgstr ""
 
 #: models.py:531
 msgid "Split participation form to level 1 categories"
-msgstr "Jaa osallistumislomake tason 1 kategorioiden mukaisesti osiin"
+msgstr ""
 
 #: models.py:533
 msgid "Please note that preview shows full form despite this option"
 msgstr ""
-"Huomaa että esikatselu näyttää koko lomakkeen riippumatta tästä valinnasta"
 
 #: models.py:535
 msgid "Allow jumping between categories"
-msgstr "Salli hyppiminen kategorioiden välillä"
+msgstr ""
 
 #: models.py:537
 msgid ""
@@ -849,330 +699,320 @@ msgid ""
 "enabled, user can jump between categories. If disabled, he must proceed them "
 "one by one."
 msgstr ""
-"Asetus on voimassa vain jos lomake on jaettu kategorioittain. Jos tämä "
-"asetus on päällä, käyttäjä voi hyppiä kategorioiden välillä. Jos asetus on "
-"poissa päältä, käyttäjän pitää käydä läpi kukin kategoria yksi kerrallaan."
 
 #: models.py:541
 msgid "Level 1 category default background color"
-msgstr "Tason 1 kategorian oletusarvoinen taustaväri"
+msgstr ""
 
 #: models.py:543
 msgid "If left blank (black), default coloring will be used"
-msgstr "Jos tämä jätetään tyhjäksi (musta), käytetään oletusvärejä"
+msgstr ""
 
 #: models.py:544
 msgid "Level 2 category default background color"
-msgstr "Tason 2 kategorian oletusarvoinen taustaväri"
+msgstr ""
 
 #: models.py:546
 msgid "If left blank (black), it will be derived from level 1 background color"
 msgstr ""
-"Jos jätetään tyhjäksi (musta), väri johdetaan tason 1 kategorian "
-"taustaväristä"
 
 #: models.py:547
 msgid "Activity default background color"
-msgstr "Aktiviteetin oletusarvoinen taustaväri"
+msgstr ""
 
 #: models.py:548
 msgid "If left blank (black), it will be derived from level 2 background color"
 msgstr ""
-"Jos jätetään tyhjäksi (musta), väri johdetaan tason 2 kategorian "
-"taustaväristä"
 
 #: models.py:552
 msgid ""
 "Description box will be shown before instruction box in participation view."
-msgstr "Kuvaus näytetään osallistumisnäkymässä ennen lomakkeen täyttöohjeita"
+msgstr ""
 
 #: models.py:554 templates/serviceform/participation/participation_view.html:16
 msgid "Instructions"
-msgstr "Ohjeet"
+msgstr ""
 
 #: models.py:555
 msgid ""
 "Use HTML formatting. Leave this empty to use default. This is shown in "
 "participation view."
 msgstr ""
-"Jos haluat käyttää oletusohjetta, voit jättää tämän tyhjäksi. Jos "
-"määrittelet ohjeen tässä, käytä HTML-muotoilua. Ohjeet näytetään "
-"osallistumisnäkymässä."
 
 #: models.py:558
 msgid "Login text"
-msgstr "Teksti kirjautumisnäkymässä"
+msgstr ""
 
 #: models.py:559
 msgid "This will be shown in the login screen"
-msgstr "Tämä näytetään kirjautumisnäkymässä"
+msgstr ""
 
 #: models.py:561 models.py:565 models.py:1007 models.py:1037
 msgid "Year of birth"
-msgstr "Syntymävuosi"
+msgstr ""
 
 #: models.py:579
 msgid "Can access"
-msgstr "Pystyy muokkaamaan lomaketta"
+msgstr ""
 
 #: models.py:598
 msgid "Default"
-msgstr "Oletus"
+msgstr ""
 
 #: models.py:600
 msgid "defaultresponsible@email.com"
-msgstr "oletusvastuullinen@email.com"
+msgstr ""
 
 #: models.py:614
 msgid "Default bulk email to responsibles"
-msgstr "Massasähköposti vastuullisille (oletus)"
+msgstr ""
 
 #: models.py:616
 msgid "Participations can be now viewed for form {{form}}"
-msgstr "Osallistujatiedot lomakkeelle {{form}} ovat nyt tarkasteltavissa"
+msgstr ""
 
 #: models.py:620
 msgid "Default email to responsibles"
-msgstr "Sähköposti vastuullisille (oletus)"
+msgstr ""
 
 #: models.py:622
 msgid "New participation arrived for form {{form}}"
-msgstr "Uusi osallistujatieto lähetetty lomakkeelle {{form}}"
+msgstr ""
 
 #: models.py:626
 msgid "Default email to participant, on finish"
-msgstr "Osallistujalle: valmis lomake (oletus)"
+msgstr ""
 
 #: models.py:628
 msgid "Your update to form {{form}}"
-msgstr "Päivityksesi lomakkeelle {{form}}"
+msgstr ""
 
 #: models.py:632
 msgid "Default email to participant, on update"
-msgstr "Osallistujalle: päivitetty lomake (oletus)"
+msgstr ""
 
 #: models.py:634
 msgid "Your updated participation to form {{form}}"
-msgstr "Päivittämäsi osallistujatietosi lomakkeelle {{form}}"
+msgstr ""
 
 #: models.py:638
 msgid "Default email to former participants"
-msgstr "Sähköposti aikaisemmille osallistujille (oletus)"
+msgstr ""
 
 #: models.py:640
 msgid "New form revision to form {{form}} has been published"
-msgstr "Uusi versio lomakkeesta {{form}} on julkaistu"
+msgstr ""
 
 #: models.py:644
 msgid "Default resend email to participant"
-msgstr "Sähköposti vastaanottajalle, uudelleenlähetys (oletus)"
+msgstr ""
 
 #: models.py:646
 msgid "Your participation to form {{form}}"
-msgstr "Osallistujatietosi lomakkeelle {{form}}"
+msgstr ""
 
 #: models.py:650
 msgid "Default invite email to participants"
-msgstr "Kutsusähköposti osallistujille (oletus)"
+msgstr ""
 
 #: models.py:652
 msgid "Invitation to fill participation in {{form}}"
-msgstr "Kutsu täyttää osallistumistiedot lomakkeelle {{form}}"
+msgstr ""
 
 #: models.py:656
 msgid "Default request responsible auth link email"
-msgstr "Sähköposti kun vastuuhenkilö pyytää raporttilinkkiä (oletus)"
+msgstr ""
 
 #: models.py:658
 msgid "Your report in {{form}}"
-msgstr "Raporttisi lomakkeelle {{form}}"
+msgstr ""
 
 #: models.py:662
 msgid "Default verification email to participant"
-msgstr "Sähköpostiosoitteen varmennusviesti osallistujalle (oletus)"
+msgstr ""
 
 #: models.py:664
 msgid "Please verify your email in {{form}}"
-msgstr "Sinun pitää varmentaa sähköpostiosoiteesi lomakkeessa {{form}}"
+msgstr ""
 
 #: models.py:711
 msgid "Is open?"
-msgstr "Auki?"
+msgstr ""
 
 #: models.py:734
 msgid "To report"
-msgstr "Raporttiin"
+msgstr ""
 
 #: models.py:736
 msgid "To form"
-msgstr "Lomakkeeseen"
+msgstr ""
 
 #: models.py:738 urls.py:81
 msgid "Preview"
-msgstr "Esikatselu"
+msgstr ""
 
 #: models.py:740
 msgid "Printable"
-msgstr "Tulostettava"
+msgstr ""
 
 #: models.py:742 urls.py:103
 msgid "Invite"
-msgstr "Kutsu"
+msgstr ""
 
 #: models.py:745
 msgid "Links"
-msgstr "Linkit"
+msgstr ""
 
 #: models.py:760
 msgid "Participation count"
-msgstr "Osallistujien määrä"
+msgstr ""
 
 #: models.py:802
 msgid "Order"
-msgstr "Järjestysnumero"
+msgstr ""
 
 #: models.py:804
 msgid "Responsible persons"
-msgstr "Vastuuhenkilöt"
+msgstr ""
 
 #: models.py:806
 msgid "Choose responsibles"
-msgstr "Valitse vastuuhenkilö(t)"
+msgstr ""
 
 #: models.py:816
 msgid "{} (and others)"
-msgstr "{} (ja muita)"
+msgstr ""
 
 #: models.py:823 models.py:838
 msgid "Background color"
-msgstr "Taustaväri"
+msgstr ""
 
 #: models.py:826 models.py:844
 msgid "Level 1 category"
-msgstr "Tason 1 kategoria"
+msgstr ""
 
 #: models.py:827
 msgid "Level 1 categories"
-msgstr "Tason 1 kategoriat"
+msgstr ""
 
 #: models.py:841
 msgid "Level 2 category"
-msgstr "Tason 2 kategoria"
+msgstr ""
 
 #: models.py:842
 msgid "Level 2 categories"
-msgstr "Tason 2 kategoriat"
+msgstr ""
 
 #: models.py:859 templates/serviceform/participation/preview_view.html:33
 #: templates/serviceform/reports/view_participant.html:25
 msgid "Activity"
-msgstr "Tehtävä"
+msgstr ""
 
 #: models.py:860 models.py:1071
 msgid "Activities"
-msgstr "Tehtävät"
+msgstr ""
 
 #: models.py:862
 msgid "Category"
-msgstr "Luokittelu"
+msgstr ""
 
 #: models.py:864
 msgid "Multichoice"
-msgstr "Monivalinta"
+msgstr ""
 
 #: models.py:865 models.py:900
 msgid "Needed"
-msgstr "Tarve"
+msgstr ""
 
 #: models.py:866 models.py:901
 msgid "Skip"
-msgstr "Ylim."
+msgstr ""
 
 #: models.py:896
 msgid "Activity choice"
-msgstr "Vaihtoehto"
+msgstr ""
 
 #: models.py:897
 msgid "Activity choices"
-msgstr "Vaihtoehdot"
+msgstr ""
 
 #: models.py:930 models.py:947
 #: templates/serviceform/participation/preview_view.html:73
 #: templates/serviceform/reports/view_participant.html:60
 msgid "Question"
-msgstr "Kysymys"
+msgstr ""
 
 #: models.py:931 urls.py:79
 msgid "Questions"
-msgstr "Kysymykset"
+msgstr ""
 
 #: models.py:939
 msgid "Integer"
-msgstr "Kokonaisluku"
+msgstr ""
 
 #: models.py:940
 msgid "Short text"
-msgstr "Lyhyt teksti"
+msgstr ""
 
 #: models.py:941
 msgid "Long text"
-msgstr "Pitkä teksti"
+msgstr ""
 
 #: models.py:942
 msgid "Boolean"
-msgstr "Kyllä / ei"
+msgstr ""
 
 #: models.py:943
 msgid "Date"
-msgstr "Päivämäärä"
+msgstr ""
 
 #: models.py:949
 msgid "Answer type"
-msgstr "Vastauksen tyyppi"
+msgstr ""
 
 #: models.py:950
 msgid "Answer required?"
-msgstr "Vaaditaanko vastaus?"
+msgstr ""
 
 #: models.py:973
 msgid "Participant"
-msgstr "Osallistuja"
+msgstr ""
 
 #: models.py:974 urls.py:90
 msgid "Participants"
-msgstr "Osallistujat"
+msgstr ""
 
 #: models.py:1001
 msgid "invited"
-msgstr "Kutsuttu"
+msgstr ""
 
 #: models.py:1002
 msgid "ongoing"
-msgstr "Meneillään"
+msgstr ""
 
 #: models.py:1003
 msgid "updating"
-msgstr "Päivittää tietoja"
+msgstr ""
 
 #: models.py:1004
 msgid "finished"
-msgstr "Valmis"
+msgstr ""
 
 #: models.py:1011 models.py:1043
 msgid "Last modified"
-msgstr "Viimeksi muokattu"
+msgstr ""
 
 #: models.py:1012 models.py:1042
 msgid "Last finished"
-msgstr "Viimeksi valmistunut"
+msgstr ""
 
 #: models.py:1017
 msgid "Email verified"
-msgstr "Sähköpostiosoite varmennettu"
+msgstr ""
 
 #: models.py:1019
 msgid "Sending email allowed"
-msgstr "Sähköpostin lähetys sallittu"
+msgstr ""
 
 #: models.py:1020
 msgid ""
@@ -1182,19 +1022,14 @@ msgid ""
 "move away and do not want to participate at all any more. You can also "
 "change this setting later if you wish."
 msgstr ""
-"Saat sähköpostia joka sisältää linkin jonka avulla voit muuttaa tietoja "
-"myöhemmin. Tämän lisäksi uuden lomakkeen version julkaisemisen yhteydessä "
-"sinulle lähetetään sähköpostia. Suosittelemme, että sallit sähköpostituksen, "
-"paitsi siinä tapauksessa jos olet muuttanut pois etkä halua osallistua enää "
-"lainkaan. Voit myös myöhemmin muuttaa tätä asetusta."
 
 #: models.py:1041
 msgid "Participant created in system"
-msgstr "Osallistuja talletettu ensimmäisen kerran järjestelmään"
+msgstr ""
 
 #: models.py:1044
 msgid "Email address verified"
-msgstr "Sähköpostiosoite varmennettu"
+msgstr ""
 
 #: models.py:1044 models.py:1045
 #: templates/serviceform/participation/preview_view.html:89
@@ -1202,7 +1037,7 @@ msgstr "Sähköpostiosoite varmennettu"
 #: templates/serviceform/reports/contents/_responsible_contents.html:62
 #: templates/serviceform/reports/view_participant.html:76
 msgid "No"
-msgstr "Ei"
+msgstr ""
 
 #: models.py:1044 models.py:1045
 #: templates/serviceform/participation/preview_view.html:87
@@ -1210,49 +1045,45 @@ msgstr "Ei"
 #: templates/serviceform/reports/contents/_responsible_contents.html:60
 #: templates/serviceform/reports/view_participant.html:74
 msgid "Yes"
-msgstr "Kyllä"
+msgstr ""
 
 #: models.py:1045
 msgid "Emails allowed"
-msgstr "Sähköpostin lähetys sallittu"
+msgstr ""
 
 #: models.py:1046
 msgid "Form status"
-msgstr "Lomakkeen tila"
+msgstr ""
 
 #: models.py:1080
 msgid "Form"
-msgstr "Lomake"
+msgstr ""
 
 #: models.py:1221
 msgid ""
 "Updated information has been stored! Please proceed until the end of the "
 "form."
 msgstr ""
-"Päivitetyt tiedot on talletettu järjestelmään! Etenethän kuitenkin lomakkeen "
-"loppuun saakka."
 
 #: templates/serviceform/error/404.html:5
 msgid "Sorry, page was not found. "
-msgstr "Anteeksi, sivua ei löytynyt"
+msgstr ""
 
 #: templates/serviceform/login/_login_navbar.html:12 urls.py:108
 msgid "Admin"
-msgstr "Ylläpito"
+msgstr ""
 
 #: templates/serviceform/login/_login_navbar.html:18
 #: templates/serviceform/navbar/navbar_base.html:28
 #: templates/serviceform/navbar/navbar_base.html:41
 #: templates/serviceform/reports/_report_navbar.html:11
 msgid "current"
-msgstr "nykyinen"
+msgstr ""
 
 #: templates/serviceform/login/password_login.html:4
 msgid ""
 "If this is the first time you fill this form, you need a password to continue"
 msgstr ""
-"Jos tämä on ensimmäinen kerta kun täytät tämän lomakkeen, sinun pitää antaa "
-"salasana jatkaaksesi"
 
 #: templates/serviceform/login/send_participant_auth_link.html:5
 msgid ""
@@ -1261,123 +1092,108 @@ msgid ""
 "information.\n"
 "  "
 msgstr ""
-"Jos olet täyttänyt tämän lomakkeen aikaisemmin, anna sähköpostiosoitteesi "
-"niin lähetämme sinulle henkilökohtaisen linkin, jonka kautta voit päivittää "
-"osallistumistietojasi."
 
 #: templates/serviceform/login/send_responsible_auth_link.html:5
 msgid ""
 "If you are marked as a responsible person, please give your email below so\n"
 "    we can send you a personal link to view your participation report."
 msgstr ""
-"Jos sinut on merkitty vastuuhenkilöksi lomakkeelle, anna "
-"sähköpostiosoitteesi, niin lähetämme sinulle henkilökohtaisen linkin, jolla "
-"voit tarkastella raporttiasi."
 
 #: templates/serviceform/login/unsubscribe_participant.html:4
 msgid "You won't be getting any emails (as participant for "
-msgstr "Et saa enää sähköposteja (osallistujana lomakkeelle "
+msgstr ""
 
 #: templates/serviceform/login/unsubscribe_participant.html:4
 #: templates/serviceform/login/unsubscribe_responsible.html:4
 msgid ") from this system any more."
-msgstr ") tästä järjestelmästä tämän jälkeen."
+msgstr ""
 
 #: templates/serviceform/login/unsubscribe_responsible.html:4
 msgid "You won't be getting any emails (as responsible for "
-msgstr "Et saa enää sähköposteja (vastuuhenkilönä lomakkeelle "
+msgstr ""
 
 #: templates/serviceform/main_page.html:4
 msgid "Serviceform root. Nothing here"
-msgstr "Palveluhakemuslomakkeen juuurihakemisto. Ei mitään täällä."
+msgstr ""
 
 #: templates/serviceform/navbar/navbar_base.html:10
 msgid "Toggle navigation"
-msgstr "Näytä navigointi"
+msgstr ""
 
 #: templates/serviceform/participation/contact_view.html:7
 msgid "You can delete your participation from the system by clicking"
-msgstr "Voit poistaa osallistumistietosi järjestelmästä painamalla"
+msgstr ""
 
 #: templates/serviceform/participation/contact_view.html:7
 msgid "here"
-msgstr "tästä"
+msgstr ""
 
 #: templates/serviceform/participation/contact_view.html:8
 msgid ""
 "Otherwise, please check if the information is correct and update it if "
 "necessary. "
 msgstr ""
-"Muussa tapauksessa, tarkista että tiedot ovat oikein ja päivitä niitä "
-"tarvittaessa."
 
 #: templates/serviceform/participation/contact_view.html:10
 msgid "Please fill in your contact details"
-msgstr "Syötä seuraavaksi yhteystietosi"
+msgstr ""
 
 #: templates/serviceform/participation/delete_participation.html:6
 msgid ""
 "Are you sure you want to delete your participation permanently from the "
 "system?"
 msgstr ""
-"Haluatko varmasti poistaa osallistumistietosi lopullisesti järjestelmästä?"
 
 #: templates/serviceform/participation/email_verification.html:6
 msgid "Email sent to"
-msgstr "Sähköpostia lähetettiin osoitteeseen"
+msgstr ""
 
 #: templates/serviceform/participation/email_verification.html:7
 msgid ""
 "Please verify your email address by clicking the link that is given in "
 "email. Then you can continue filling the form."
 msgstr ""
-"Varmenna sähköpostiosoitteesi klikkaamalla sähköpostissa annettavaa linkkiä. "
-"Sen jälkeen voit jatkaa lomakkeen täyttämistä."
 
 #: templates/serviceform/participation/login_base.html:12
 msgid "Form is not public at the moment."
-msgstr "Lomake ei ole avoinna tällä hetkellä"
+msgstr ""
 
 #: templates/serviceform/participation/participation_form/participation_form.html:6
 #: templates/serviceform/participation/question_form/question_form.html:5
 msgid "Please fix errors below"
-msgstr "Korjaa alla olevat virheet"
+msgstr ""
 
 #: templates/serviceform/participation/participation_form/snippets/category.html:27
 #: templates/serviceform/participation/participation_form/snippets/extra_info.html:14
 msgid "Responsible contact person(s)"
-msgstr "Vastuussa olevat yhteyshenkilö(t)"
+msgstr ""
 
 #: templates/serviceform/participation/participation_form/snippets/extra_info.html:20
 msgid "Please give additional information if needed"
-msgstr "Anna tähän tarvittaessa lisätietoa"
+msgstr ""
 
 #: templates/serviceform/participation/participation_form/snippets/responsible_contact_person.html:11
 #: templates/serviceform/participation/participation_form/snippets/responsible_tooltip.html:11
 msgid "Phone"
-msgstr "Puhelin"
+msgstr ""
 
 #: templates/serviceform/participation/participation_form/snippets/responsible_tooltip.html:7
 #: templates/serviceform/participation/preview_view.html:8
 #: templates/serviceform/reports/view_participant.html:6 urls.py:73
 msgid "Contact details"
-msgstr "Yhteystiedot"
+msgstr ""
 
 #: templates/serviceform/participation/participation_view.html:19
 msgid ""
 "Select all activities that you would like to participate by ticking boxes "
 "below."
 msgstr ""
-"Valitse kaikki tehtävät joihin haluaisit osallistua ruksaamalla "
-"valintaruutuja"
 
 #: templates/serviceform/participation/participation_view.html:22
 msgid ""
 "You can get more information about activity by pressing <span class='fa fa-"
 "info'></span> button."
 msgstr ""
-"Saat lisää tietoa tehtävistä painamalla <span class='fa fa-info'></span>-"
-"nappia."
 
 #: templates/serviceform/participation/participation_view.html:25
 msgid ""
@@ -1390,487 +1206,322 @@ msgid ""
 "class=\"fa fa-pencil\"></span> button.\n"
 "          "
 msgstr ""
-"\n"
-"Jos haluat antaa lisätietoa osallistumisestasi (kuten esim. milloin ja "
-"kuinka usein haluaisit osallistua), voit antaa lisätietoja tekstiruutuun "
-"joka tulee näkyviin kun painat <span class=\"fa fa-pencil\"></span>-nappia."
 
 #: templates/serviceform/participation/participation_view.html:66
 msgid "Go to admin"
-msgstr "Lomakkeen hallintapaneeliin"
+msgstr ""
 
 #: templates/serviceform/participation/participation_view.html:68
 #: templates/serviceform/participation/question_view.html:11
 msgid "Save and continue"
-msgstr "Tallenna ja jatka"
+msgstr ""
 
 #: templates/serviceform/participation/participation_view.html:74
 #: templates/serviceform/participation/question_view.html:15
 msgid "Are you sure you want to leave form unsaved?"
-msgstr "Oletko varma että haluat jättää lomakkeen tallentamatta?"
+msgstr ""
 
 #: templates/serviceform/participation/preview_view.html:6
 msgid "Please check that the given data is correct "
-msgstr "Tarkista että antamasi tiedot ovat oikein "
+msgstr ""
 
 #: templates/serviceform/participation/preview_view.html:24
 msgid "Change contact details"
-msgstr "Muuta yhteystietoja"
+msgstr ""
 
 #: templates/serviceform/participation/preview_view.html:30
 #: templates/serviceform/reports/view_participant.html:22
 msgid "I am wishing to participate in the following activities"
-msgstr "Haluan osallistua seuraaviin toimintamuotoihin"
+msgstr ""
 
 #: templates/serviceform/participation/preview_view.html:36
 #: templates/serviceform/reports/snippets/_participant_row.html:59
 #: templates/serviceform/reports/view_participant.html:28
 msgid "Additional info"
-msgstr "Lisätietoja"
+msgstr ""
 
 #: templates/serviceform/participation/preview_view.html:63
 msgid "Adjust participation information"
-msgstr "Muuta osallistumistietoja"
+msgstr ""
 
 #: templates/serviceform/participation/preview_view.html:70
 #: templates/serviceform/reports/contents/_all_questions.html:2
 #: templates/serviceform/reports/contents/_responsible_contents.html:50
 #: templates/serviceform/reports/view_participant.html:57
 msgid "Answers to questions"
-msgstr "Vastaukset kysymyksiin"
+msgstr ""
 
 #: templates/serviceform/participation/preview_view.html:76
 #: templates/serviceform/reports/view_participant.html:63
 msgid "Answer"
-msgstr "Vastaus"
+msgstr ""
 
 #: templates/serviceform/participation/preview_view.html:100
 msgid "Modify question answers"
-msgstr "Muuta vastauksia"
+msgstr ""
 
 #: templates/serviceform/participation/preview_view.html:106
 msgid "Are you ready to send data?"
-msgstr "Oletko valmis lähettämään tiedot?"
+msgstr ""
 
 #: templates/serviceform/participation/preview_view.html:111
 msgid "Send data!"
-msgstr "Lähetä tiedot!"
+msgstr ""
 
 #: templates/serviceform/participation/question_view.html:6
 msgid "Please answer following questions."
-msgstr "Vastaa seuraaviin kysymyksiin."
+msgstr ""
 
 #: templates/serviceform/participation/submitted_view.html:5
 msgid "Thank you!"
-msgstr "Kiitos!"
+msgstr ""
 
 #: templates/serviceform/participation/submitted_view.html:7
 msgid ""
 "Your data was saved into the system and related responsibles will be "
 "informed about your participation."
 msgstr ""
-"Antamasi tiedot tallennettiin järjestelmään ja tehtävien vastuuhenkilöille "
-"välitetään tieto halukkuudestasi osallistua tehtäviin."
 
 #: templates/serviceform/participation/submitted_view.html:8
 msgid ""
 "You will receive also email that contains a link that you can use to edit "
 "your participation."
 msgstr ""
-"Sinulle lähetettiin myös sähköposti joka sisältää linkin, jota voit käyttää, "
-"mikäli haluat myöhemmin muuttaa tietojasi tai ilmoittaa halukkuudestasi "
-"osallistua uusiin tehtäviin."
 
 #: templates/serviceform/participation/submitted_view.html:11
 msgid "Fill a new form"
-msgstr "Täytä uusi lomake"
+msgstr ""
 
 #: templates/serviceform/reports/_report_navbar.html:7
 msgid "Actions"
-msgstr "Toiminnot"
+msgstr ""
 
 #: templates/serviceform/reports/base/anonymous_report_base.html:4
 #: templates/serviceform/reports/base/report_base.html:4
 msgid "Report for"
-msgstr "Raportit lomakkeelle"
+msgstr ""
 
 #: templates/serviceform/reports/contents/_all_activities.html:4
 msgid "All activities"
-msgstr "Kaikki tehtävät"
+msgstr ""
 
 #: templates/serviceform/reports/contents/_all_participants.html:2
 msgid "All participants"
-msgstr "Kaikki osallistujat"
+msgstr ""
 
 #: templates/serviceform/reports/contents/_all_responsibles.html:2
 msgid "Responsible contact persons"
-msgstr "Vastuussa olevat yhteyshenkilöt"
+msgstr ""
 
 #: templates/serviceform/reports/contents/_responsible_contents.html:2
 msgid "Participation to activities"
-msgstr "Tehtävien osallistumistiedot"
+msgstr ""
 
 #: templates/serviceform/reports/edit_responsible.html:4
 msgid "Edit details"
-msgstr "Muokkaa tietoja"
+msgstr ""
 
 #: templates/serviceform/reports/invite.html:4
 msgid "Send invitations"
-msgstr "Lähetä kutsuja"
+msgstr ""
 
 #: templates/serviceform/reports/responsible.html:13
 #: templates/serviceform/reports/responsible_anonymous.html:12
 msgid "Responsible person contact details"
-msgstr "Vastuussa olevan yhteyshenkilön yhteystiedot"
+msgstr ""
 
 #: templates/serviceform/reports/responsible.html:16
 #: templates/serviceform/reports/responsible_anonymous.html:15
 msgid "Can see full report"
-msgstr "Voi nähdä koko raportin"
+msgstr ""
 
 #: templates/serviceform/reports/responsible.html:20
 #: templates/serviceform/reports/responsible_anonymous.html:20
 msgid "Configuration"
-msgstr "Valinnat"
+msgstr ""
 
 #: templates/serviceform/reports/responsible.html:24
 #: templates/serviceform/reports/responsible_anonymous.html:28
 msgid "Expand all info"
-msgstr "Näytä kaikkien lisätiedot"
+msgstr ""
 
 #: templates/serviceform/reports/responsible_anonymous.html:24
 msgid "Show participations from earlier revisions"
-msgstr "Näytä osallistujatiedot aiemmista versioista"
+msgstr ""
 
 #: templates/serviceform/reports/settings.html:5
 msgid "Settings"
-msgstr "Asetukset"
+msgstr ""
 
 #: templates/serviceform/reports/snippets/_help.html:3
 msgid "Each participant rows contains the following data"
-msgstr "Kunkin osallistujan rivi sisältää seuraavat tiedot"
+msgstr ""
 
 #: templates/serviceform/reports/snippets/_help.html:7
 msgid "Email address"
-msgstr "Sähköpostiosoite"
+msgstr ""
 
 #: templates/serviceform/reports/snippets/_help.html:8
 msgid "Age"
-msgstr "Ikä"
+msgstr ""
 
 #: templates/serviceform/reports/snippets/_help.html:9
 msgid ""
 "Number of activities; colors from green (1 activity) to red (10 or more "
 "activities)."
 msgstr ""
-"Tehtävien lukumäärä; väri vihreästä (1 tehtävä) punaiseen (10 tehtävää tai "
-"enemmän)"
 
 #: templates/serviceform/reports/snippets/_help.html:10
 msgid "Information buttons; pushing button will give more information"
-msgstr "Lisätietopainikkeet; saat lisätietoa painamalla painiketta"
+msgstr ""
 
 #: templates/serviceform/reports/snippets/_help.html:12
 msgid "More information is given"
-msgstr "Osallistuja on jättänyt lisätietoja osallistumisesta"
+msgstr ""
 
 #: templates/serviceform/reports/snippets/_help.html:14
 msgid "Notes have been entered"
-msgstr "Osallistujasta on jätetty muistiinpanoja"
+msgstr ""
 
 #: templates/serviceform/reports/snippets/_participant_row.html:32
 msgid "Number of activities"
-msgstr "Tehtävien lukumäärä"
+msgstr ""
 
 #: templates/serviceform/reports/snippets/_participant_row.html:64
 #: templates/serviceform/reports/view_participant.html:104
 msgid "Log"
-msgstr "Muistiinpanot"
+msgstr ""
 
 #: templates/serviceform/reports/view_participant.html:88
 msgid "Other information"
-msgstr "Muita tietoja"
+msgstr ""
 
 #: templates/serviceform/reports/view_participant.html:113
 msgid "Add entry"
-msgstr "Lisää muistiinpano"
+msgstr ""
 
 #: templatetags/serviceform_tags.py:211
 msgid "True"
-msgstr "Kyllä"
+msgstr ""
 
 #: templatetags/serviceform_tags.py:212
 msgid "False"
-msgstr "Ei"
+msgstr ""
 
 #: urls.py:75
 msgid "Email verification"
-msgstr "Sähköpostiosoitteen varmennus"
+msgstr ""
 
 #: urls.py:77
 msgid "Participation details"
-msgstr "Osallistumistiedot"
+msgstr ""
 
 #: urls.py:83
 msgid "Ready!"
-msgstr "Valmis!"
+msgstr ""
 
 #: urls.py:88 urls.py:133
 msgid "Responsibles"
-msgstr "Vastuuhenkilöt"
+msgstr ""
 
 #: urls.py:92
 msgid "Participations"
-msgstr "Osallistumistiedot"
+msgstr ""
 
 #: urls.py:94
 msgid "Answers"
-msgstr "Vastaukset"
+msgstr ""
 
 #: urls.py:96
 msgid "My report"
-msgstr "Oma raportti"
+msgstr ""
 
 #: urls.py:101
 msgid "Report settings"
-msgstr "Raportin asetukset"
+msgstr ""
 
 #: urls.py:105
 msgid "Edit form"
-msgstr "Muokkaa lomaketta"
+msgstr ""
 
 #: urls.py:110 urls.py:125
 msgid "Log out"
-msgstr "Kirjaudu ulos"
+msgstr ""
 
 #: urls.py:115
 msgid "Your report"
-msgstr "Raporttisi"
+msgstr ""
 
 #: urls.py:118
 msgid "Edit your contact details"
-msgstr "Muokkaa yhteystietojasi"
+msgstr ""
 
 #: urls.py:121
 msgid "To full report"
-msgstr "Koko raportti"
+msgstr ""
 
 #: urls.py:129
 msgid "Password login"
-msgstr "Kirjautuminen salasanalla"
+msgstr ""
 
 #: urls.py:131
 msgid "Former users"
-msgstr "Aikaisemmat käyttäjät"
+msgstr ""
 
 #: urls.py:135
 msgid "Admin login"
-msgstr "Ylläpidon kirjautuminen"
+msgstr ""
 
 #: utils.py:112
 msgid "User is not allowed to access document"
-msgstr "Käyttäjällä ei ole pääsyä dokumenttiin"
+msgstr ""
 
 #: utils.py:168
 msgid "Copy of {}"
-msgstr "Lomakkeen {} kopio"
+msgstr ""
 
 #: utils.py:172
 msgid "new-revision"
-msgstr "uusi-versio"
+msgstr ""
 
 #: utils.py:429
 msgid "Your authentication URL was expired. New link has been sent to {}"
-msgstr "Avainlinkkisi on vanhentunut. Uusi linkki on lähetetty osoitteeseen {}"
+msgstr ""
 
 #: views/participation_views.py:73
 msgid "Verification email already sent to {}, not sending again."
 msgstr ""
-"Sähköpostin varmennusviesti on jo lähetetty osoitteeseen {}. Viestiä ei "
-"lähetetä uudelleen."
 
 #: views/participation_views.py:162
 msgid "Authentication link was sent to email address {}."
 msgstr ""
-"Lomakkeen tietojen muokkaamisen mahdollistava linkki lähetettiin "
-"sähköpostiosoitteeseen {}."
 
 #: views/participation_views.py:170
 msgid "Your email {} is now verified successfully!"
-msgstr "Sähköpostiosoitteesi {} on nyt varmennettu!"
+msgstr ""
 
 #: views/participation_views.py:202 views/reports_views.py:46
 msgid ""
 "Given URL might be expired. Please give your email address and we'll send "
 "you a new link"
 msgstr ""
-"Antamasi linkki voi olla vanhentunut tai muuten virheellinen. Anna "
-"sähköpostiosoitteesi niin lähetämme sinulle uuden linkin."
 
 #: views/participation_views.py:230
 msgid "Your participation was deleted"
-msgstr "Osallistumistietosi poistettiin"
+msgstr ""
 
 #: views/reports_views.py:71
 msgid "Settings saved"
-msgstr "Asetukset tallennettu"
+msgstr ""
 
 #: views/reports_views.py:73
 msgid "Settings could not be saved"
-msgstr "Asetuksia ei voitu tallentaa"
+msgstr ""
 
 #: views/reports_views.py:168
 msgid "Saved contact details"
-msgstr "Yhteystiedot tallennettu"
+msgstr ""
 
 #: views/reports_views.py:186
 msgid "You have been logged out"
-msgstr "Olet kirjautunut ulos"
-
-#~ msgid "Allowed users"
-#~ msgstr "Sallitut käyttäjät"
-
-#~ msgid ""
-#~ "Users that are allowed to perform form administration and view reports"
-#~ msgstr ""
-#~ "Käyttäjät, joilla on oikeus hallinnoida lomaketta ja katsoa raportteja"
-
-#~ msgid "Created by"
-#~ msgstr "Tekijä"
-
-#~ msgid ""
-#~ "Secret key that is used to generate link which can be used to view "
-#~ "personal report"
-#~ msgstr ""
-#~ "Salainen avain jota käytetään generoimaan linkki, jonka avulla voi "
-#~ "tarkastella henkilökohtaista raporttia"
-
-#~ msgid "Link to edit participation"
-#~ msgstr "Linkki osallistumistietojen muokkaukseen"
-
-#~ msgid "Responsible contact person"
-#~ msgstr "Vastuussa oleva yhteyshenkilö"
-
-#~ msgid "{} etc."
-#~ msgstr "{} ja muita"
-
-#~ msgid "Responsible person"
-#~ msgstr "Vastuuhenkilö"
-
-#~ msgid "Checkboxes"
-#~ msgstr "Monivalinta"
-
-#~ msgid "Amount of people needed"
-#~ msgstr "Kuinka monta ihmistä tarvitaan?"
-
-#~ msgid "Skip count"
-#~ msgstr "Hyppää numerointi"
-
-#~ msgid "Custom numbering"
-#~ msgstr "Oma numerointi"
-
-#~ msgid "Initial-revision"
-#~ msgstr "uusi-versio"
-
-#~ msgid "Contact"
-#~ msgstr "Yhteystieto"
-
-#~ msgid "See more"
-#~ msgstr "Katso lisää"
-
-#~ msgid "Responsible login"
-#~ msgstr "Vastuuhenkilöt"
-
-#~ msgid "All data at once"
-#~ msgstr "Kaikki tiedot"
-
-#~ msgid "Save"
-#~ msgstr "Tallenna"
-
-#~ msgid "Shuffled data (anonymity mode)"
-#~ msgstr "Sekoitetut tiedot (anonymiteettitila)"
-
-#~ msgid "Back to report"
-#~ msgstr "Raporttiin"
-
-#~ msgid "Logout"
-#~ msgstr "Kirjaudu ulos"
-
-#~ msgid "Password is required to continue to form."
-#~ msgstr "Lomakkeen täyttämiseen tarvitaan salasana"
-
-#~ msgid "Updated information has been stored!"
-#~ msgstr ""
-#~ "Päivitetyt tiedot on talletettu järjestelmään. Viesti vastuullisille "
-#~ "lähetetään kuitenkin vasta kun olet painanut 'Lähetä "
-
-#~ msgid "New form revision to form {} has been published"
-#~ msgstr "Uusi versio lomakkeesta {} on julkaistu"
-
-#, fuzzy
-#~| msgid ""
-#~| "Thank you! Your data was saved into the system and related responsibles "
-#~| "will be informed about your participation. "
-#~ msgid ""
-#~ "\n"
-#~ "<h2>Thank you! </h2>\n"
-#~ "<ul>\n"
-#~ "<li>Your data was saved into the system and related responsibles will be "
-#~ "informed about your participation. </li>\n"
-#~ "<li>You will receive also email that contains a link that you can use to "
-#~ "edit your participation.</li>\n"
-#~ "</ul>\n"
-#~ msgstr ""
-#~ "Kiitos kun täytit palveluhakemuslomakkeen! Antamasi tiedot tallennettiin "
-#~ "järjestelmään ja tehtävien vastuuhenkilöille ilmoitetaan halustasi "
-#~ "osallistua kyseisiin tehtäviin. "
-
-#~ msgid "Thank you! Your data was saved into the system."
-#~ msgstr "Kiitos! Tiedot tallennettiin järjestelmään."
-
-#~ msgid "Contact person"
-#~ msgstr "Yhteyshenkilö"
-
-#~ msgid ""
-#~ "Send email to responsible person whenever a participant fills and sends a "
-#~ "form"
-#~ msgstr ""
-#~ "Lähetä sähköpostia vastuuhenkilölle aina kun uusi lomake on täytetty"
-
-#~ msgid "Reports"
-#~ msgstr "Raportit"
-
-#~ msgid ""
-#~ "Items are ordered by this field. This field is automatically filled if "
-#~ "not given."
-#~ msgstr ""
-#~ "Elementit järjestetään tämän kentän perusteella. Jos jätät kentän "
-#~ "tyhjäksi, se täytetään automaattisesti."
-
-#~ msgid ""
-#~ "Are multiple choices allowed? If multiple choices are allowed, it will "
-#~ "result in checkboxes, if not, radiobuttons are used instead."
-#~ msgstr ""
-#~ "Hyväksytäänkö monen vaihtoehdon valinta? Jos monivalinta sallitaan, "
-#~ "käytetään vaihtoehdoille checkbox-tyyppistä valintaa, jos ei, niin "
-#~ "käytetään radiobutton-valintoja."
-
-#~ msgid "Visible id"
-#~ msgstr "Id"
-
-#~ msgid ""
-#~ "If you wish to use different numbering system in the form, you can enter "
-#~ "your custom id here."
-#~ msgstr ""
-#~ "Jos haluat käyttää erilaista numerointijärjestelmää lomakkeelle, voit "
-#~ "syöttää tähän haluamasi tyyppisen tunnuksen."
-
-#~ msgid "Responsible contact"
-#~ msgstr "Vastuussa oleva yhteyshenkilö"
-
-#~| msgid "Description"
-#~ msgid "Description: "
-#~ msgstr "Kuvaus: "
-
-#~ msgid "String"
-#~ msgstr "Vapaamuotoinen"
+msgstr ""

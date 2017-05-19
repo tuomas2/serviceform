@@ -1,6 +1,9 @@
 {% extends "serviceform/participation/login_base.html" %}
 {% load i18n crispy_forms_tags %}
 {% block login-content %}
-    <p>{% trans "If you are marked as a responsible person, please give your email below so we can send you a personal link to view your participation report." %}</p>
+    <p>
+    {% blocktrans %}If you are marked as a responsible person, please give your email below so
+    we can send you a personal link to view your participation report.{% endblocktrans%}
+    </p>
     {% crispy email_form %}
 {% endblock %}
