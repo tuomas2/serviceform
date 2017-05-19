@@ -30,7 +30,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         while True:
-            tasks = Task.objects.filter(status=Task.REQUESTED, scheduled_time__gte=timezone.now())
+            tasks = Task.objects.filter(status=Task.REQUESTED, scheduled_time__lte=timezone.now())
             for t in tasks:
                 with DelayedKeyboardInterrupt():
                     t.execute()
