@@ -90,7 +90,7 @@ class RevisionOptions:
 settings_defaults = {'revision': RevisionOptions.CURRENT}
 
 
-def get_report_settings(request: HttpRequest, parameter=None) -> dict:
+def get_report_settings(request: HttpRequest, parameter: str=None) -> Union[dict, str]:
     cache = caches['persistent']
     report_settings = cache.get('settings_for_%s' % _get_ident(request), settings_defaults.copy())
     if parameter:
