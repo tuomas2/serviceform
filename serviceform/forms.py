@@ -16,8 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Serviceform.  If not, see <http://www.gnu.org/licenses/>.
 
-from logging import getLogger
+import logging
 import re
+from typing import Optional, TYPE_CHECKING, List
 
 from django.contrib import messages
 from django.core.exceptions import ValidationError
@@ -25,8 +26,8 @@ from django.core.urlresolvers import reverse
 from django.core.validators import validate_email
 from django.db import transaction
 from django.forms import ModelForm, Form, fields, PasswordInput, widgets
+from django.http import HttpRequest
 from django.template.loader import render_to_string
-from django.core.cache import cache
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -34,10 +35,13 @@ from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-from serviceform import utils
-from . import models
+from . import utils, models
 
-logger = getLogger('serviceform.forms')
+if TYPE_CHECKING:
+    from django.contrib.auth.models import AbstractUser
+    from django.http import QueryDict
+
+logger = logging.getLogger('serviceform.forms')
 
 
 class MyFormHelper(FormHelper):
@@ -55,7 +59,8 @@ class ReportSettingsForm(Form):
 
     # shuffled_data = fields.BooleanField(label=_('Shuffled data (anonymity mode)'), required=False)
 
-    def __init__(self, service_form, request, *args, **kwargs):
+    def __init__(self, service_form: models.ServiceForm,
+                 request: HttpRequest, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.request = request
         self.instance = service_form
@@ -71,13 +76,13 @@ class ReportSettingsForm(Form):
         helper.form_id = 'form'
         helper.layout.append(Submit('submit', _('Save settings')))
 
-    def set_initial_data(self):
+    def set_initial_data(self) -> None:
         report_settings = utils.get_report_settings(self.request)
         for name, f in self.fields.items():
             val = report_settings.get(name)
             f.initial = val
 
-    def save(self):
+    def save(self) -> None:
         report_settings = {name: self.cleaned_data[name] for name in self.fields.keys()}
         utils.set_report_settings(self.request, report_settings)
 
@@ -85,7 +90,7 @@ class ReportSettingsForm(Form):
 class PasswordForm(Form):
     password = fields.CharField(max_length=32, label=_('Password'), widget=PasswordInput)
 
-    def __init__(self, service_form, *args, **kwargs):
+    def __init__(self, service_form: models.ServiceForm, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         helper = self.helper = MyFormHelper(self)
 
@@ -137,7 +142,8 @@ class ParticipantSendEmailForm(Form):
 class ResponsibleSendEmailForm(Form):
     email = fields.EmailField(max_length=128, label=_('Email'))
 
-    def __init__(self, service_form, request, *args, **kwargs):
+    def __init__(self, service_form: models.ServiceForm, request: HttpRequest,
+                 *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         helper = self.helper = MyFormHelper(self)
         self.request = request
@@ -145,7 +151,7 @@ class ResponsibleSendEmailForm(Form):
         helper.layout.append(Submit('submit_email', _('Send the link!')))
         self.instance = service_form
 
-    def clean_email(self):
+    def clean_email(self) -> str:
         email = self.cleaned_data['email']
         if email and 'email' in self.changed_data:
             responsible = models.ResponsibilityPerson.objects.filter(email=email,
@@ -155,7 +161,7 @@ class ResponsibleSendEmailForm(Form):
                     _('There were no responsible with email address {}').format(email))
         return email
 
-    def save(self):
+    def save(self) -> Optional[models.EmailMessage]:
         responsible = models.ResponsibilityPerson.objects.filter(email=self.cleaned_data['email'],
                                                                  form=self.instance).first()
         success = responsible.resend_auth_link()
@@ -174,7 +180,7 @@ class ContactForm(ModelForm):
         fields = ('forenames', 'surname', 'year_of_birth', 'street_address',
                   'postal_code', 'city', 'email', 'phone_number', 'send_email_allowed')
 
-    def __init__(self, *args, user=None, **kwargs):
+    def __init__(self, *args, user: 'AbstractUser'=None, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.participant = self.instance
         self.service_form = self.participant.form
@@ -191,7 +197,7 @@ class ContactForm(ModelForm):
             helper.layout.append(
                 Submit('submit', _('Save details'), css_class='btn-participation-continue'))
 
-    def _fix_fields(self):
+    def _fix_fields(self) -> None:
         req = self.service_form.required_street_address
         self.fields['street_address'].required = req
         self.fields['postal_code'].required = req
@@ -250,7 +256,7 @@ class ContactForm(ModelForm):
                             'To edit earlier participation, {}').format(email_link)))
         return email
 
-    def save(self, commit=True):
+    def save(self, commit: bool=True):
         if 'email' in self.changed_data:
             self.instance.email_verified = False
         return super().save(commit=commit)
@@ -262,7 +268,7 @@ class ResponsibleForm(ModelForm):
         fields = ('forenames', 'surname', 'street_address',
                   'postal_code', 'city', 'email', 'phone_number', 'send_email_notifications')
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.helper = helper = MyFormHelper(self)
 
@@ -275,7 +281,8 @@ class LogForm(ModelForm):
         model = models.ParticipantLog
         fields = ('message',)
 
-    def __init__(self, participant, user, *args, **kwargs):
+    def __init__(self, participant: models.Participant, user: 'AbstractUser',
+                 *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.instance.participant = participant
         self.instance.written_by = user
@@ -284,7 +291,7 @@ class LogForm(ModelForm):
 class DeleteParticipationForm(Form):
     yes_please = fields.BooleanField(label=_('Yes I am sure'), required=True)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.helper = helper = MyFormHelper(self)
         helper.layout.append(
@@ -297,7 +304,9 @@ class ParticipationForm:
     Not any standard Django form.
     """
 
-    def __init__(self, request, participant, category, post_data=None, service_form=None):
+    def __init__(self, request: HttpRequest, participant: models.Participant,
+                 category: models.Level1Category, post_data: 'QueryDict'=None,
+                 service_form: models.ServiceForm=None) -> None:
         self.instance = participant
         self.request = request
         self.post_data = post_data
@@ -314,7 +323,7 @@ class ParticipationForm:
         if participant and not post_data:
             self.load()
 
-    def load(self):
+    def load(self) -> None:
         participant = self.instance
         for pact in participant.participationactivity_set.all():
             act = self.all_activities.get(pact.activity_id)
@@ -330,7 +339,7 @@ class ParticipationForm:
                 choice.selected = True
                 self.selected_choices.add(choice)
 
-    def save(self):
+    def save(self) -> None:
         participant = self.instance
         with transaction.atomic():
             for choice in self.selected_choices:
@@ -354,7 +363,7 @@ class ParticipationForm:
                 pchoice.additional_info = getattr(choice, 'extra', None)
                 pchoice.save(update_fields=['additional_info'])
 
-    def _fetch_instances(self):
+    def _fetch_instances(self) -> None:
         categories = [self.category] if self.category else self.form.sub_items
 
         for cat1 in categories:
@@ -364,7 +373,7 @@ class ParticipationForm:
                     for choice in activity.sub_items:
                         self.all_choices[choice.pk] = choice
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         try:
             self.clean()
         except ValidationError:
@@ -441,7 +450,8 @@ class QuestionForm:
     Not any standard Django form.
     """
 
-    def __init__(self, request, participant, post_data=None):
+    def __init__(self, request: HttpRequest, participant: models.Participant,
+                 post_data: 'QueryDict'=None) -> None:
         self.instance = participant
         self.request = request
         self.data = post_data
@@ -523,7 +533,8 @@ class InviteForm(Form):
     email_addresses = fields.CharField(widget=widgets.Textarea, required=True, label=_(
         'Email addresses, separated by comma, space or enter'))
 
-    def __init__(self, postdata=None, instance=None, **kwargs):
+    def __init__(self, postdata: 'QueryDict'=None, instance: models.ServiceForm=None,
+                 **kwargs) -> None:
         super().__init__(postdata, *kwargs)
         helper = self.helper = MyFormHelper(self)
 
@@ -532,7 +543,7 @@ class InviteForm(Form):
         self.service_form = instance
 
     @staticmethod
-    def address_list(email_str):
+    def address_list(email_str: str) -> List[str]:
         return re.sub('[\n, \r]+', ',', email_str).split(',')
 
     def clean_email_addresses(self):
@@ -549,7 +560,7 @@ class InviteForm(Form):
             raise ValidationError(errors)
         return self.cleaned_data['email_addresses']
 
-    def save(self, request=None):
+    def save(self, request: HttpRequest=None) -> None:
         addresses = self.address_list(self.cleaned_data.get('email_addresses', ''))
         old_participants = self.cleaned_data.get('old_participants')
         for a in addresses:
