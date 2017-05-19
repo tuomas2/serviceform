@@ -454,10 +454,3 @@ def decode(number: str) -> Optional[int]:
         result = None
     return result
 
-# def code(pk):
-#    return hex(pk ^ settings.PK_CODE_KEY)[2:].upper()
-#
-#
-# def decode(secret_pk):
-#    secret_pk = int('0x%s'%secret_pk.lower(), 16)
-#    return secret_pk ^ settings.PK_CODE_KEY
