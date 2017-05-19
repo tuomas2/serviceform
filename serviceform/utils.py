@@ -90,7 +90,7 @@ class RevisionOptions:
 settings_defaults = {'revision': RevisionOptions.CURRENT}
 
 
-def get_report_settings(request: HttpRequest, parameter=None) -> dict:
+def get_report_settings(request: HttpRequest, parameter: str=None) -> Union[dict, str]:
     cache = caches['persistent']
     report_settings = cache.get('settings_for_%s' % _get_ident(request), settings_defaults.copy())
     if parameter:
@@ -351,7 +351,7 @@ def count_for_responsible(resp: 'ResponsibilityPerson') -> int:
 def generate_uuid() -> str:
     return str(uuid.uuid4())
 
-ColorStr = str #Match[RGB_REGEX.pattern] # TODO: fix this
+ColorStr = str  # TODO: Type validation against RGB_REGEX.pattern?
 
 
 def darker_color(color: ColorStr) -> ColorStr:

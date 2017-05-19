@@ -19,12 +19,16 @@
 import json
 import logging
 from collections import OrderedDict
+from typing import Callable, TYPE_CHECKING
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 logger = logging.getLogger('tasks')
 
@@ -54,10 +58,11 @@ class Task(models.Model):
     result = models.TextField()  # JSON serialized result of function
 
     def __str__(self):
-        return '%s::%s scheduled at %s (%s)'%(self.target, self.method_name, self.scheduled_time, self.status)
+        return (f'{self.target}::{self.method_name} scheduled at '
+                f'{self.scheduled_time} ({self.status})')
 
     @classmethod
-    def make(cls, method, *args, scheduled_time=None, **kwargs):
+    def make(cls, method: Callable, *args, scheduled_time: 'datetime'=None, **kwargs):
         target = method.__self__
         method_name = method.__name__
 
@@ -65,7 +70,8 @@ class Task(models.Model):
             scheduled_time = timezone.now()
 
         data = json.dumps((args, kwargs))
-        return cls.objects.create(target=target, method_name=method_name, data=data, scheduled_time=scheduled_time)
+        return cls.objects.create(target=target, method_name=method_name, data=data,
+                                  scheduled_time=scheduled_time)
 
     def execute(self):
         args, kwargs = json.loads(self.data)

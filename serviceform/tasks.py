@@ -18,8 +18,6 @@
 
 # Celery tasks
 
-#TODO: delete this deprecated file
-
 import logging
 
 from celery import shared_task

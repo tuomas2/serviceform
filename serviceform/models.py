@@ -82,56 +82,56 @@ postalcode_regex = RegexValidator(
 )
 
 
-def contact_details_mixin(blank: bool=False, force_email: bool=False):
-    class ContactDetailsMixin(models.Model):
-        class Meta:
-            abstract = True
+class ContactDetailsMixin(models.Model):
+    class Meta:
+        abstract = True
 
-        def __str__(self):
-            if self.forenames or self.surname:
-                return '%s %s' % (self.forenames.title(), self.surname.title())
-            else:
-                return self.email
+    def __str__(self):
+        if self.forenames or self.surname:
+            return '%s %s' % (self.forenames.title(), self.surname.title())
+        else:
+            return self.email
 
-        @property
-        def address(self):
-            return ('%s\n%s %s' % (
-                self.street_address.title(), self.postal_code, self.city.title())).strip()
+    @property
+    def address(self):
+        return ('%s\n%s %s' % (
+            self.street_address.title(), self.postal_code, self.city.title())).strip()
 
-        email_blank = blank and not force_email
+    forenames = models.CharField(max_length=64, verbose_name=_('Forename(s)'))
+    surname = models.CharField(max_length=64, verbose_name=_('Surname'))
+    street_address = models.CharField(max_length=128, blank=False,
+                                      verbose_name=_('Street address'))
+    postal_code = models.CharField(max_length=32, blank=False,
+                                   verbose_name=_('Zip/Postal code'),
+                                   validators=[postalcode_regex])
+    city = models.CharField(max_length=32, blank=False, verbose_name=_('City'))
+    email = models.EmailField(blank=False, verbose_name=_('Email'), db_index=True)
+    phone_number = models.CharField(max_length=32, validators=[phone_regex], blank=False,
+                                    verbose_name=_('Phone number'))
 
-        forenames = models.CharField(max_length=64, verbose_name=_('Forename(s)'))
-        surname = models.CharField(max_length=64, verbose_name=_('Surname'))
-        street_address = models.CharField(max_length=128, blank=blank,
-                                          verbose_name=_('Street address'))
-        postal_code = models.CharField(max_length=32, blank=blank,
-                                       verbose_name=_('Zip/Postal code'),
-                                       validators=[postalcode_regex])
-        city = models.CharField(max_length=32, blank=blank, verbose_name=_('City'))
-        email = models.EmailField(blank=email_blank, verbose_name=_('Email'), db_index=True)
-        phone_number = models.CharField(max_length=32, validators=[phone_regex], blank=blank,
-                                        verbose_name=_('Phone number'))
+    @property
+    def contact_details(self):
+        yield _('Name'), '%s %s' % (self.forenames.title(), self.surname.title())
+        if self.email:
+            yield _('Email'), self.email
+        if self.phone_number:
+            yield _('Phone number'), self.phone_number
+        if self.address:
+            yield _('Address'), '\n' + self.address
 
-        @property
-        def contact_details(self):
-            yield _('Name'), '%s %s' % (self.forenames.title(), self.surname.title())
-            if self.email:
-                yield _('Email'), self.email
-            if self.phone_number:
-                yield _('Phone number'), self.phone_number
-            if self.address:
-                yield _('Address'), '\n' + self.address
-
-        @property
-        def contact_display(self):
-            return '\n'.join('%s: %s' % (k, v) for k, v in self.contact_details)
-
-    return ContactDetailsMixin
+    @property
+    def contact_display(self):
+        return '\n'.join('%s: %s' % (k, v) for k, v in self.contact_details)
 
 
-ContactDetailsMixinBlank = contact_details_mixin(blank=True)
-ContactDetailsMixinEmail = contact_details_mixin(blank=True, force_email=True)
-ContactDetailsMixin = contact_details_mixin(blank=False)
+class ContactDetailsMixinEmail(ContactDetailsMixin):
+    class Meta:
+        abstract = True
+
+ContactDetailsMixinEmail._meta.get_field('street_address').blank = True
+ContactDetailsMixinEmail._meta.get_field('postal_code').blank = True
+ContactDetailsMixinEmail._meta.get_field('city').blank = True
+ContactDetailsMixinEmail._meta.get_field('phone_number').blank = True
 
 
 class NameDescriptionMixin(models.Model):
@@ -178,6 +178,8 @@ class PasswordMixin(models.Model):
     AUTH_STORE_KEYS number of most recent keys in a json storage.
     """
 
+    AUTH_VIEW: str
+
     class Meta:
         abstract = True
 
@@ -203,7 +205,7 @@ class PasswordMixin(models.Model):
         password = utils.generate_uuid()
 
         auth_key_hash = make_password(password)
-        auth_key_expire = (timezone.now() +
+        auth_key_expire: datetime.datetime = (timezone.now() +
                            datetime.timedelta(days=getattr(settings, 'AUTH_KEY_EXPIRE_DAYS', 90)))
 
         valid_hashes.append((auth_key_hash, auth_key_expire.timestamp()))
@@ -336,7 +338,7 @@ class EmailMessage(models.Model):
     subject = models.CharField(max_length=256)
     content = models.TextField()
     sent_at = models.DateTimeField(null=True)
-    context = models.TextField(default="{}")  # Jsonified context variables
+    context = models.TextField(default="{}")  # JSONified context variables
 
     def __str__(self):
         return '<EmailMessage %s to %s>' % (self.pk, self.to_address)
@@ -383,7 +385,8 @@ class EmailMessage(models.Model):
             logger.error('Email message to %s could not be sent', self)
 
     @classmethod
-    def make(cls, template, context_dict, address, send=False) -> 'EmailMessage':
+    def make(cls, template: 'EmailTemplate', context_dict: dict, address: str,
+             send: bool=False) -> 'EmailMessage':
         logger.info('Creating email to %s', address)
         msg = cls.objects.create(template=template, to_address=address,
                                  from_address=settings.SERVER_EMAIL,
@@ -817,6 +820,9 @@ class AbstractServiceFormItem(models.Model):
         else:
             return first_resp
 
+    def background_color_display(self) -> ColorStr:
+        raise NotImplementedError
+
 
 class Level1Category(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem):
     subitem_name = 'level2category'
@@ -1129,8 +1135,8 @@ class Participant(ContactDetailsMixin, PasswordMixin, models.Model):
         self.last_finished = timezone.now()
         self.save(update_fields=['status', 'last_finished'])
 
-    def send_participant_email(self, event: EmailIds, extra_context: dict=None) \
-            -> Optional[EmailMessage]:
+    def send_participant_email(self, event: EmailIds,
+                               extra_context: dict=None) -> Optional[EmailMessage]:
         """
         Send email to participant
         :return: False if email was not sent. Message if it was sent.

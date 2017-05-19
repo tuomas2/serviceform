@@ -17,13 +17,14 @@
 # along with Serviceform.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-
-from collections import Iterable
+from typing import Iterable
+import collections
 from django.contrib import admin
 from django.conf import settings
 from django.contrib import messages
-from django.db.models import Model
+from django.db.models import Model, Field
 from django.forms.utils import pretty_name
+from django.http import HttpRequest
 from django.utils.encoding import force_str
 from django.utils.translation import ugettext_lazy as _, gettext as _g
 from django.utils import timezone
@@ -42,7 +43,7 @@ else:
 
 
 class OwnerSaveMixin:
-    def save_model(self, request, obj, form, change):
+    def save_model(self, request: HttpRequest, obj: Model, form, change: bool) -> Model:
         assign_new_perm = not obj.pk
         rv = super().save_model(request, obj, form, change)
         if assign_new_perm:
@@ -51,7 +52,7 @@ class OwnerSaveMixin:
 
 
 class ResponsibleMixin:
-    def formfield_for_manytomany(self, db_field, request=None, **kwargs):
+    def formfield_for_manytomany(self, db_field: Field, request: HttpRequest=None, **kwargs):
         formfield = super().formfield_for_manytomany(db_field, request, **kwargs)
         if db_field.name in ['responsibles']:
             formfield.queryset = request._responsibles
@@ -78,7 +79,7 @@ class ExtendedLogMixin:
             else:
                 return _g(str(choices.get(value, value)))
 
-        if isinstance(values, Iterable) and not isinstance(values, str):
+        if isinstance(values, collections.Iterable) and not isinstance(values, str):
             msg = ', '.join(do_map(val, choices) for val in values)
             return '[%s]' % msg
         else:
@@ -268,50 +269,53 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
     new_fieldsets = ((_('Basic information'), {'fields': basic}),)
     readonly_fields = ('can_access',)
 
-    def get_fieldsets(self, request, obj=None):
+    def get_fieldsets(self, request: HttpRequest, obj: models.ServiceForm=None):
         return self.new_fieldsets if obj is None else super().get_fieldsets(request, obj)
 
-    def get_inline_instances(self, request, obj=None):
+    def get_inline_instances(self, request: HttpRequest, obj: models.ServiceForm=None):
         return super().get_inline_instances(request, obj) if obj else []
 
-    def get_actions(self, request):
+    def get_actions(self, request: HttpRequest):
         actions = super().get_actions(request)
         if not request.user.is_superuser:
             for a in self.superuser_actions:
                 actions.pop(a, None)
         return actions
 
-    def copy_form(self, request, queryset):
+    def copy_form(self, request: HttpRequest, queryset: Iterable[models.ServiceForm]) -> None:
         for serviceform in queryset:
             new_form = serviceform.copy_as_new()
             assign_perm('serviceform.can_access_serviceform', request.user, new_form)
 
     copy_form.short_description = _('Copy form as a new')
 
-    def bulk_email_former_participants(self, request, queryset):
+    def bulk_email_former_participants(self, request: HttpRequest,
+                                       queryset: Iterable[models.ServiceForm]) -> None:
         for serviceform in queryset:
             serviceform.bulk_email_former_participants()
 
     bulk_email_former_participants.short_description = _('Bulk email former participants now!')
 
-    def bulk_email_responsibles(self, request, queryset):
+    def bulk_email_responsibles(self, request: HttpRequest,
+                                queryset: Iterable[models.ServiceForm]) -> None:
         for serviceform in queryset:
             serviceform.bulk_email_responsibles()
 
     bulk_email_responsibles.short_description = _('Bulk email responsibility persons now!')
 
-    def shuffle_data(self, request, queryset):
+    def shuffle_data(self, request: HttpRequest,
+                     queryset: Iterable[models.ServiceForm]) -> None:
         for serviceform in queryset:
             utils.shuffle_person_data(serviceform)
 
     shuffle_data.short_description = _('Shuffle participant data')
 
-    def get_queryset(self, request):
+    def get_queryset(self, request: HttpRequest):
         qs = super().get_queryset(request)
         return get_objects_for_user(request.user, 'serviceform.can_access_serviceform', klass=qs,
                                     use_groups=True)
 
-    def get_form(self, request, obj=None, **kwargs):
+    def get_form(self, request: HttpRequest, obj: models.ServiceForm=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         if obj:
             request._responsibles = responsibles = models.ResponsibilityPerson.objects.filter(
@@ -330,7 +334,7 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
 
         return form
 
-    def save_model(self, request, obj, form, change):
+    def save_model(self, request: HttpRequest, obj: models.ServiceForm, form, change: bool):
         obj.last_editor = request.user
         rv = super().save_model(request, obj, form, change)
         if not change:
@@ -344,7 +348,7 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
                     'so that form is rendered correctly.').format(count))
         return rv
 
-    def save_related(self, request, form, formsets, change):
+    def save_related(self, request: HttpRequest, form, formsets, change: bool):
         rv = super().save_related(request, form, formsets, change)
         form.instance.reschedule_bulk_email()
         return rv
@@ -352,24 +356,16 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
 
 @admin.register(models.EmailMessage)
 class EmailMessageAdmin(ExtendedLogMixin, admin.ModelAdmin):
-    list_display = ('to_address', 'created_at', 'sent_at', 'subject_display', 'template', 'content_display',)
-
-
-def send_mail(modeladmin, request, queryset):
-    for p in queryset:
-        p.send_participant_email()
-
-
-send_mail.short_description = _('Send mail')
+    list_display = ('to_address', 'created_at', 'sent_at', 'subject_display', 'template',
+                    'content_display',)
 
 
 @admin.register(models.Participant)
 class ParticipantAdmin(ExtendedLogMixin, admin.ModelAdmin):
     list_display = (
-        'id', '__str__', 'form_display', 'form_revision', 'status', 'activities_display', 'created_at',
-        'last_modified', 'personal_link')
+        'id', '__str__', 'form_display', 'form_revision', 'status', 'activities_display',
+        'created_at', 'last_modified', 'personal_link')
     fields = ('forenames', 'surname')
-    actions = [send_mail]
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).select_related('form_revision__form')

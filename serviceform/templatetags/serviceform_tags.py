@@ -1,18 +1,22 @@
-from typing import NamedTuple, Dict, List
+from typing import NamedTuple, Dict, List, TYPE_CHECKING, Union, Iterable
 
 from django import template
 from django.core.urlresolvers import reverse
+from django.template import Context
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
+from django.utils.safestring import mark_safe, SafeString
 from django.utils.translation import gettext_lazy as _
 
 from serviceform.models import Participant
-from serviceform.utils import safe_join
+from serviceform.utils import safe_join, ColorStr
 from .. import utils
 from ..urls import participant_flow_urls, menu_urls, Requires
 from ..utils import lighter_color as lighter_color_util, darker_color
 
 register = template.Library()
+if TYPE_CHECKING:
+    from ..models import (AbstractServiceFormItem, ResponsibilityPerson, SubitemMixin, Activity,
+                          ActivityChoice, ParticipationActivity, ParticipationActivityChoice)
 
 
 class FlowItem(NamedTuple):
@@ -22,8 +26,20 @@ class FlowItem(NamedTuple):
     attrs: Dict[str, str]
 
 
+class MenuItem(NamedTuple):
+    name: str
+    title: str
+    url: str
+    is_active: bool
+
+
+class MenuItems(NamedTuple):
+    left: List[MenuItem]
+    right: List[MenuItem]
+
+
 @register.simple_tag(takes_context=True)
-def responsible_link(context, item):
+def responsible_link(context: Context, item: 'AbstractServiceFormItem') -> SafeString:
     """
     Used in category captions in report views, for example
     """
@@ -43,12 +59,13 @@ def responsible_link(context, item):
 
 
 @register.assignment_tag
-def has_responsible(item, responsible):
+def has_responsible(item: 'SubitemMixin', responsible: 'ResponsibilityPerson') -> bool:
     return item.has_responsible(responsible)
 
 
 @register.assignment_tag(takes_context=True)
-def participation_items(context, item):
+def participation_items(context: Context, item: 'Union[Activity, ActivityChoice]')\
+        -> 'Iterable[ParticipationActivity, ParticipationActivityChoice]':
     revision_name = utils.get_report_settings(context['request'], 'revision')
     service_form = context.get('service_form')
     if revision_name == utils.RevisionOptions.ALL:
@@ -61,13 +78,13 @@ def participation_items(context, item):
 
 
 @register.assignment_tag(takes_context=True)
-def all_revisions(context):
+def all_revisions(context: Context) -> bool:
     revision_name = utils.get_report_settings(context['request'], 'revision')
     return revision_name == utils.RevisionOptions.ALL
 
 
 @register.assignment_tag(takes_context=True)
-def participants(context):
+def participants(context: Context) -> 'Iterable[Participant]':
     revision_name = utils.get_report_settings(context['request'], 'revision')
     service_form = context.get('service_form')
 
@@ -83,7 +100,7 @@ def participants(context):
 
 
 @register.assignment_tag(takes_context=True)
-def participant_flow_menu_items(context) -> List[FlowItem]:
+def participant_flow_menu_items(context: Context) -> List[FlowItem]:
     current_view = context['request'].resolver_match.view_name
     participant = context['request'].participant
     cat_num = context.get('cat_num', 0)
@@ -108,7 +125,7 @@ def participant_flow_menu_items(context) -> List[FlowItem]:
 
 
 @register.assignment_tag(takes_context=True)
-def participant_flow_categories(context):
+def participant_flow_categories(context: Context) -> List[FlowItem]:
     current_view = 'participation'
     service_form = context['service_form']
     cat_num = context.get('cat_num', 0)
@@ -129,7 +146,7 @@ def participant_flow_categories(context):
 
 
 @register.assignment_tag(takes_context=True)
-def menu_items(context, menu_name):
+def menu_items(context: Context, menu_name: str) -> MenuItems:
     """
     This is used for:
      - Reports menu
@@ -166,39 +183,40 @@ def menu_items(context, menu_name):
         icon = f_item.default_args.get('icon')
         if icon:
             title = format_html('<span class="fa fa-{}"></span> {}', icon, title)
-        itm = {'name': name, 'title': title, 'url': url, 'is_active': is_active}
+        itm = MenuItem(name, title, url, is_active)
         if is_right:
             right.append(itm)
         else:
             left.append(itm)
-    return {'left': left, 'right': right}
+    return MenuItems(left, right)
 
 
 @register.filter()
-def shorten(text):
+def shorten(text: str) -> SafeString:
     return format_html('<span class="tooltip-only" title="{}" >{}...</span>', text,
                        text[:5].strip())
 
 
+
 @register.filter()
-def lighter_color(cat_color):
+def lighter_color(cat_color: ColorStr) -> ColorStr:
     return lighter_color_util(cat_color)
 
 
 @register.filter(is_safe=True)
-def url_target_blank(text):
+def url_target_blank(text: str) -> str:
     return text.replace('<a ', '<a target="_blank" ')
 
 
 @register.filter()
-def count_color(count):
+def count_color(count: int) -> SafeString:
     color_for_count = utils.color_for_count(count)
     return format_html('<span class="color-count" style="background: {};">{}</span>',
                        color_for_count, count)
 
 
 @register.simple_tag()
-def color_style(item, lighter=0, attr='background'):
+def color_style(item: 'AbstractServiceFormItem', lighter=0, attr='background') -> SafeString:
     color = item.background_color_display
     if color:
         if lighter < 0:
@@ -209,11 +227,11 @@ def color_style(item, lighter=0, attr='background'):
                 color = lighter_color_util(color)
         return format_html('style="{}: {};"', attr, color)
     else:
-        return ''
+        return format_html('')
 
 
 @register.filter()
-def translate_bool(value):
+def translate_bool(value: bool) -> str:
     _('True')
     _('False')
     return _(str(value))
