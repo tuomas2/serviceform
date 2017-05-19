@@ -24,6 +24,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.db.models import Model
 from django.forms.utils import pretty_name
+from django.http import HttpRequest
 from django.utils.encoding import force_str
 from django.utils.translation import ugettext_lazy as _, gettext as _g
 from django.utils import timezone
@@ -42,7 +43,7 @@ else:
 
 
 class OwnerSaveMixin:
-    def save_model(self, request, obj, form, change):
+    def save_model(self, request: HttpRequest, obj: Model, form, change):
         assign_new_perm = not obj.pk
         rv = super().save_model(request, obj, form, change)
         if assign_new_perm:

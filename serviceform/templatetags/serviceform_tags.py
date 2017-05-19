@@ -59,7 +59,7 @@ def responsible_link(context: Context, item: 'AbstractServiceFormItem') -> SafeS
 
 
 @register.assignment_tag
-def has_responsible(item: SubitemMixin, responsible: 'ResponsibilityPerson') -> bool:
+def has_responsible(item: 'SubitemMixin', responsible: 'ResponsibilityPerson') -> bool:
     return item.has_responsible(responsible)
 
 
