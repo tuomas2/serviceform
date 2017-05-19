@@ -178,6 +178,8 @@ class PasswordMixin(models.Model):
     AUTH_STORE_KEYS number of most recent keys in a json storage.
     """
 
+    AUTH_VIEW: str
+
     class Meta:
         abstract = True
 
@@ -203,7 +205,7 @@ class PasswordMixin(models.Model):
         password = utils.generate_uuid()
 
         auth_key_hash = make_password(password)
-        auth_key_expire = (timezone.now() +
+        auth_key_expire: datetime.datetime = (timezone.now() +
                            datetime.timedelta(days=getattr(settings, 'AUTH_KEY_EXPIRE_DAYS', 90)))
 
         valid_hashes.append((auth_key_hash, auth_key_expire.timestamp()))
@@ -336,7 +338,7 @@ class EmailMessage(models.Model):
     subject = models.CharField(max_length=256)
     content = models.TextField()
     sent_at = models.DateTimeField(null=True)
-    context = models.TextField(default="{}")  # Jsonified context variables
+    context = models.TextField(default="{}")  # JSONified context variables
 
     def __str__(self):
         return '<EmailMessage %s to %s>' % (self.pk, self.to_address)
@@ -383,7 +385,8 @@ class EmailMessage(models.Model):
             logger.error('Email message to %s could not be sent', self)
 
     @classmethod
-    def make(cls, template, context_dict, address, send=False) -> 'EmailMessage':
+    def make(cls, template: 'EmailTemplate', context_dict: dict, address: str,
+             send: bool=False) -> 'EmailMessage':
         logger.info('Creating email to %s', address)
         msg = cls.objects.create(template=template, to_address=address,
                                  from_address=settings.SERVER_EMAIL,
@@ -820,6 +823,7 @@ class AbstractServiceFormItem(models.Model):
     def background_color_display(self) -> ColorStr:
         raise NotImplementedError
 
+
 class Level1Category(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem):
     subitem_name = 'level2category'
     background_color = ColorField(_('Background color'), blank=True, null=True)
@@ -1131,8 +1135,8 @@ class Participant(ContactDetailsMixin, PasswordMixin, models.Model):
         self.last_finished = timezone.now()
         self.save(update_fields=['status', 'last_finished'])
 
-    def send_participant_email(self, event: EmailIds, extra_context: dict=None) \
-            -> Optional[EmailMessage]:
+    def send_participant_email(self, event: EmailIds,
+                               extra_context: dict=None) -> Optional[EmailMessage]:
         """
         Send email to participant
         :return: False if email was not sent. Message if it was sent.

@@ -351,7 +351,7 @@ def count_for_responsible(resp: 'ResponsibilityPerson') -> int:
 def generate_uuid() -> str:
     return str(uuid.uuid4())
 
-ColorStr = str #Match[RGB_REGEX.pattern] # TODO: fix this
+ColorStr = str  # TODO: Type validation against RGB_REGEX.pattern?
 
 
 def darker_color(color: ColorStr) -> ColorStr:

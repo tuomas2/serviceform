@@ -123,12 +123,13 @@ TEMPLATES = [
 ]
 
 if not DEBUG:
-    TEMPLATES[0]['OPTIONS'].update({
-        'loaders': [
-            ('django.template.loaders.cached.Loader', [
-                'django.template.loaders.filesystem.Loader',
-                'django.template.loaders.app_directories.Loader',
-            ])]})
+    TEMPLATES[0]['OPTIONS'].update(
+        {
+            'loaders': [
+                ('django.template.loaders.cached.Loader', [
+                    'django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader',
+                ])]})
 
 WSGI_APPLICATION = 'serviceform_project.wsgi.application'
 
@@ -365,8 +366,4 @@ SILENCED_SYSTEM_CHECKS = [
 
 AUTH_KEY_EXPIRE_DAYS = 3*30  # 3 months
 AUTH_STORE_KEYS = 10
-#PK_CODE_KEY=0x12a19174f
-
-#DEBUG = False
-#ALLOWED_HOSTS = ["localhost"]
 
