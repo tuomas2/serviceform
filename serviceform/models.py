@@ -82,56 +82,56 @@ postalcode_regex = RegexValidator(
 )
 
 
-def contact_details_mixin(blank: bool=False, force_email: bool=False):
-    class ContactDetailsMixin(models.Model):
-        class Meta:
-            abstract = True
+class ContactDetailsMixin(models.Model):
+    class Meta:
+        abstract = True
 
-        def __str__(self):
-            if self.forenames or self.surname:
-                return '%s %s' % (self.forenames.title(), self.surname.title())
-            else:
-                return self.email
+    def __str__(self):
+        if self.forenames or self.surname:
+            return '%s %s' % (self.forenames.title(), self.surname.title())
+        else:
+            return self.email
 
-        @property
-        def address(self):
-            return ('%s\n%s %s' % (
-                self.street_address.title(), self.postal_code, self.city.title())).strip()
+    @property
+    def address(self):
+        return ('%s\n%s %s' % (
+            self.street_address.title(), self.postal_code, self.city.title())).strip()
 
-        email_blank = blank and not force_email
+    forenames = models.CharField(max_length=64, verbose_name=_('Forename(s)'))
+    surname = models.CharField(max_length=64, verbose_name=_('Surname'))
+    street_address = models.CharField(max_length=128, blank=False,
+                                      verbose_name=_('Street address'))
+    postal_code = models.CharField(max_length=32, blank=False,
+                                   verbose_name=_('Zip/Postal code'),
+                                   validators=[postalcode_regex])
+    city = models.CharField(max_length=32, blank=False, verbose_name=_('City'))
+    email = models.EmailField(blank=False, verbose_name=_('Email'), db_index=True)
+    phone_number = models.CharField(max_length=32, validators=[phone_regex], blank=False,
+                                    verbose_name=_('Phone number'))
 
-        forenames = models.CharField(max_length=64, verbose_name=_('Forename(s)'))
-        surname = models.CharField(max_length=64, verbose_name=_('Surname'))
-        street_address = models.CharField(max_length=128, blank=blank,
-                                          verbose_name=_('Street address'))
-        postal_code = models.CharField(max_length=32, blank=blank,
-                                       verbose_name=_('Zip/Postal code'),
-                                       validators=[postalcode_regex])
-        city = models.CharField(max_length=32, blank=blank, verbose_name=_('City'))
-        email = models.EmailField(blank=email_blank, verbose_name=_('Email'), db_index=True)
-        phone_number = models.CharField(max_length=32, validators=[phone_regex], blank=blank,
-                                        verbose_name=_('Phone number'))
+    @property
+    def contact_details(self):
+        yield _('Name'), '%s %s' % (self.forenames.title(), self.surname.title())
+        if self.email:
+            yield _('Email'), self.email
+        if self.phone_number:
+            yield _('Phone number'), self.phone_number
+        if self.address:
+            yield _('Address'), '\n' + self.address
 
-        @property
-        def contact_details(self):
-            yield _('Name'), '%s %s' % (self.forenames.title(), self.surname.title())
-            if self.email:
-                yield _('Email'), self.email
-            if self.phone_number:
-                yield _('Phone number'), self.phone_number
-            if self.address:
-                yield _('Address'), '\n' + self.address
-
-        @property
-        def contact_display(self):
-            return '\n'.join('%s: %s' % (k, v) for k, v in self.contact_details)
-
-    return ContactDetailsMixin
+    @property
+    def contact_display(self):
+        return '\n'.join('%s: %s' % (k, v) for k, v in self.contact_details)
 
 
-ContactDetailsMixinBlank = contact_details_mixin(blank=True)
-ContactDetailsMixinEmail = contact_details_mixin(blank=True, force_email=True)
-ContactDetailsMixin = contact_details_mixin(blank=False)
+class ContactDetailsMixinEmail(ContactDetailsMixin):
+    class Meta:
+        abstract = True
+
+ContactDetailsMixinEmail._meta.get_field('street_address').blank = True
+ContactDetailsMixinEmail._meta.get_field('postal_code').blank = True
+ContactDetailsMixinEmail._meta.get_field('city').blank = True
+ContactDetailsMixinEmail._meta.get_field('phone_number').blank = True
 
 
 class NameDescriptionMixin(models.Model):
