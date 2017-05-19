@@ -36,11 +36,13 @@ def password_login(request, service_form):
     if request.method == 'POST':
         password_form = forms.PasswordForm(service_form, request.POST)
         if password_form.is_valid():
-            participant = models.Participant.objects.create(form_revision=service_form.current_revision)
+            participant = models.Participant.objects.create(
+                form_revision=service_form.current_revision)
             request.session['authenticated_participant'] = participant.pk
             return HttpResponseRedirect(reverse('contact_details'))
 
-    return render(request, 'serviceform/login/password_login.html', {'password_form': password_form, 'service_form': service_form})
+    return render(request, 'serviceform/login/password_login.html',
+                  {'password_form': password_form, 'service_form': service_form})
 
 
 @serviceform
@@ -51,9 +53,11 @@ def send_participant_email(request, service_form):
         email_form = forms.ParticipantSendEmailForm(service_form, request, request.POST)
         if email_form.is_valid():
             email_form.save()
-            return HttpResponseRedirect(reverse('send_participant_email', args=(service_form.slug,)))
+            return HttpResponseRedirect(
+                reverse('send_participant_email', args=(service_form.slug,)))
 
-    return render(request, 'serviceform/login/send_participant_auth_link.html', {'email_form': email_form, 'service_form': service_form})
+    return render(request, 'serviceform/login/send_participant_auth_link.html',
+                  {'email_form': email_form, 'service_form': service_form})
 
 
 @serviceform
@@ -64,6 +68,8 @@ def send_responsible_email(request, service_form):
         email_form = forms.ResponsibleSendEmailForm(service_form, request, request.POST)
         if email_form.is_valid():
             email_form.save()
-            return HttpResponseRedirect(reverse('send_responsible_email', args=(service_form.slug,)))
+            return HttpResponseRedirect(
+                reverse('send_responsible_email', args=(service_form.slug,)))
 
-    return render(request, 'serviceform/login/send_responsible_auth_link.html', {'email_form': email_form, 'service_form': service_form})
+    return render(request, 'serviceform/login/send_responsible_auth_link.html',
+                  {'email_form': email_form, 'service_form': service_form})

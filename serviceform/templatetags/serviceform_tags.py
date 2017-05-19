@@ -11,6 +11,7 @@ from serviceform.utils import safe_join
 from .. import utils
 from ..urls import participant_flow_urls, menu_urls, Requires
 from ..utils import lighter_color as lighter_color_util, darker_color
+
 register = template.Library()
 
 
@@ -70,7 +71,8 @@ def participants(context):
     revision_name = utils.get_report_settings(context['request'], 'revision')
     service_form = context.get('service_form')
 
-    qs = Participant.objects.filter(form_revision__form=service_form, status__in=Participant.READY_STATUSES).order_by('surname')
+    qs = Participant.objects.filter(form_revision__form=service_form,
+                                    status__in=Participant.READY_STATUSES).order_by('surname')
     if revision_name == utils.RevisionOptions.CURRENT:
         qs = qs.filter(form_revision__id=service_form.current_revision_id)
     elif revision_name == utils.RevisionOptions.ALL:
@@ -149,7 +151,7 @@ def menu_items(context, menu_name):
 
     left = []
     right = []
-    for idx, f_item  in enumerate(menu_urls[menu_name]):
+    for idx, f_item in enumerate(menu_urls[menu_name]):
         name = f_item.name
         is_active = current_view == name
         arglist = f_item.default_args.get('arglist', ('slug',))
@@ -174,7 +176,9 @@ def menu_items(context, menu_name):
 
 @register.filter()
 def shorten(text):
-    return format_html('<span class="tooltip-only" title="{}" >{}...</span>', text, text[:5].strip())
+    return format_html('<span class="tooltip-only" title="{}" >{}...</span>', text,
+                       text[:5].strip())
+
 
 @register.filter()
 def lighter_color(cat_color):
@@ -189,7 +193,8 @@ def url_target_blank(text):
 @register.filter()
 def count_color(count):
     color_for_count = utils.color_for_count(count)
-    return format_html('<span class="color-count" style="background: {};">{}</span>', color_for_count, count)
+    return format_html('<span class="color-count" style="background: {};">{}</span>',
+                       color_for_count, count)
 
 
 @register.simple_tag()
@@ -205,6 +210,7 @@ def color_style(item, lighter=0, attr='background'):
         return format_html('style="{}: {};"', attr, color)
     else:
         return ''
+
 
 @register.filter()
 def translate_bool(value):

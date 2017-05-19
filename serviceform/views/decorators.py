@@ -19,7 +19,6 @@
 from functools import wraps
 
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import resolve
@@ -29,7 +28,8 @@ from django.shortcuts import get_object_or_404
 from serviceform import models, utils
 
 
-def serviceform(function=None, check_form_permission=False, init_counters=False, all_responsibles=True,
+def serviceform(function=None, check_form_permission=False, init_counters=False,
+                all_responsibles=True,
                 fetch_participants=False):
     def actual_decorator(func):
         @wraps(func)
@@ -48,6 +48,7 @@ def serviceform(function=None, check_form_permission=False, init_counters=False,
             return func_(request, service_form, *args)
 
         return wrapper
+
     if function:
         return actual_decorator(function)
     return actual_decorator
@@ -63,6 +64,7 @@ def require_authenticated_responsible(func):
             return func(request, responsible, *args)
         else:
             raise PermissionDenied
+
     return wrapper
 
 
@@ -74,9 +76,10 @@ def require_authenticated_participant(function=None, check_flow=True):
 
             participant_pk = request.session.get('authenticated_participant')
             if participant_pk:
-                request.participant = participant = get_object_or_404(models.Participant.objects.all(),
-                                                                      pk=participant_pk,
-                                                                      status__in=models.Participant.EDIT_STATUSES)
+                request.participant = participant = get_object_or_404(
+                    models.Participant.objects.all(),
+                    pk=participant_pk,
+                    status__in=models.Participant.EDIT_STATUSES)
                 if check_flow:
                     # Check flow status
                     participant._current_view = current_view
@@ -93,6 +96,7 @@ def require_authenticated_participant(function=None, check_flow=True):
 
             else:
                 raise PermissionDenied
+
         return wrapper
 
     if function:
@@ -106,6 +110,7 @@ def require_published_form(func):
         if not participant.form.is_published:
             raise PermissionDenied
         return func(request, participant, *args, **kwargs)
+
     return wrapper
 
 
@@ -121,5 +126,4 @@ def require_form_permissions(func):
 
         return func(request, service_form, *args, **kwargs)
 
-    return wrapper #
-
+    return wrapper  #

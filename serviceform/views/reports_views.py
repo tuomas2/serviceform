@@ -28,7 +28,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from serviceform import models, forms
-from serviceform.utils import user_has_serviceform_permission, fetch_participants, expire_auth_link, decode
+from serviceform.utils import user_has_serviceform_permission, fetch_participants, \
+    expire_auth_link, decode
 from serviceform.views.decorators import serviceform, require_authenticated_responsible
 
 
@@ -43,7 +44,8 @@ def authenticate_responsible(request, responsible_id, password):
     responsible = get_object_or_404(models.ResponsibilityPerson.objects.all(), pk=responsible_id)
     result = responsible.check_auth_key(password)
     if result == responsible.PasswordStatus.PASSWORD_NOK:
-        messages.error(request, _("Given URL might be expired. Please give your email address and we'll send you a new link"))
+        messages.error(request, _(
+            "Given URL might be expired. Please give your email address and we'll send you a new link"))
         return redirect('send_responsible_email', responsible.form.slug)
     elif result == responsible.PasswordStatus.PASSWORD_EXPIRED:
         return expire_auth_link(request, responsible)
@@ -71,28 +73,33 @@ def settings_view(request, service_form):
             messages.info(request, _('Settings saved'))
         else:
             messages.error(request, _('Settings could not be saved'))
-        #return HttpResponseRedirect('') # TODO: why does this not work?
-    return render(request, 'serviceform/reports/settings.html', {'service_form': service_form, 'form': form})
+            # return HttpResponseRedirect('') # TODO: why does this not work?
+    return render(request, 'serviceform/reports/settings.html',
+                  {'service_form': service_form, 'form': form})
 
 
 @serviceform(check_form_permission=True, init_counters=True)
 def all_responsibles(request, service_form):
-    return render(request, 'serviceform/reports/all_responsibles.html', {'service_form': service_form})
+    return render(request, 'serviceform/reports/all_responsibles.html',
+                  {'service_form': service_form})
 
 
 @serviceform(check_form_permission=True, fetch_participants=True)
 def all_participants(request, service_form):
-    return render(request, 'serviceform/reports/all_participants.html', {'service_form': service_form})
+    return render(request, 'serviceform/reports/all_participants.html',
+                  {'service_form': service_form})
 
 
 @serviceform(check_form_permission=True, init_counters=True, fetch_participants=True)
 def all_activities(request, service_form):
-    return render(request, 'serviceform/reports/all_activities.html', {'service_form': service_form})
+    return render(request, 'serviceform/reports/all_activities.html',
+                  {'service_form': service_form})
 
 
 @serviceform(check_form_permission=True, init_counters=True, fetch_participants=True)
 def all_questions(request, service_form):
-    return render(request, 'serviceform/reports/all_questions.html', {'service_form': service_form})
+    return render(request, 'serviceform/reports/all_questions.html',
+                  {'service_form': service_form})
 
 
 @require_authenticated_responsible
@@ -125,15 +132,18 @@ def view_participant(request, responsible, participant_id):
 @require_authenticated_responsible
 def view_responsible(request, auth_responsible, responsible_pk):
     responsible = models.ResponsibilityPerson.objects.get(pk=responsible_pk)
-    if not (user_has_serviceform_permission(request.user, responsible.form, raise_permissiondenied=False)
-            or (auth_responsible and auth_responsible.show_full_report and responsible.form == auth_responsible.form)):
+    if not (user_has_serviceform_permission(request.user, responsible.form,
+                                            raise_permissiondenied=False)
+            or (
+                auth_responsible and auth_responsible.show_full_report and responsible.form == auth_responsible.form)):
         raise PermissionDenied
     service_form = responsible.form
     request.service_form = service_form
     service_form.init_counters()
     fetch_participants(service_form, all_revisions=True)
     return render(request, 'serviceform/reports/responsible.html',
-                  {'service_form': responsible.form, 'responsible': responsible, 'show_report_btn': True})
+                  {'service_form': responsible.form, 'responsible': responsible,
+                   'show_report_btn': True})
 
 
 @require_authenticated_responsible
@@ -166,7 +176,8 @@ def edit_responsible(request, responsible):
         if form.is_valid():
             form.save()
             messages.info(request, _('Saved contact details'))
-    return render(request, 'serviceform/reports/edit_responsible.html', {'form': form, 'service_form': service_form, 'responsible': responsible})
+    return render(request, 'serviceform/reports/edit_responsible.html',
+                  {'form': form, 'service_form': service_form, 'responsible': responsible})
 
 
 @require_authenticated_responsible
@@ -201,10 +212,12 @@ def invite(request, serviceform_slug, **kwargs):
             form.save(request=request)
             return HttpResponseRedirect(reverse('invite', args=(service_form.slug,)))
         else:
-            return render(request, 'serviceform/reports/invite.html', {'form': form, 'service_form': service_form})
+            return render(request, 'serviceform/reports/invite.html',
+                          {'form': form, 'service_form': service_form})
     else:
         form = forms.InviteForm(instance=service_form)
-        return render(request, 'serviceform/reports/invite.html', {'form': form, 'service_form': service_form})
+        return render(request, 'serviceform/reports/invite.html',
+                      {'form': form, 'service_form': service_form})
 
 
 @require_authenticated_responsible
@@ -218,5 +231,6 @@ def unsubscribe(request, secret_id):
     responsible = get_object_or_404(models.ResponsibilityPerson.objects, pk=decode(secret_id))
     responsible.send_email_notifications = False
     responsible.save(update_fields=['send_email_notifications'])
-    return render(request, 'serviceform/login/unsubscribe_responsible.html', {'responsible': responsible,
-                                                                              'service_form': responsible.form})
+    return render(request, 'serviceform/login/unsubscribe_responsible.html',
+                  {'responsible': responsible,
+                   'service_form': responsible.form})
