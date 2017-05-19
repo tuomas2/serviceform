@@ -8,7 +8,7 @@ from django.utils.safestring import mark_safe, SafeString
 from django.utils.translation import gettext_lazy as _
 
 from serviceform.models import Participant
-from serviceform.utils import safe_join
+from serviceform.utils import safe_join, ColorStr
 from .. import utils
 from ..urls import participant_flow_urls, menu_urls, Requires
 from ..utils import lighter_color as lighter_color_util, darker_color
@@ -18,17 +18,20 @@ if TYPE_CHECKING:
     from ..models import (AbstractServiceFormItem, ResponsibilityPerson, SubitemMixin, Activity,
                           ActivityChoice, ParticipationActivity, ParticipationActivityChoice)
 
+
 class FlowItem(NamedTuple):
     name: str
     title: str
     target: str
     attrs: Dict[str, str]
 
+
 class MenuItem(NamedTuple):
     name: str
     title: str
     url: str
     is_active: bool
+
 
 class MenuItems(NamedTuple):
     left: List[MenuItem]
@@ -189,30 +192,31 @@ def menu_items(context: Context, menu_name: str) -> MenuItems:
 
 
 @register.filter()
-def shorten(text):
+def shorten(text: str) -> SafeString:
     return format_html('<span class="tooltip-only" title="{}" >{}...</span>', text,
                        text[:5].strip())
 
 
+
 @register.filter()
-def lighter_color(cat_color):
+def lighter_color(cat_color: ColorStr) -> ColorStr:
     return lighter_color_util(cat_color)
 
 
 @register.filter(is_safe=True)
-def url_target_blank(text):
+def url_target_blank(text: str) -> str:
     return text.replace('<a ', '<a target="_blank" ')
 
 
 @register.filter()
-def count_color(count):
+def count_color(count: int) -> SafeString:
     color_for_count = utils.color_for_count(count)
     return format_html('<span class="color-count" style="background: {};">{}</span>',
                        color_for_count, count)
 
 
 @register.simple_tag()
-def color_style(item, lighter=0, attr='background'):
+def color_style(item: 'AbstractServiceFormItem', lighter=0, attr='background') -> SafeString:
     color = item.background_color_display
     if color:
         if lighter < 0:
@@ -223,11 +227,11 @@ def color_style(item, lighter=0, attr='background'):
                 color = lighter_color_util(color)
         return format_html('style="{}: {};"', attr, color)
     else:
-        return ''
+        return format_html('')
 
 
 @register.filter()
-def translate_bool(value):
+def translate_bool(value: bool) -> str:
     _('True')
     _('False')
     return _(str(value))

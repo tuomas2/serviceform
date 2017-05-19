@@ -817,6 +817,8 @@ class AbstractServiceFormItem(models.Model):
         else:
             return first_resp
 
+    def background_color_display(self) -> ColorStr:
+        raise NotImplementedError
 
 class Level1Category(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem):
     subitem_name = 'level2category'
