@@ -1,0 +1,6 @@
+pip>=8.1.2
+wheel>=0.29.0
+# packages that need compilation
+django-libsass==0.7
+uwsgi==2.0.15
+psycopg2==2.6.2
