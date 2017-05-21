@@ -7,6 +7,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 IS_WEB = bool(os.environ.get('IS_WEB', False))
 
 PRODUCTION = bool(os.environ.get('PRODUCTION', False))
+STAGING = bool(os.environ.get('STAGING', False))
 DEBUG = bool(os.environ.get('DEBUG', False))
 
 EMAIL_BACKEND = "sgbackend.SendGridBackend"
@@ -152,6 +153,15 @@ DATABASES = {
 
 LOGGING_CONFIG = None
 
+if PRODUCTION:
+    SESSION_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+    CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_HTTPONLY = True
+    X_FRAME_OPTIONS = 'DENY'
+    SECURE_BROWSER_XSS_FILTER = True
+
+
 if not PRODUCTION:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     LOGGING = {
@@ -186,13 +196,6 @@ if not PRODUCTION:
     dictConfig(LOGGING)
 
 else:
-    SESSION_COOKIE_SECURE = True
-    SECURE_SSL_REDIRECT = True
-    CSRF_COOKIE_SECURE = True
-    CSRF_COOKIE_HTTPONLY = True
-    X_FRAME_OPTIONS = 'DENY'
-    SECURE_BROWSER_XSS_FILTER = True
-
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': True,

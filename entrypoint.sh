@@ -17,7 +17,7 @@ wait_db
 case "$1" in
   'upgrade')
     # Update nginx configuration
-    rm /nginx-config/*
+    rm -f /nginx-config/*
     cd nginx-config
     for i in *; do
         envsubst < $i > /nginx-config/$i

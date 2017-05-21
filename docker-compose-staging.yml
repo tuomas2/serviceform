@@ -1,0 +1,105 @@
+version: "2"
+
+# Environment is similar to production
+
+volumes:
+  static:
+  media:
+  nginx-config:
+  celery-beat-store:
+
+
+services:
+  # Nginx web server is only for development environment. Disabled in production.
+
+  redis:
+    env_file: env/staging.list
+    image: redis:3.2.5-alpine
+    volumes:
+      - /data
+
+  db:
+     image: postgres:9.6.1
+     env_file: env/staging.list
+     volumes:
+      - /var/lib/postgresql
+
+  upgrade:
+    image: tuomasairaksinen/serviceform:latest
+    user: root
+    env_file: env/staging.list
+    command: upgrade
+    links:
+      - db
+      - redis
+    volumes:
+      - static:/code/static
+      - media:/code/media
+      - nginx-config:/nginx-config
+      - celery-beat-store:/celery-beat-store
+
+  celery:
+    image: tuomasairaksinen/serviceform:latest
+    command: celery
+    env_file: env/staging.list
+    links:
+      - redis
+      - db
+    depends_on:
+      - upgrade
+
+  celery-beat:
+    image: tuomasairaksinen/serviceform:latest
+    command: celery-beat
+    env_file: env/staging.list
+    links:
+      - db
+      - redis
+    volumes:
+      - celery-beat-store:/store
+    depends_on:
+      - upgrade
+
+  task-processor:
+    image: tuomasairaksinen/serviceform:latest
+    command: task-processor
+    env_file: env/staging.list
+    links:
+      - db
+      - redis
+    depends_on:
+      - upgrade
+
+  send-emails:
+    command: send-emails
+    image: tuomasairaksinen/serviceform:latest
+    env_file: env/staging.list
+    links:
+      - db
+    depends_on:
+      - upgrade
+
+  app:
+    image: tuomasairaksinen/serviceform:latest
+    env_file: env/staging.list
+    command: app
+    links:
+      - db
+      - redis
+    volumes:
+     - static:/code/static:ro
+     - media:/code/media
+    depends_on:
+      - upgrade
+
+  web:
+    image: nginx:1.11
+    env_file: env/staging.list
+    ports:
+      - 8080:80
+    links:
+      - app
+    volumes:
+      - static:/serviceform-static:ro
+      - media:/serviceform-media:ro
+      - nginx-config:/etc/nginx/conf.d:ro

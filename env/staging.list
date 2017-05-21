@@ -1,0 +1,22 @@
+STAGING=1
+# You can choose your credentials here. Initial database will be made according to these
+# settings
+POSTGRES_USER=serviceform
+POSTGRES_DB=serviceform
+POSTGRES_PASSWORD=django
+# Django's secret key. Use generator such as this: http://www.miniwebtool.com/django-secret-key-generator/
+SECRET_KEY=asdf
+# API key to Sendgrid email sending service.
+SENDGRID_API_KEY=
+# Sentry authentication. Leave this out if you don't have Sentry account.
+RAVEN_DSN=
+# Your service will be at https://SERVICEFORM_HOST
+SERVICEFORM_HOST=localhost
+ADMIN_NAME=Your Name
+ADMIN_EMAIL=your.name@yourhost.com
+SERVER_EMAIL=noreply@yourhost.com
+# This code is used to generate unpredictable id, choose 5 random letters here
+CODE_LETTERS=ABCDE
+# Available: en, fi
+LANGUAGE_CODE=fi
+TIME_ZONE=Europe/Helsinki

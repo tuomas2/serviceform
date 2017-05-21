@@ -256,16 +256,25 @@ Bash shell (to investigate/edit volumes etc.)::
 Development
 ===========
 
-Running tests with docker
-=========================
+Running tests with docker-compose
+=================================
 
 Run::
 
     docker-compose -f docker-compose-tests.yml run tests
 
+Running staging system with docker-compose
+==========================================
+
+Run::
+
+   docker-compose -f docker-compose-staging.yml up -d
+   docker-compose -f docker-compose-staging.yml run upgrade createsuperuser
+
+then go to http://localhost:8080 and log in.
 
 How to set things up and run your local development environment:
-----------------------------------------------------------------
+================================================================
 
 Install dependencies::
 
