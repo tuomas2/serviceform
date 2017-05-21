@@ -128,7 +128,7 @@ class Pages:
 
 SKIP_SLOW_TESTS = os.getenv('SKIP_SLOW_TESTS', False)
 
-#@pytest.mark.skip("very long test")
+@pytest.mark.skipif(SKIP_SLOW_TESTS, 'Very slow test')
 @pytest.mark.parametrize('email_verification', [False, True])
 @pytest.mark.parametrize('flow_by_categories', [False, True])
 @pytest.mark.parametrize('allow_skip_categories', [False, True])

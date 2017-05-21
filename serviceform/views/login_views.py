@@ -17,7 +17,7 @@
 # along with Serviceform.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpRequest, HttpResponse
 from django.shortcuts import render
 
 from serviceform import forms, models
@@ -26,7 +26,7 @@ from serviceform.views.decorators import serviceform
 
 
 @serviceform
-def password_login(request, service_form):
+def password_login(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     clean_session(request)
     if not service_form.password:
         return HttpResponseRedirect(reverse('contact_details'))
@@ -46,7 +46,7 @@ def password_login(request, service_form):
 
 
 @serviceform
-def send_participant_email(request, service_form):
+def send_participant_email(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     email_form = forms.ParticipantSendEmailForm(service_form, request)
 
     if request.method == 'POST':
@@ -61,7 +61,7 @@ def send_participant_email(request, service_form):
 
 
 @serviceform
-def send_responsible_email(request, service_form):
+def send_responsible_email(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     email_form = forms.ResponsibleSendEmailForm(service_form, request)
 
     if request.method == 'POST':

@@ -22,7 +22,7 @@ import logging
 import string
 import time
 from enum import Enum
-from typing import Set, Optional, Iterable, Iterator, Tuple, Union, List
+from typing import Set, Optional, Iterable, Iterator, Tuple, Union, List, Sequence
 
 from django.conf import settings
 from django.contrib import messages
@@ -582,7 +582,7 @@ class ServiceForm(SubitemMixin, models.Model):
     can_access.short_description = _('Can access')
 
     @cached_property
-    def sub_items(self) -> 'Iterable[AbstractServiceFormItem]':
+    def sub_items(self) -> 'Sequence[AbstractServiceFormItem]':
         lvl2s = Prefetch('level2category_set',
                          queryset=Level2Category.objects.prefetch_related('responsibles'))
         acts = Prefetch('level2category_set__activity_set',

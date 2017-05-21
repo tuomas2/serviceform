@@ -22,9 +22,8 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from serviceform import models, forms
@@ -33,19 +32,24 @@ from serviceform.utils import user_has_serviceform_permission, fetch_participant
 from serviceform.views.decorators import serviceform, require_authenticated_responsible
 
 
-def authenticate_responsible_old(request, uuid):
+def authenticate_responsible_old(request: HttpRequest, uuid: str) -> HttpResponse:
+    """
+    Just expire old and insecure authrorization link if such is being used and send a new one.
+    """
     if not uuid:
         raise Http404
     responsible = get_object_or_404(models.ResponsibilityPerson.objects.all(), secret_key=uuid)
     return expire_auth_link(request, responsible)
 
 
-def authenticate_responsible(request, responsible_id, password):
+def authenticate_responsible(request: HttpRequest, responsible_id: int,
+                             password: str) -> HttpResponse:
     responsible = get_object_or_404(models.ResponsibilityPerson.objects.all(), pk=responsible_id)
     result = responsible.check_auth_key(password)
     if result == responsible.PasswordStatus.PASSWORD_NOK:
         messages.error(request, _(
-            "Given URL might be expired. Please give your email address and we'll send you a new link"))
+            "Given URL might be expired. Please give your email address and we'll send "
+            "you a new link"))
         return redirect('send_responsible_email', responsible.form.slug)
     elif result == responsible.PasswordStatus.PASSWORD_EXPIRED:
         return expire_auth_link(request, responsible)
@@ -55,7 +59,10 @@ def authenticate_responsible(request, responsible_id, password):
 
 
 @login_required(login_url=settings.LOGIN_URL)
-def authenticate_responsible_mock(request, responsible_id):
+def authenticate_responsible_mock(request: HttpRequest, responsible_id: int) -> HttpResponse:
+    """
+    Mocked authentication to responsible view from admin panel
+    """
     responsible = get_object_or_404(models.ResponsibilityPerson.objects.all(), pk=responsible_id)
     user_has_serviceform_permission(request.user, responsible.form, raise_permissiondenied=True)
 
@@ -64,7 +71,7 @@ def authenticate_responsible_mock(request, responsible_id):
 
 
 @serviceform(check_form_permission=True)
-def settings_view(request, service_form):
+def settings_view(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     form = forms.ReportSettingsForm(service_form, request)
     if request.method == 'POST':
         form = forms.ReportSettingsForm(service_form, request, request.POST)
@@ -79,31 +86,32 @@ def settings_view(request, service_form):
 
 
 @serviceform(check_form_permission=True, init_counters=True)
-def all_responsibles(request, service_form):
+def all_responsibles(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     return render(request, 'serviceform/reports/all_responsibles.html',
                   {'service_form': service_form})
 
 
 @serviceform(check_form_permission=True, fetch_participants=True)
-def all_participants(request, service_form):
+def all_participants(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     return render(request, 'serviceform/reports/all_participants.html',
                   {'service_form': service_form})
 
 
 @serviceform(check_form_permission=True, init_counters=True, fetch_participants=True)
-def all_activities(request, service_form):
+def all_activities(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     return render(request, 'serviceform/reports/all_activities.html',
                   {'service_form': service_form})
 
 
 @serviceform(check_form_permission=True, init_counters=True, fetch_participants=True)
-def all_questions(request, service_form):
+def all_questions(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     return render(request, 'serviceform/reports/all_questions.html',
                   {'service_form': service_form})
 
 
 @require_authenticated_responsible
-def view_participant(request, responsible, participant_id):
+def view_participant(request: HttpRequest, responsible: models.ResponsibilityPerson,
+                     participant_id: int) -> HttpResponse:
     participant = get_object_or_404(models.Participant.objects, pk=participant_id)
     anonymous = False
 
@@ -130,12 +138,13 @@ def view_participant(request, responsible, participant_id):
 
 
 @require_authenticated_responsible
-def view_responsible(request, auth_responsible, responsible_pk):
+def view_responsible(request: HttpRequest, auth_responsible: models.ResponsibilityPerson,
+                     responsible_pk: int) -> HttpResponse:
     responsible = models.ResponsibilityPerson.objects.get(pk=responsible_pk)
     if not (user_has_serviceform_permission(request.user, responsible.form,
                                             raise_permissiondenied=False)
-            or (
-                auth_responsible and auth_responsible.show_full_report and responsible.form == auth_responsible.form)):
+            or (auth_responsible and auth_responsible.show_full_report
+                and responsible.form == auth_responsible.form)):
         raise PermissionDenied
     service_form = responsible.form
     request.service_form = service_form
@@ -147,7 +156,8 @@ def view_responsible(request, auth_responsible, responsible_pk):
 
 
 @require_authenticated_responsible
-def preview_form(request, responsible, slug):
+def preview_form(request: HttpRequest, responsible: models.ResponsibilityPerson,
+                 slug: str) -> HttpResponse:
     service_form = get_object_or_404(models.ServiceForm.objects, slug=slug)
     user_has_serviceform_permission(request.user, service_form)
     service_form.init_counters()
@@ -157,7 +167,8 @@ def preview_form(request, responsible, slug):
 
 
 @require_authenticated_responsible
-def preview_printable(request, responsible, slug):
+def preview_printable(request: HttpRequest, responsible: models.ResponsibilityPerson,
+                      slug: str) -> HttpResponse:
     service_form = get_object_or_404(models.ServiceForm.objects, slug=slug)
     user_has_serviceform_permission(request.user, service_form)
     service_form.init_counters()
@@ -166,7 +177,8 @@ def preview_printable(request, responsible, slug):
 
 
 @require_authenticated_responsible
-def edit_responsible(request, responsible):
+def edit_responsible(request: HttpRequest,
+                     responsible: models.ResponsibilityPerson) -> HttpResponse:
     if responsible is None:
         raise PermissionDenied
     service_form = responsible.form
@@ -181,7 +193,8 @@ def edit_responsible(request, responsible):
 
 
 @require_authenticated_responsible
-def responsible_report(request, responsible):
+def responsible_report(request: HttpRequest,
+                       responsible: models.ResponsibilityPerson) -> HttpResponse:
     if responsible is None:
         raise PermissionDenied
     service_form = responsible.form
@@ -191,7 +204,7 @@ def responsible_report(request, responsible):
                   {'service_form': responsible.form, 'responsible': responsible})
 
 
-def logout_view(request, **kwargs):
+def logout_view(request: HttpRequest, **kwargs) -> HttpResponse:
     responsible_pk = request.session.pop('authenticated_responsibility', None)
     logout(request)
     messages.info(request, _('You have been logged out'))
@@ -202,7 +215,7 @@ def logout_view(request, **kwargs):
 
 
 @login_required(login_url=settings.LOGIN_URL)
-def invite(request, serviceform_slug, **kwargs):
+def invite(request: HttpRequest, serviceform_slug: str, **kwargs) -> HttpResponse:
     service_form = get_object_or_404(models.ServiceForm.objects, slug=serviceform_slug)
     user_has_serviceform_permission(request.user, service_form)
 
@@ -221,13 +234,13 @@ def invite(request, serviceform_slug, **kwargs):
 
 
 @require_authenticated_responsible
-def to_full_report(request, responsible):
+def to_full_report(request: HttpRequest, responsible: models.ResponsibilityPerson) -> HttpResponse:
     if not responsible.show_full_report:
         raise PermissionDenied
     return redirect('report', responsible.form.slug)
 
 
-def unsubscribe(request, secret_id):
+def unsubscribe(request: HttpRequest, secret_id: str) -> HttpResponse:
     responsible = get_object_or_404(models.ResponsibilityPerson.objects, pk=decode(secret_id))
     responsible.send_email_notifications = False
     responsible.save(update_fields=['send_email_notifications'])

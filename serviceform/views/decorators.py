@@ -22,22 +22,19 @@ from django.conf import settings
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import resolve
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 
 from serviceform import models, utils
 
 
 def serviceform(function=None, check_form_permission=False, init_counters=False,
-                all_responsibles=True,
-                fetch_participants=False):
+                all_responsibles=True, fetch_participants=False):
     def actual_decorator(func):
         @wraps(func)
-        def wrapper(request, slug, *args, **kwargs):
-            try:
-                service_form = models.ServiceForm.objects.get(slug=slug)
-            except models.ServiceForm.DoesNotExist:
-                raise Http404
+        def wrapper(request: HttpRequest, slug: str,
+                    *args, **kwargs) -> HttpResponse:
+            service_form = get_object_or_404(models.ServiceForm.objects, slug=slug)
             request.service_form = service_form
             if init_counters:
                 service_form.init_counters(all_responsibles)
@@ -56,7 +53,7 @@ def serviceform(function=None, check_form_permission=False, init_counters=False,
 
 def require_authenticated_responsible(func):
     @wraps(func)
-    def wrapper(request, *args, **kwargs):
+    def wrapper(request: HttpRequest, *args, **kwargs) -> HttpResponse:
         responsible = utils.get_responsible(request)
         if responsible:
             request.service_form = responsible.form
@@ -71,7 +68,7 @@ def require_authenticated_responsible(func):
 def require_authenticated_participant(function=None, check_flow=True):
     def actual_decorator(func):
         @wraps(func)
-        def wrapper(request, *args, title='', **kwargs):
+        def wrapper(request: HttpRequest, *args, title: str='', **kwargs) -> HttpResponse:
             current_view = request.resolver_match.view_name
 
             participant_pk = request.session.get('authenticated_participant')
@@ -106,7 +103,8 @@ def require_authenticated_participant(function=None, check_flow=True):
 
 def require_published_form(func):
     @wraps(func)
-    def wrapper(request, participant, *args, **kwargs):
+    def wrapper(request: HttpRequest, participant: models.Participant,
+                *args, **kwargs) -> HttpResponse:
         if not participant.form.is_published:
             raise PermissionDenied
         return func(request, participant, *args, **kwargs)
@@ -116,7 +114,8 @@ def require_published_form(func):
 
 def require_form_permissions(func):
     @wraps(func)
-    def wrapper(request, service_form, *args, **kwargs):
+    def wrapper(request: HttpRequest, service_form: models.ServiceForm,
+                *args, **kwargs) -> HttpResponse:
         try:
             utils.user_has_serviceform_permission(request.user, service_form)
         except PermissionDenied:

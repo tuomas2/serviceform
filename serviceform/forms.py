@@ -305,7 +305,7 @@ class ParticipationForm:
     """
 
     def __init__(self, request: HttpRequest, participant: models.Participant,
-                 category: models.Level1Category, post_data: 'QueryDict'=None,
+                 category: models.Level1Category=None, post_data: 'QueryDict'=None,
                  service_form: models.ServiceForm=None) -> None:
         self.instance = participant
         self.request = request
