@@ -268,8 +268,9 @@ Running staging system with docker-compose
 
 Run::
 
-   docker-compose -f docker-compose-staging.yml up -d
+   docker-compose -f docker-compose-staging.yml run upgrade # initialize everything
    docker-compose -f docker-compose-staging.yml run upgrade createsuperuser
+   docker-compose -f docker-compose-staging.yml up -d
 
 then go to http://localhost:8080 and log in.
 
@@ -343,6 +344,7 @@ Translations
 
 If changes to translatable strings are made, run::
 
+    cd serviceform
     django-admin.py makemessages
 
 Then update translation (*.po) files for example with poedit, and then run::
