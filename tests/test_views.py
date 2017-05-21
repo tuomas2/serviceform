@@ -25,16 +25,18 @@ def test_hit_admin_pages(settings, db, admin_client: Client):
     assert b'Tutustu palvelulomakkeeseen' in res.content
 
 
-def test_hit_admin_raports(db, settings, admin_client: Client):
+def test_hit_admin_reports(db, settings, admin_client: Client):
     p = models.Participant.objects.filter(form_revision__form__slug=SLUG).first()
     r = models.ResponsibilityPerson.objects.filter(form__slug=SLUG).first()
     pages = [
                 f"/report/{SLUG}/",
                 f"/report/{SLUG}/all_participants/",
                 f"/report/{SLUG}/all_activities/",
+                f"/report/{SLUG}/settings/",
                 f"/report/{SLUG}/all_questions/",
                 f"/report/participant/{p.pk}/",
                 f"/report/responsible/{r.pk}/",
+                f"/invite/{SLUG}/",
     ]
     for p in pages:
         res = admin_client.get(p)
@@ -128,7 +130,7 @@ class Pages:
 
 SKIP_SLOW_TESTS = os.getenv('SKIP_SLOW_TESTS', False)
 
-@pytest.mark.skipif(SKIP_SLOW_TESTS, 'Very slow test')
+@pytest.mark.skipif(SKIP_SLOW_TESTS, reason='Very slow test')
 @pytest.mark.parametrize('email_verification', [False, True])
 @pytest.mark.parametrize('flow_by_categories', [False, True])
 @pytest.mark.parametrize('allow_skip_categories', [False, True])
