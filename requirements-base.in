@@ -1,0 +1,7 @@
+pip
+wheel
+# packages that need compilation
+django-libsass
+uwsgi
+psycopg2
+pip-tools
