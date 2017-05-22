@@ -14,6 +14,60 @@ import serviceform.serviceform.models
 import serviceform.serviceform.utils
 
 
+
+def add_basic_rights_groups_and_permissions(apps, schema_editor):
+    full = ['activity',
+            'activitychoice',
+            'formrevision',
+            'level1category',
+            'level2category',
+            'question',
+            'responsibilityperson',
+            'serviceform',
+            'emailtemplate',
+            ]
+    delete = [
+        'participant',
+        'participationactivity',
+        'participationactivitychoice',
+        'questionanswer',
+    ]
+
+    custom_permissions = []
+
+    Permission = apps.get_model('auth', 'Permission')
+    Group = apps.get_model('auth', 'Group')
+    ContentType = apps.get_model('contenttypes', 'ContentType')
+    grp, created = Group.objects.get_or_create(name='Serviceform basic rights')
+
+    def add_perm(_model, _action):
+        print('Trying to add permission %s to %s' %(_action, _model))
+        ct, created = ContentType.objects.get_or_create(app_label='serviceform', model=_model)
+        codename = '%s_%s' % (_action, _model)
+        try:
+            p = Permission.objects.get(codename=codename, content_type=ct)
+        except Permission.DoesNotExist:
+            p = Permission.objects.create(codename=codename, name=codename.capitalize().replace('_', ' '), content_type=ct)
+
+        grp.permissions.add(p)
+
+    for model in full:
+        for action in ['add', 'change', 'delete']:
+            add_perm(model, action)
+
+    for model in delete:
+        add_perm(model, 'delete')
+
+    ct = ContentType.objects.get(app_label='serviceform', model='serviceform')
+    p = Permission.objects.create(codename='can_access_serviceform',
+                                  content_type=ct, name='Can access Service Form')
+
+
+def null(apps_schema_editor):
+    pass
+
+
+
 class Migration(migrations.Migration):
 
     initial = True
@@ -376,4 +430,6 @@ class Migration(migrations.Migration):
             name='formrevision',
             unique_together=set([('form', 'name')]),
         ),
+        migrations.RunPython(add_basic_rights_groups_and_permissions, null),
+
     ]
