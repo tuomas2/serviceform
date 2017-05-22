@@ -59,7 +59,7 @@ case "$1" in
     cd $2
     ./manage.py collectstatic --noinput
     ./manage.py compress
-    py.test -v --cov serviceform/ tests/
+    py.test -v --cov serviceform/ --cov tasks/ tests/
   ;;
   'bash')
     bash
