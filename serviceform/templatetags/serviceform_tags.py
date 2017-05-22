@@ -1,4 +1,4 @@
-from typing import NamedTuple, Dict, List, TYPE_CHECKING, Union, Iterable
+from typing import NamedTuple, Dict, List, TYPE_CHECKING, Union, Iterable, Sequence
 
 from django import template
 from django.core.urlresolvers import reverse
@@ -84,7 +84,7 @@ def all_revisions(context: Context) -> bool:
 
 
 @register.assignment_tag(takes_context=True)
-def participants(context: Context) -> 'Iterable[Participant]':
+def participants(context: Context) -> 'Sequence[Participant]':
     revision_name = utils.get_report_settings(context['request'], 'revision')
     service_form = context.get('service_form')
 

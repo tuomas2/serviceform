@@ -139,12 +139,19 @@ class Pages:
     RESPONSIBLE_RESEND_LINK = f'/{SLUG}/send_responsible_link/'
     RESPONSIBLE_TO_FULL_RAPORT = '/for_responsible/to_full_report/'
     FULL_REPORT_RESPONSIBLES = f'/report/{SLUG}/'
+    FULL_REPORT_PARTICIPANTS = f"/report/{SLUG}/all_participants/"
+    FULL_REPORT_ACTIVITIES = f"/report/{SLUG}/all_activities/"
+    FULL_REPORT_QUESTIONS = f"/report/{SLUG}/all_questions/"
+    FULL_REPORT_SETTINGS = f"/report/{SLUG}/settings/"
+
+
     REPORT_PAGES = [
-                f"/report/{SLUG}/",
-                f"/report/{SLUG}/all_participants/",
-                f"/report/{SLUG}/all_activities/",
-                f"/report/{SLUG}/settings/",
-                f"/report/{SLUG}/all_questions/",]
+                FULL_REPORT_RESPONSIBLES,
+                FULL_REPORT_ACTIVITIES,
+                FULL_REPORT_PARTICIPANTS,
+                FULL_REPORT_QUESTIONS,
+                FULL_REPORT_SETTINGS,
+                ]
 
 @pytest.mark.skipif(os.getenv('SKIP_SLOW_TESTS', False), reason='Very slow test')
 @pytest.mark.parametrize('email_verification', [False, True])
@@ -577,6 +584,21 @@ def test_responsible_personal_report(client: Client, admin_client:Client, mock_l
                 assert res.url.startswith(Pages.ADMIN_LOGIN)
         res = cli.get(Pages.RESPONSIBLE_REPORT)
         assert res.status_code == Http.OK
+
+
+def test_report_settings(admin_client: Client):
+    from serviceform.templatetags.serviceform_tags import all_revisions
+    res = admin_client.get(Pages.FULL_REPORT_PARTICIPANTS)
+    assert res.status_code == Http.OK
+    assert not all_revisions(res.context) # default settings
+
+    res = admin_client.get(Pages.FULL_REPORT_SETTINGS)
+    assert res.status_code == Http.OK
+    res = admin_client.post(Pages.FULL_REPORT_SETTINGS, {'revision': '__all'})
+    assert res.status_code == Http.OK
+
+    assert all_revisions(res.context)
+
 
 
 # TODO:
