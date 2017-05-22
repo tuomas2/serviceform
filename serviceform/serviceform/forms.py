@@ -94,6 +94,9 @@ class PasswordForm(Form):
         super().__init__(*args, **kwargs)
         helper = self.helper = MyFormHelper(self)
 
+        if not service_form.password:
+            del self.fields['password']
+
         helper.form_id = 'contactform'
         helper.layout.append(Submit('submit_password', _('Get in')))
         self.instance = service_form

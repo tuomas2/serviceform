@@ -28,9 +28,6 @@ from ..views.decorators import serviceform
 @serviceform
 def password_login(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     clean_session(request)
-    if not service_form.password:
-        return HttpResponseRedirect(reverse('contact_details'))
-
     password_form = forms.PasswordForm(service_form)
 
     if request.method == 'POST':

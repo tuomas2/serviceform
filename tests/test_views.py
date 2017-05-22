@@ -65,6 +65,15 @@ def test_flow_login_wrong_password(db, client: Client):
     assert b'Virheellinen salasana' in res.content
 
 
+def test_flow_login_no_password(serviceform, client: Client):
+    serviceform.password = ''
+    serviceform.save()
+
+    res = client.post(f'/{SLUG}/', {})
+    assert res.status_code == Http.REDIR
+    assert res.url == Pages.CONTACT
+
+
 def test_flow_login_send_participant_email(db, client: Client):
     page = Pages.LOGIN_SEND_PARTICIPANT_LINK
     res = client.get(page)
