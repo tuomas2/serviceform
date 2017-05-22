@@ -102,6 +102,7 @@ def test_flow_login_send_responsible_email(db, client: Client):
 class Pages:
     ADMIN_LOGIN = '/admin/login/'
     LOGIN = f'/{SLUG}/'
+    MAIN_PAGE = '/'
     LOGIN_SEND_PARTICIPANT_LINK = f'/{SLUG}/send_participant_link/'
     LOGIN_SEND_RESPONSIBLE_LINK = f'/{SLUG}/send_responsible_link/'
 
@@ -520,7 +521,7 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
 
 @pytest.mark.parametrize('full_raport', [False, True])
 @pytest.mark.parametrize('mock_login', [False, True])
-def test_responsible_personal_report(client: Client, admin_client:Client, mock_login, full_raport):
+def test_responsible_personal_report(client1: Client, admin_client:Client, mock_login, full_raport):
     forenames = 'Anne-Maija Sven'
     s = models.ServiceForm.objects.get(slug=SLUG)
     resp = s.responsibilityperson_set.get(pk=89)
@@ -530,27 +531,27 @@ def test_responsible_personal_report(client: Client, admin_client:Client, mock_l
     assert resp.forenames == forenames
 
     if mock_login:
-        cli = admin_client
-        res = cli.get(Pages.RESPONSIBLE_MOCK_AUTH % resp.pk)
+        client = admin_client
+        res = client.get(Pages.RESPONSIBLE_MOCK_AUTH % resp.pk)
     else:
-        cli = client
-        res = cli.get(Pages.RESPONSIBLE_RESEND_LINK)
+        client = client1
+        res = client.get(Pages.RESPONSIBLE_RESEND_LINK)
         assert res.status_code == Http.OK
         assert not resp.auth_keys_hash_storage
         timestamp = timezone.now()
-        res = cli.post(Pages.RESPONSIBLE_RESEND_LINK, {'email': resp.email})
+        res = client.post(Pages.RESPONSIBLE_RESEND_LINK, {'email': resp.email})
         assert res.status_code == Http.REDIR
         assert res.url == Pages.RESPONSIBLE_RESEND_LINK
         email = models.EmailMessage.objects.get(created_at__gt=timestamp)
         assert email.to_address == resp.email
         auth_url = urlparse(email.context_dict['url']).path
-        res = cli.get(auth_url)
+        res = client.get(auth_url)
 
     assert res.status_code == Http.REDIR
     assert res.url == Pages.RESPONSIBLE_REPORT
-    res = cli.get(Pages.RESPONSIBLE_REPORT)
+    res = client.get(Pages.RESPONSIBLE_REPORT)
     assert res.status_code == Http.OK
-    res = cli.get(Pages.RESPONSIBLE_EDIT)
+    res = client.get(Pages.RESPONSIBLE_EDIT)
     assert res.status_code == Http.OK
     assert res.context['form'].initial['forenames'] == forenames
     post_data = {'forenames': resp.forenames + ' DAA',
@@ -558,32 +559,41 @@ def test_responsible_personal_report(client: Client, admin_client:Client, mock_l
                  'email': resp.email,
                  'phone_number': resp.phone_number,
                  'send_email_notifications': 'on'}
-    res = cli.post(Pages.RESPONSIBLE_EDIT, post_data)
+    res = client.post(Pages.RESPONSIBLE_EDIT, post_data)
     assert res.status_code == Http.OK
     resp.refresh_from_db()
     assert resp.forenames == forenames + ' DAA'
     # test full raport link
     if full_raport:
-        res = cli.get(Pages.RESPONSIBLE_TO_FULL_RAPORT)
+        res = client.get(Pages.RESPONSIBLE_TO_FULL_RAPORT)
         assert res.status_code == Http.REDIR
         assert res.url == Pages.FULL_REPORT_RESPONSIBLES
         for p in Pages.REPORT_PAGES:
-            res = cli.get(p)
+            res = client.get(p)
             assert res.status_code == Http.OK
-        res = cli.get(Pages.RESPONSIBLE_REPORT)
+        res = client.get(Pages.RESPONSIBLE_REPORT)
         assert res.status_code == Http.OK
     else:
-        res = cli.get(Pages.RESPONSIBLE_TO_FULL_RAPORT)
+        res = client.get(Pages.RESPONSIBLE_TO_FULL_RAPORT)
         assert res.status_code == Http.FORBIDDEN
         for p in Pages.REPORT_PAGES:
-            res = cli.get(p)
+            res = client.get(p)
             if mock_login:
                 assert res.status_code == Http.OK
             else:
                 assert res.status_code == Http.REDIR
                 assert res.url.startswith(Pages.ADMIN_LOGIN)
-        res = cli.get(Pages.RESPONSIBLE_REPORT)
+        res = client.get(Pages.RESPONSIBLE_REPORT)
         assert res.status_code == Http.OK
+
+    res = client.get(Pages.LOGOUT)
+    assert res.status_code == Http.REDIR
+    assert res.url == Pages.LOGIN
+
+    res = client.get(Pages.FULL_REPORT_PARTICIPANTS)
+    assert res.status_code == Http.REDIR
+    assert res.url.startswith(Pages.ADMIN_LOGIN)
+
 
 
 def test_report_settings_and_logout(admin_client: Client):
@@ -600,7 +610,7 @@ def test_report_settings_and_logout(admin_client: Client):
     assert all_revisions(res.context)
     res = admin_client.get(Pages.LOGOUT)
     assert res.status_code == Http.REDIR
-    assert res.url == Pages.LOGIN
+    assert res.url == Pages.MAIN_PAGE
 
     res = admin_client.get(Pages.FULL_REPORT_PARTICIPANTS)
     assert res.status_code == Http.REDIR

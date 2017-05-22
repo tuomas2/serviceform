@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.contenttypes.models import ContentType
+from django.core.cache import caches
 from django.core.management import call_command
 from django.db import connection
 import os
@@ -10,7 +11,8 @@ DELETE from django_content_type CASCADE;"""
 
 @pytest.fixture(scope='session')
 def django_db_setup(django_db_setup, django_db_blocker):
-    #ContentType.objects.all().delete()
+    cache = caches['persistent']
+    cache.clear()
     with django_db_blocker.unblock():
         with connection.cursor() as c:
             c.execute(sql)
