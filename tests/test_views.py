@@ -37,6 +37,8 @@ def test_hit_admin_reports(db, settings, admin_client: Client):
                 f"/report/participant/{p.pk}/",
                 f"/report/responsible/{r.pk}/",
                 f"/invite/{SLUG}/",
+                f"/preview/{SLUG}/",
+                f"/preview_printable/{SLUG}/",
     ]
     for p in pages:
         res = admin_client.get(p)
@@ -98,6 +100,7 @@ def test_flow_login_send_responsible_email(db, client: Client):
 
 
 class Pages:
+    ADMIN_LOGIN = '/admin/login/'
     LOGIN = f'/{SLUG}/'
     LOGIN_SEND_PARTICIPANT_LINK = f'/{SLUG}/send_participant_link/'
     LOGIN_SEND_RESPONSIBLE_LINK = f'/{SLUG}/send_responsible_link/'
@@ -128,9 +131,22 @@ class Pages:
 
     DELETE_PARTICIPATION = '/participant/delete/'
 
-SKIP_SLOW_TESTS = os.getenv('SKIP_SLOW_TESTS', False)
+    RESPONSIBLE_MOCK_AUTH = '/anonymous/authenticate_responsible_mock/%d/'
+    #RESPONSIBLE_MOCK_AUTH = '/authenticate_responsible_mock/%d/'
+    RESPONSIBLE_REPORT = '/for_responsible/'
+    RESPONSIBLE_EDIT = '/for_responsible/edit_details/'
 
-@pytest.mark.skipif(SKIP_SLOW_TESTS, reason='Very slow test')
+    RESPONSIBLE_RESEND_LINK = f'/{SLUG}/send_responsible_link/'
+    RESPONSIBLE_TO_FULL_RAPORT = '/for_responsible/to_full_report/'
+    FULL_REPORT_RESPONSIBLES = f'/report/{SLUG}/'
+    REPORT_PAGES = [
+                f"/report/{SLUG}/",
+                f"/report/{SLUG}/all_participants/",
+                f"/report/{SLUG}/all_activities/",
+                f"/report/{SLUG}/settings/",
+                f"/report/{SLUG}/all_questions/",]
+
+@pytest.mark.skipif(os.getenv('SKIP_SLOW_TESTS', False), reason='Very slow test')
 @pytest.mark.parametrize('email_verification', [False, True])
 @pytest.mark.parametrize('flow_by_categories', [False, True])
 @pytest.mark.parametrize('allow_skip_categories', [False, True])
@@ -163,9 +179,6 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
         return
 
     def assert_forbidden():
-        if SKIP_SLOW_TESTS:
-            return
-
         for p in Pages.PARTICIPATION_PAGES:
             res = client.get(p)
             assert res.status_code == Http.FORBIDDEN
@@ -174,9 +187,6 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
         """ 
         Check if other participation pages can be already accessed 
         """
-        if SKIP_SLOW_TESTS:
-            return
-
         for page_num in range(7):
             res = client.get(Pages.PARTICIPATIONX % page_num)
             if allow_skip_categories or page_num <= position or updating:
@@ -225,7 +235,7 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
                 for p in REPORT_PAGES:
                     res = client1.get(p)
                     assert res.status_code == Http.REDIR
-                    assert res.url.startswith('/admin/login')
+                    assert res.url.startswith(Pages.ADMIN_LOGIN)
         assert _no_full_report_hit and _full_report_hit and _no_email_hit  #  check that test data is comprehensive enough
 
     s = models.ServiceForm.objects.get(slug=SLUG)
@@ -499,6 +509,75 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
     assert res.url == Pages.LOGIN
     with pytest.raises(p.DoesNotExist):
         models.Participant.objects.get(pk=p.pk)
+
+
+@pytest.mark.parametrize('full_raport', [False, True])
+@pytest.mark.parametrize('mock_login', [False, True])
+def test_responsible_personal_report(client: Client, admin_client:Client, mock_login, full_raport):
+    forenames = 'Anne-Maija Sven'
+    s = models.ServiceForm.objects.get(slug=SLUG)
+    resp = s.responsibilityperson_set.get(pk=89)
+    resp.show_full_report = full_raport
+    resp.save()
+
+    assert resp.forenames == forenames
+
+    if mock_login:
+        cli = admin_client
+        res = cli.get(Pages.RESPONSIBLE_MOCK_AUTH % resp.pk)
+    else:
+        cli = client
+        res = cli.get(Pages.RESPONSIBLE_RESEND_LINK)
+        assert res.status_code == Http.OK
+        assert not resp.auth_keys_hash_storage
+        timestamp = timezone.now()
+        res = cli.post(Pages.RESPONSIBLE_RESEND_LINK, {'email': resp.email})
+        assert res.status_code == Http.REDIR
+        assert res.url == Pages.RESPONSIBLE_RESEND_LINK
+        email = models.EmailMessage.objects.get(created_at__gt=timestamp)
+        assert email.to_address == resp.email
+        auth_url = urlparse(email.context_dict['url']).path
+        res = cli.get(auth_url)
+
+    assert res.status_code == Http.REDIR
+    assert res.url == Pages.RESPONSIBLE_REPORT
+    res = cli.get(Pages.RESPONSIBLE_REPORT)
+    assert res.status_code == Http.OK
+    res = cli.get(Pages.RESPONSIBLE_EDIT)
+    assert res.status_code == Http.OK
+    assert res.context['form'].initial['forenames'] == forenames
+    post_data = {'forenames': resp.forenames + ' DAA',
+                 'surname': resp.surname,
+                 'email': resp.email,
+                 'phone_number': resp.phone_number,
+                 'send_email_notifications': 'on'}
+    res = cli.post(Pages.RESPONSIBLE_EDIT, post_data)
+    assert res.status_code == Http.OK
+    resp.refresh_from_db()
+    assert resp.forenames == forenames + ' DAA'
+    # test full raport link
+    if full_raport:
+        res = cli.get(Pages.RESPONSIBLE_TO_FULL_RAPORT)
+        assert res.status_code == Http.REDIR
+        assert res.url == Pages.FULL_REPORT_RESPONSIBLES
+        for p in Pages.REPORT_PAGES:
+            res = cli.get(p)
+            assert res.status_code == Http.OK
+        res = cli.get(Pages.RESPONSIBLE_REPORT)
+        assert res.status_code == Http.OK
+    else:
+        res = cli.get(Pages.RESPONSIBLE_TO_FULL_RAPORT)
+        assert res.status_code == Http.FORBIDDEN
+        for p in Pages.REPORT_PAGES:
+            res = cli.get(p)
+            if mock_login:
+                assert res.status_code == Http.OK
+            else:
+                assert res.status_code == Http.REDIR
+                assert res.url.startswith(Pages.ADMIN_LOGIN)
+        res = cli.get(Pages.RESPONSIBLE_REPORT)
+        assert res.status_code == Http.OK
+
 
 # TODO:
 # Test emailing

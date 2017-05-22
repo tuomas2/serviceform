@@ -197,7 +197,6 @@ def shorten(text: str) -> SafeString:
                        text[:5].strip())
 
 
-
 @register.filter()
 def lighter_color(cat_color: ColorStr) -> ColorStr:
     return lighter_color_util(cat_color)
