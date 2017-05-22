@@ -1175,7 +1175,7 @@ class Participant(ContactDetailsMixin, PasswordMixin, models.Model):
 
     @property
     def flow(self) -> List[str]:
-        from serviceform.urls import participant_flow_urls
+        from .urls import participant_flow_urls
 
         rv = [i.name for i in participant_flow_urls]
         if not self.form.questions:

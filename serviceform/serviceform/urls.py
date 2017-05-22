@@ -33,7 +33,6 @@ Including another URLconf
 from itertools import chain
 
 from django.conf.urls import url
-from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponseRedirect
 
