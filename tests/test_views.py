@@ -146,6 +146,8 @@ class Pages:
     FULL_REPORT_SETTINGS = f"/report/{SLUG}/settings/"
     LOGOUT = f'/logout/'
 
+    INVITE = f"/invite/{SLUG}/"
+
     REPORT_PAGES = [
                 FULL_REPORT_RESPONSIBLES,
                 FULL_REPORT_ACTIVITIES,
@@ -615,6 +617,30 @@ def test_report_settings_and_logout(admin_client: Client):
     res = admin_client.get(Pages.FULL_REPORT_PARTICIPANTS)
     assert res.status_code == Http.REDIR
     assert res.url.startswith(Pages.ADMIN_LOGIN)
+
+
+@pytest.mark.parametrize('send_existing', [False, True])
+@pytest.mark.parametrize('emails', ['test@test.fi, test2@test.fi', 'test@test.fi\ntest2@test.fi',
+                                    'test@test.fi test2@test.fi', 'test@test.fi test2@test.fi'])
+def test_invite_success(serviceform, admin_client: Client, emails, send_existing):
+    res = admin_client.get(Pages.INVITE)
+    assert res.status_code == Http.OK
+    part_email = 'timo.ahlroth@email.com'
+    participant = models.Participant.objects.get(email=part_email)
+    revision = models.FormRevision.objects.create(name='old', form=serviceform)
+
+    participant.form_revision = revision
+    participant.save()
+
+    post_data = {'email_addresses': emails + f' {part_email}'}
+    if send_existing:
+        post_data.update({'old_participants': 'on'})
+    timestamp = timezone.now()
+    res = admin_client.post(Pages.INVITE, post_data)
+    assert res.status_code == Http.REDIR
+    assert res.url == Pages.INVITE
+    assert len(models.EmailMessage.objects.filter(created_at__gt=timestamp)) == (3 if send_existing else 2)
+
 
 
 # TODO:

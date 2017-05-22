@@ -4,6 +4,9 @@ from django.core.cache import caches
 from django.core.management import call_command
 from django.db import connection
 import os
+from serviceform import models
+
+SLUG = 'jklvapis'
 
 sql = """DELETE from auth_group_permissions CASCADE;
 DELETE from auth_permission CASCADE;
@@ -18,6 +21,9 @@ def django_db_setup(django_db_setup, django_db_blocker):
             c.execute(sql)
         call_command('loaddata', os.path.join(os.path.dirname(__file__), 'test_data.json'))
 
+@pytest.fixture
+def serviceform(db):
+    yield models.ServiceForm.objects.get(slug=SLUG)
 
 @pytest.fixture
 def client1(client):
