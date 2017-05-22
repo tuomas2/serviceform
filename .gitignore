@@ -9,3 +9,4 @@ __pycache__
 /.cache/
 /.coverage
 *.secret
+/serviceform.egg-info/
