@@ -11,3 +11,6 @@ backup
 **/*.sql
 .cache
 .coverage
+serviceform.egg-info
+build
+dist
