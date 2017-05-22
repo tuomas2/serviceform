@@ -10,3 +10,5 @@ __pycache__
 /.coverage
 *.secret
 /serviceform.egg-info/
+/build/
+/dist/
