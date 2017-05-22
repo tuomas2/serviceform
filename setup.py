@@ -6,10 +6,6 @@ from setuptools import setup, find_packages
 with open('README.rst') as readme_file:
     readme = readme_file.read()
 
-with open('requirements.in') as requirements_file:
-    requirements = requirements_file.read()
-
-
 setup(
     name="serviceform",
     version="0.9.3",
