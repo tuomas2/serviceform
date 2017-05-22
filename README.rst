@@ -171,6 +171,7 @@ For the following commands set first environment variable
 export SERVICEFORM_ENV_FILE=/path_to/serviceform-env.list
 
 .. _external:
+
 External services
 =================
 
@@ -205,6 +206,7 @@ Or alternatively, pull it from the repository::
     docker pull tuomasairaksinen/serviceform:latest
 
 .. _upgrade:
+
 Initialization / upgrade.
 -------------------------
 
@@ -223,6 +225,7 @@ This migrates database and (re-)creates static files in shared volume (for nginx
 Command can be safely run multiple times.
 
 .. _services:
+
 Serviceform services
 --------------------
 
@@ -270,6 +273,7 @@ App::
             tuomasairaksinen/serviceform:latest app
 
 .. _http_server:
+
 HTTP server
 -----------
 
@@ -287,6 +291,7 @@ With this configuration serviceform will listen HTTP connections to port 8038.
 Now you need to set up your web server (https) to redirect connections to this port.
 
 .. _restarting:
+
 Shutting down and starting (system reboot procedures)
 =====================================================
 
@@ -303,6 +308,7 @@ Starting again (set this into your system startup). Notice order.::
                  serviceform-nginx
 
 .. _upgrading:
+
 Upgrading system
 ================
 
@@ -323,6 +329,7 @@ Then run all docker run all `services`_ and `http_server`_.
 Zero-downtime upgrade method is planned in the future.
 
 .. _troubleshooting:
+
 Troubleshooting / shell access
 ==============================
 
@@ -484,7 +491,7 @@ If changes to translatable strings are made, run::
     cd serviceform
     django-admin.py makemessages
 
-Then update translation (*.po) files for example with poedit, and then run::
+Then update translation (.po) files for example with poedit, and then run::
 
     django-admin.py compilemessages
 
