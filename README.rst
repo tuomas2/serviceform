@@ -15,9 +15,117 @@ RELEASE IS STILL WORK IN PROGRESS. PLEASE WAIT...
 Web application for collecting data from volunteers of willingness to participate.
 
 
-================
-Production guide
-================
+=============================
+Install as Django application
+=============================
+
+Install serviceform and its requirements to your virtualenv::
+
+   pip install serviceform
+
+settings.py modifications
+=========================
+
+In your Django application's settings.py perform the following modifications.
+Add following applications to INSTALLED_APPS::
+
+    INSTALLED_APPS = [
+        'grappelli' # optional but recommended, needs django-grappelli
+
+        ...
+
+        'nested_admin',
+        'compressor',
+        'crispy_forms',
+        'guardian',
+        'serviceform.serviceform',
+        'serviceform.tasks',
+        'select2'
+    ]
+
+Settings for Django-compress::
+
+    COMPRESS_PRECOMPILERS = (
+        ('text/x-scss', 'django_libsass.SassCompiler'),
+    )
+
+    STATICFILES_FINDERS = ("django.contrib.staticfiles.finders.FileSystemFinder",
+                           "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+                           "compressor.finders.CompressorFinder",
+    )
+
+Settings for crispy-forms::
+
+   CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+Settings for Django guardian::
+
+    AUTHENTICATION_BACKENDS = (
+        'django.contrib.auth.backends.ModelBackend', # default
+        'guardian.backends.ObjectPermissionBackend',
+    )
+
+Database settings, we need postgresql!::
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'serviceform',
+            'USER': 'serviceform',
+            'PASSWORD': 'django',
+            'HOST': 'db',
+            'PORT': 5433,
+        }
+
+We need to set up named caches::
+
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'default',
+        },
+        'persistent': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'persistent',
+        },
+        'cachalot': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'cachalot',
+        }
+    }
+
+In production, use redis or similar instead at least for persistent cache!
+
+Set up static root::
+
+   STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+Set up serviceform specific settings::
+
+    SERVER_URL="http://localhost:8000"
+    # random capital letters that are used to generate unpredictable
+    # links from ids
+    CODE_LETTERS='ABCDE'
+
+urls.py modifications
+=====================
+
+Add urls that are specific to grappelli (optional), nested_admin, select2 and serviceform::
+
+    urlpatterns = [
+        url(r'^admin/', admin.site.urls),
+
+        url(r'^_grappelli/', include('grappelli.urls')), # optional
+        url(r'^_nested_admin/', include('nested_admin.urls')),
+        url(r'^_select2/', include('select2.urls')),
+
+        url(r'', include('serviceform.serviceform.urls')),
+    ]
+
+
+=============================
+Production guide using Docker
+=============================
 
 Requirements
 ============
