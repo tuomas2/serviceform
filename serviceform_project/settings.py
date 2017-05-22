@@ -52,8 +52,8 @@ INSTALLED_APPS = [
     'cachalot',
     'guardian',
 
-    'serviceform.serviceform',
-    'serviceform.tasks',
+    'serviceform_app.serviceform',
+    'serviceform_app.tasks',
 
     'select2',
 ]
@@ -97,8 +97,8 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'serviceform.serviceform.utils.ClearParticipantCacheMiddleware',
-    'serviceform.serviceform.utils.InvalidateCachalotAfterEachRequestMiddleware'
+    'serviceform_app.serviceform.utils.ClearParticipantCacheMiddleware',
+    'serviceform_app.serviceform.utils.InvalidateCachalotAfterEachRequestMiddleware'
 ]
 
 if DEBUG:
