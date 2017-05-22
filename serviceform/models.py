@@ -729,9 +729,6 @@ class ServiceForm(SubitemMixin, models.Model):
             slug += '-copy'
         return slug
 
-    def copy_as_new(self) -> 'ServiceForm':
-        return utils.copy_serviceform_as_new(self)
-
     def links(self) -> Tuple[str]:
         return (format_html('<a href="{}">{}</a>, ', reverse('report', args=(self.slug,)),
                             _('To report')) +

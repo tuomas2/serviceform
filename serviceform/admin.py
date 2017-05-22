@@ -212,7 +212,7 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
     if settings.DEBUG:
         superuser_actions.append('shuffle_data')
 
-    actions = superuser_actions  # + ['copy_form']
+    actions = superuser_actions
 
     prepopulated_fields = {'slug': ('name',)}
     list_display = (
@@ -281,13 +281,6 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
             for a in self.superuser_actions:
                 actions.pop(a, None)
         return actions
-
-    def copy_form(self, request: HttpRequest, queryset: Iterable[models.ServiceForm]) -> None:
-        for serviceform in queryset:
-            new_form = serviceform.copy_as_new()
-            assign_perm('serviceform.can_access_serviceform', request.user, new_form)
-
-    copy_form.short_description = _('Copy form as a new')
 
     def bulk_email_former_participants(self, request: HttpRequest,
                                        queryset: Iterable[models.ServiceForm]) -> None:
