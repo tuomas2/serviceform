@@ -601,7 +601,7 @@ def test_responsible_personal_report(client1: Client, admin_client:Client, mock_
 
 
 def test_report_settings_and_logout(admin_client: Client):
-    from serviceform.templatetags.serviceform_tags import all_revisions
+    from serviceform.serviceform.templatetags.serviceform_tags import all_revisions
     res = admin_client.get(Pages.FULL_REPORT_PARTICIPANTS)
     assert res.status_code == Http.OK
     assert not all_revisions(res.context) # default settings
@@ -645,7 +645,7 @@ def test_invite_success(serviceform, admin_client: Client, emails, send_existing
 
 
 def test_unsubscribe_participant(client: Client, participant: models.Participant):
-    from serviceform.utils import encode
+    from serviceform.serviceform.utils import encode
     assert participant.send_email_allowed
     res = client.get(Pages.UNSUBSCRIBE_PARTICIPANT % encode(participant.pk))
     assert res.status_code == 200
@@ -654,7 +654,7 @@ def test_unsubscribe_participant(client: Client, participant: models.Participant
 
 
 def test_unsubscribe_responsible(client: Client, responsible: models.ResponsibilityPerson):
-    from serviceform.utils import encode
+    from serviceform.serviceform.utils import encode
     assert responsible.send_email_notifications
     res = client.get(Pages.UNSUBSCRIBE_RESPONSIBLE % encode(responsible.pk))
     assert res.status_code == 200
