@@ -21,5 +21,5 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class ServiceformConfig(AppConfig):
-    name = 'serviceform_app.serviceform'
+    name = 'serviceform.serviceform'
     verbose_name = _('Service form application')

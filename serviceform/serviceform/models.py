@@ -49,7 +49,7 @@ from django.utils.functional import cached_property
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from colorful.fields import RGBColorField
-from serviceform_app.tasks.models import Task
+from serviceform.tasks.models import Task
 
 from . import utils, emails
 
