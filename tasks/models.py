@@ -74,6 +74,9 @@ class Task(models.Model):
                                   scheduled_time=scheduled_time)
 
     def execute(self):
+        if self.status != self.REQUESTED:
+            logger.warning('Task %s status was not REQUESTED but %s', self, self.status)
+            return
         args, kwargs = json.loads(self.data)
         try:
             func = getattr(self.target, self.method_name)
