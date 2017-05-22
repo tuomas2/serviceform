@@ -251,6 +251,35 @@ Bash shell (to investigate/edit volumes etc.)::
             --env-file $SERVICEFORM_ENV_FILE \
             tuomasairaksinen/serviceform:latest bash
 
+Dumping/loading production data as/from sql
+===========================================
+
+Dump current data
+-----------------
+
+Run::
+
+   docker exec -u postgres serviceform-db pg_dump serviceform > backup.sql
+
+Load data from file.
+--------------------
+
+First you need to destroy current database from postgres shell::
+
+   DROP DATABASE serviceform;
+   CREATE DATABASE serviceform;
+
+Alternatively, you can stop database, remove volume::
+
+   docker stop serviceform-db
+   docker rm serviceform-db
+   docker volume rm serviceform-db
+
+and then start database server (see external_).
+
+And then::
+
+   docker exec -u postgres serviceform-db psql serviceform < backup.sql
 
 ===========
 Development
