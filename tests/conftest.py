@@ -26,6 +26,14 @@ def serviceform(db):
     yield models.ServiceForm.objects.get(slug=SLUG)
 
 @pytest.fixture
+def participant(serviceform: models.ServiceForm):
+    yield serviceform.current_revision.participant_set.get(pk=89)
+
+@pytest.fixture
+def responsible(serviceform: models.ServiceForm):
+    yield serviceform.responsibilityperson_set.get(pk=89)
+
+@pytest.fixture
 def client1(client):
     return client
 
