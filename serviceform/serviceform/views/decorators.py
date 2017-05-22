@@ -25,7 +25,7 @@ from django.core.urlresolvers import resolve
 from django.http import Http404, HttpResponseRedirect, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 
-from serviceform import models, utils
+from .. import models, utils
 
 
 def serviceform(function=None, check_form_permission=False, init_counters=False,

@@ -36,7 +36,6 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.utils.safestring import mark_safe
 
-from . import models
 from collections import defaultdict
 
 from colour import Color
@@ -120,13 +119,14 @@ _participants = {}
 def get_participant(_id: int) -> 'Participant':
     p = _participants.get(_id)
     if p is None:
-        models.logger.error('Participant %d was not in cache!', _id)
+        logger.error('Participant %d was not in cache!', _id)
     return p
 
 
 def fetch_participants(service_form: 'ServiceForm', all_revisions: bool=False) -> None:
     global _participants
-    qs = models.Participant.objects.prefetch_related('participantlog_set__written_by')
+    from .models import Participant
+    qs = Participant.objects.prefetch_related('participantlog_set__written_by')
     if all_revisions:
         qs = qs.select_related('form_revision')
     participants = qs.filter(form_revision__form=service_form).distinct() if all_revisions \
@@ -215,11 +215,12 @@ def init_serviceform_counters(service_form: 'ServiceForm', all_responsibles: boo
 
 
 def shuffle_person_data(service_form: 'ServiceForm') -> None:
+    from .models import Participant, ResponsibilityPerson, Question
     letters = len(string.ascii_letters)
     forenames = set()
     surnames = set()
-    participants = models.Participant.objects.filter(form_revision__form=service_form)
-    responsibles = models.ResponsibilityPerson.objects.filter(form=service_form)
+    participants = Participant.objects.filter(form_revision__form=service_form)
+    responsibles = ResponsibilityPerson.objects.filter(form=service_form)
     for p in chain(participants, responsibles):
         for n in p.forenames.split(' '):
             if n:
@@ -240,8 +241,8 @@ def shuffle_person_data(service_form: 'ServiceForm') -> None:
         m.save()
 
     def shuffle_question(q):
-        if q.question.answer_type in [models.Question.ANSWER_LONG_TEXT,
-                                      models.Question.ANSWER_SHORT_TEXT]:
+        if q.question.answer_type in [Question.ANSWER_LONG_TEXT,
+                                      Question.ANSWER_SHORT_TEXT]:
             shuffle(q, 'answer')
 
     forenames = tuple(forenames)
@@ -323,8 +324,9 @@ def color_for_count(count: int) -> ColorStr:
 
 
 def update_serviceform_default_emails() -> None:
+    from .models import ServiceForm
     translation.activate('fi')
-    for s in models.ServiceForm.objects.all():
+    for s in ServiceForm.objects.all():
         s.create_email_templates()
 
 
@@ -337,8 +339,9 @@ def clean_session(request: HttpRequest):
 
 
 def get_responsible(request: HttpRequest):
+    from .models import ResponsibilityPerson
     responsible_pk = request.session.get('authenticated_responsibility')
-    return models.ResponsibilityPerson.objects.filter(pk=responsible_pk).first()
+    return ResponsibilityPerson.objects.filter(pk=responsible_pk).first()
 
 
 def safe_join(sep: str, args_generator: Iterable[str]):

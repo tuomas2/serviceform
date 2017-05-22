@@ -20,9 +20,9 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpRequest, HttpResponse
 from django.shortcuts import render
 
-from serviceform import forms, models
-from serviceform.utils import clean_session
-from serviceform.views.decorators import serviceform
+from .. import forms, models
+from ..utils import clean_session
+from ..views.decorators import serviceform
 
 
 @serviceform

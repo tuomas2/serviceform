@@ -11,7 +11,7 @@ from django.db.models import QuerySet
 from django.test import Client
 from django.utils import timezone
 
-from serviceform import models
+from serviceform.serviceform import models
 
 SLUG = 'jklvapis'
 

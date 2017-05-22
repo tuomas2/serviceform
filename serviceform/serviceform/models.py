@@ -22,7 +22,7 @@ import logging
 import string
 import time
 from enum import Enum
-from typing import Set, Optional, Iterable, Iterator, Tuple, Union, List, Sequence
+from typing import Set, Optional, Iterable, Iterator, Tuple, Union, List, Sequence, TYPE_CHECKING
 
 from django.conf import settings
 from django.contrib import messages
@@ -49,20 +49,22 @@ from django.utils.functional import cached_property
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from colorful.fields import RGBColorField
-from tasks.models import Task
+from serviceform.tasks.models import Task
 
 from . import utils, emails
-from .utils import ColorStr
+
+if TYPE_CHECKING:
+    from .utils import ColorStr
 
 
 class ColorField(RGBColorField):
-    def get_prep_value(self, value: ColorStr) -> Optional[ColorStr]:
+    def get_prep_value(self, value: 'ColorStr') -> 'Optional[ColorStr]':
         rv = super().get_prep_value(value)
         if rv == '#000000':
             rv = None
         return rv
 
-    def from_db_value(self, value: Optional[ColorStr], *args):
+    def from_db_value(self, value: 'Optional[ColorStr]', *args):
         if value is None:
             return '#000000'
         return value
@@ -817,7 +819,7 @@ class AbstractServiceFormItem(models.Model):
         else:
             return first_resp
 
-    def background_color_display(self) -> ColorStr:
+    def background_color_display(self) -> 'ColorStr':
         raise NotImplementedError
 
 
@@ -832,7 +834,7 @@ class Level1Category(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem
     form = models.ForeignKey(ServiceForm, on_delete=models.CASCADE)
 
     @cached_property
-    def background_color_display(self) -> ColorStr:
+    def background_color_display(self) -> 'ColorStr':
         return utils.not_black(self.background_color) or utils.not_black(self.form.level1_color)
 
 
@@ -848,7 +850,7 @@ class Level2Category(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem
                                  on_delete=models.CASCADE)
 
     @cached_property
-    def background_color_display(self) -> ColorStr:
+    def background_color_display(self) -> 'ColorStr':
         return (utils.not_black(self.background_color) or
                 (self.category.background_color_display and utils.lighter_color(
                     self.category.background_color_display)) or
@@ -889,7 +891,7 @@ class Activity(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem):
         return not has_choices or (has_choices and not self.multiple_choices_allowed)
 
     @cached_property
-    def background_color_display(self) -> ColorStr:
+    def background_color_display(self) -> 'ColorStr':
         return self.category.background_color_display and utils.lighter_color(
             self.category.background_color_display)
 
@@ -923,7 +925,7 @@ class ActivityChoice(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem
         )
 
     @cached_property
-    def background_color_display(self) -> ColorStr:
+    def background_color_display(self) -> 'ColorStr':
         return self.activity.category.background_color_display and utils.lighter_color(
             self.activity.category.background_color_display)
 

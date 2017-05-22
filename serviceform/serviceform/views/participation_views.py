@@ -26,10 +26,9 @@ from django.http import HttpResponseRedirect, Http404, HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import ugettext_lazy as _
 
-from serviceform import forms, models
-from serviceform.utils import clean_session, user_has_serviceform_permission, expire_auth_link, \
-    decode
-from serviceform.views.decorators import require_authenticated_participant, require_published_form
+from .. import forms, models
+from ..utils import clean_session, user_has_serviceform_permission, expire_auth_link, decode
+from .decorators import require_authenticated_participant, require_published_form
 
 logger = logging.getLogger(__name__)
 

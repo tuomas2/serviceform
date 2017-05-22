@@ -26,10 +26,9 @@ from django.http import HttpResponseRedirect, Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.translation import gettext_lazy as _
 
-from serviceform import models, forms
-from serviceform.utils import user_has_serviceform_permission, fetch_participants, \
-    expire_auth_link, decode
-from serviceform.views.decorators import serviceform, require_authenticated_responsible
+from .. import models, forms
+from ..utils import user_has_serviceform_permission, fetch_participants, expire_auth_link, decode
+from .decorators import serviceform, require_authenticated_responsible
 
 
 def authenticate_responsible_old(request: HttpRequest, uuid: str) -> HttpResponse:

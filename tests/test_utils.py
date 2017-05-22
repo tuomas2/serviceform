@@ -1,4 +1,4 @@
-from serviceform.utils import shuffle_person_data
+from serviceform.serviceform.utils import shuffle_person_data
 
 
 def test_shuffle(serviceform):

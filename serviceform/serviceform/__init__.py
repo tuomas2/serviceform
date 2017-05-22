@@ -1,1 +1,1 @@
-default_app_config = 'serviceform.apps.ServiceformConfig'
+default_app_config = 'serviceform.serviceform.apps.ServiceformConfig'

@@ -1,7 +1,7 @@
 from django.utils import timezone
 
-from tasks.models import Task
-from serviceform import models
+from serviceform.tasks.models import Task
+from serviceform.serviceform import models
 
 def test_tasks(serviceform: models.ServiceForm):
     t = Task.make(serviceform.create_initial_data, scheduled_time=timezone.now())

@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^_grappelli/', include('grappelli.urls')),
     url(r'^_nested_admin/', include('nested_admin.urls')),
     url(r'^_select2/', include('select2.urls')),
-    url(r'', include('serviceform.urls')),
+    url(r'', include('serviceform.serviceform.urls')),
 ]
 
 admin.site.site_header = admin.site.site_title = _('Serviceform admin')

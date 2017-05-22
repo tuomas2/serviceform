@@ -7,8 +7,8 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe, SafeString
 from django.utils.translation import gettext_lazy as _
 
-from serviceform.models import Participant
-from serviceform.utils import safe_join, ColorStr
+from ..models import Participant
+from ..utils import safe_join, ColorStr
 from .. import utils
 from ..urls import participant_flow_urls, menu_urls, Requires
 from ..utils import lighter_color as lighter_color_util, darker_color

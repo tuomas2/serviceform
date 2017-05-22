@@ -18,7 +18,7 @@
 
 from django.contrib import admin
 
-from tasks import models
+from . import models
 
 
 @admin.register(models.Task)

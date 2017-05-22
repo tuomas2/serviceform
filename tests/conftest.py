@@ -4,7 +4,7 @@ from django.core.cache import caches
 from django.core.management import call_command
 from django.db import connection
 import os
-from serviceform import models
+from serviceform.serviceform import models
 
 SLUG = 'jklvapis'
 
