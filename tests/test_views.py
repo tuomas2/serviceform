@@ -143,7 +143,7 @@ class Pages:
     FULL_REPORT_ACTIVITIES = f"/report/{SLUG}/all_activities/"
     FULL_REPORT_QUESTIONS = f"/report/{SLUG}/all_questions/"
     FULL_REPORT_SETTINGS = f"/report/{SLUG}/settings/"
-
+    LOGOUT = f'/logout/'
 
     REPORT_PAGES = [
                 FULL_REPORT_RESPONSIBLES,
@@ -586,7 +586,7 @@ def test_responsible_personal_report(client: Client, admin_client:Client, mock_l
         assert res.status_code == Http.OK
 
 
-def test_report_settings(admin_client: Client):
+def test_report_settings_and_logout(admin_client: Client):
     from serviceform.templatetags.serviceform_tags import all_revisions
     res = admin_client.get(Pages.FULL_REPORT_PARTICIPANTS)
     assert res.status_code == Http.OK
@@ -598,7 +598,13 @@ def test_report_settings(admin_client: Client):
     assert res.status_code == Http.OK
 
     assert all_revisions(res.context)
+    res = admin_client.get(Pages.LOGOUT)
+    assert res.status_code == Http.REDIR
+    assert res.url == Pages.LOGIN
 
+    res = admin_client.get(Pages.FULL_REPORT_PARTICIPANTS)
+    assert res.status_code == Http.REDIR
+    assert res.url.startswith(Pages.ADMIN_LOGIN)
 
 
 # TODO:
