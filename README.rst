@@ -355,11 +355,11 @@ Dumping and loading database in development environment
 
 Database can be dumped with the following command::
 
-        docker-compose exec db su - postgres -c "pg_dump serviceform" > init.sql
+    docker-compose exec -u postgres db pg_dump serviceform > init.sql
 
 To load dump, you must first clear the current database. This can be done as follows::
 
-    cat init.sql | docker exec -i serviceform-db su - postgres -c "psql serviceform"
+    docker-compose exec -u postgres -i db psql serviceform < init.sql
 
 Dump data in json format for tests::
 
