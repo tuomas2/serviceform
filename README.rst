@@ -4,6 +4,8 @@
 .. image:: https://coveralls.io/repos/github/tuomas2/serviceform/badge.svg?branch=master
    :target: https://coveralls.io/github/tuomas2/serviceform?branch=master
 
+.. image:: https://www.versioneye.com/user/projects/5922f7e68dcc41003af21f61/badge.svg?style=flat-square
+   :target: https://www.versioneye.com/user/projects/5922f7e68dcc41003af21f61
 
 ===========
 Serviceform

@@ -98,7 +98,6 @@ class PasswordForm(Form):
 
         helper = self.helper = MyFormHelper(self)
 
-
         helper.form_id = 'contactform'
         helper.layout.append(Submit('submit_password', _('Get in')))
         self.instance = service_form
