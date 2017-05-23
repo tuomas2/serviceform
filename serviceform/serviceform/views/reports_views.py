@@ -27,7 +27,8 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.translation import gettext_lazy as _
 
 from .. import models, forms
-from ..utils import user_has_serviceform_permission, fetch_participants, expire_auth_link, decode
+from ..utils import user_has_serviceform_permission, fetch_participants, expire_auth_link, decode, \
+    RevisionOptions
 from .decorators import serviceform, require_authenticated_responsible
 
 
@@ -148,7 +149,7 @@ def view_responsible(request: HttpRequest, auth_responsible: models.Responsibili
     service_form = responsible.form
     request.service_form = service_form
     service_form.init_counters()
-    fetch_participants(service_form, all_revisions=True)
+    fetch_participants(service_form, revision_name=RevisionOptions.ALL)
     return render(request, 'serviceform/reports/responsible.html',
                   {'service_form': responsible.form, 'responsible': responsible,
                    'show_report_btn': True})
@@ -198,7 +199,7 @@ def responsible_report(request: HttpRequest,
         raise PermissionDenied
     service_form = responsible.form
     service_form.init_counters(all_responsibles=True)
-    fetch_participants(service_form, all_revisions=True)
+    fetch_participants(service_form, revision_name=RevisionOptions.ALL)
     return render(request, 'serviceform/reports/responsible_anonymous.html',
                   {'service_form': responsible.form, 'responsible': responsible})
 

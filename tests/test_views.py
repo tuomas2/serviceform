@@ -608,7 +608,6 @@ def test_responsible_personal_report(client1: Client, admin_client:Client, mock_
     assert res.url.startswith(Pages.ADMIN_LOGIN)
 
 
-
 def test_report_settings_and_logout(admin_client: Client):
     from serviceform.serviceform.templatetags.serviceform_tags import all_revisions
     res = admin_client.get(Pages.FULL_REPORT_PARTICIPANTS)

@@ -123,14 +123,22 @@ def get_participant(_id: int) -> 'Participant':
     return p
 
 
-def fetch_participants(service_form: 'ServiceForm', all_revisions: bool=False) -> None:
+def fetch_participants(service_form: 'ServiceForm', revision_name: str) -> None:
     global _participants
     from .models import Participant
+    is_all_revisions = revision_name == RevisionOptions.ALL
+    is_current_revision = revision_name == RevisionOptions.CURRENT
+
     qs = Participant.objects.prefetch_related('participantlog_set__written_by')
-    if all_revisions:
+    if is_all_revisions:
         qs = qs.select_related('form_revision')
-    participants = qs.filter(form_revision__form=service_form).distinct() if all_revisions \
-        else qs.filter(form_revision=service_form.current_revision)
+    if is_all_revisions:
+        participants = qs.filter(form_revision__form=service_form).distinct()
+    elif is_current_revision:
+        participants = qs.filter(form_revision=service_form.current_revision)
+    else:
+        participants = qs.filter(form_revision__name=revision_name)
+
     _participants = {itm.pk: itm for itm in participants}
     return
 
