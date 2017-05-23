@@ -252,7 +252,7 @@ class ContactForm(ModelForm):
                 models.Participant.objects.filter(email=email,
                                                   form_revision__form=self.service_form) \
                         .exclude(pk=self.participant.pk):
-            logger.warning('User tried to enter same email address %s again.', email)
+            logger.info('User tried to enter same email address %s again.', email)
             email_link = '<a href="{}">{}</a>'.format(reverse('send_auth_link', args=(email,)),
                                                       _('resend auth link to your email!'))
             raise ValidationError(
