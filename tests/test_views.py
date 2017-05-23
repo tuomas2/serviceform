@@ -15,7 +15,7 @@ from serviceform.serviceform import models
 
 SLUG = 'jklvapis'
 
-def test_hit_admin_pages(settings, db, admin_client: Client):
+def test_hit_admin_pages(report_settings, db, admin_client: Client):
     res = admin_client.get('/admin/')
     assert res.status_code == Http.OK
     res = admin_client.get('/admin/serviceform/serviceform/')
@@ -25,7 +25,7 @@ def test_hit_admin_pages(settings, db, admin_client: Client):
     assert b'Tutustu palvelulomakkeeseen' in res.content
 
 
-def test_hit_admin_reports(db, settings, admin_client: Client):
+def test_hit_admin_reports(db, report_settings, admin_client: Client):
     p = models.Participant.objects.filter(form_revision__form__slug=SLUG).first()
     r = models.ResponsibilityPerson.objects.filter(form__slug=SLUG).first()
     pages = [
@@ -534,7 +534,8 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
 
 @pytest.mark.parametrize('full_raport', [False, True])
 @pytest.mark.parametrize('mock_login', [False, True])
-def test_responsible_personal_report(client1: Client, admin_client:Client, mock_login, full_raport):
+def test_responsible_personal_report(client1: Client, report_settings,
+                                     admin_client:Client, mock_login, full_raport):
     forenames = 'Anne-Maija Sven'
     s = models.ServiceForm.objects.get(slug=SLUG)
     resp = s.responsibilityperson_set.get(pk=89)
@@ -656,7 +657,7 @@ def test_unsubscribe_participant(client: Client, participant: models.Participant
     from serviceform.serviceform.utils import encode
     assert participant.send_email_allowed
     res = client.get(Pages.UNSUBSCRIBE_PARTICIPANT % encode(participant.pk))
-    assert res.status_code == 200
+    assert res.status_code == Http.OK
     participant.refresh_from_db()
     assert not participant.send_email_allowed
 
@@ -665,7 +666,7 @@ def test_unsubscribe_responsible(client: Client, responsible: models.Responsibil
     from serviceform.serviceform.utils import encode
     assert responsible.send_email_notifications
     res = client.get(Pages.UNSUBSCRIBE_RESPONSIBLE % encode(responsible.pk))
-    assert res.status_code == 200
+    assert res.status_code == Http.OK
     responsible.refresh_from_db()
     assert not responsible.send_email_notifications
 

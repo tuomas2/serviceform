@@ -878,7 +878,7 @@ class Activity(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem):
     def id_display(self) -> str:
         return '%s+' % max(1, self._counter) if self.skip_numbering else self._counter
 
-    def participation_items(self, revision_name: str=None) -> 'Iterable[ParticipationActivity]':
+    def participation_items(self, revision_name: str=None) -> 'Sequence[ParticipationActivity]':
         if revision_name is None:
             revision_name = self.category.category.form.current_revision.name
         return self.participationactivity_set.filter(
@@ -959,11 +959,19 @@ class Question(CopyMixin, AbstractServiceFormItem):
             'serviceform/participation/question_form/types/question_%s.html' % self.answer_type,
             {'question': self})
 
-    @property
-    def questionanswers(self) -> 'Iterable[QuestionAnswer]':
-        revision = self.form.current_revision
-        return QuestionAnswer.objects.filter(question=self, participant__form_revision=revision,
-                                             participant__status__in=Participant.READY_STATUSES)
+    def questionanswers(self, revision_name: str) -> 'Sequence[QuestionAnswer]':
+        qs = QuestionAnswer.objects.filter(question=self,
+                                           participant__status__in=Participant.READY_STATUSES)
+
+        current_revision = self.form.current_revision
+
+        if revision_name == utils.RevisionOptions.ALL:
+            qs = qs.order_by('-participant__form_revision')
+        elif revision_name == utils.RevisionOptions.CURRENT:
+            qs = qs.filter(participant__form_revision=current_revision)
+        else:
+            qs = qs.filter(participant__form_revision__name=revision_name)
+        return qs
 
     def __str__(self):
         return self.question

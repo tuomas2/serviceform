@@ -22,6 +22,23 @@ def django_db_setup(django_db_setup, django_db_blocker):
             c.execute(sql)
         call_command('loaddata', os.path.join(os.path.dirname(__file__), 'test_data.json'))
 
+
+@pytest.fixture(params=['__all', '__current', 'Vuosi-2016', 'Vuosi-2017'])
+def report_settings(request, mocker):
+    revision_name = request.param
+
+    class MockedSettings:
+        def __call__(self, request, parameter=None):
+            settings = {'revision': revision_name}
+            if parameter:
+                return settings.get(parameter)
+            return settings
+
+    mocker.patch('serviceform.serviceform.utils.get_report_settings',
+                 new_callable=MockedSettings)
+    yield None
+
+
 @pytest.fixture
 def serviceform(db):
     yield models.ServiceForm.objects.get(slug=SLUG)

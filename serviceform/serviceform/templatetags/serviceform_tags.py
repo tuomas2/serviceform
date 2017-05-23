@@ -16,7 +16,8 @@ from ..utils import lighter_color as lighter_color_util, darker_color
 register = template.Library()
 if TYPE_CHECKING:
     from ..models import (AbstractServiceFormItem, ResponsibilityPerson, SubitemMixin, Activity,
-                          ActivityChoice, ParticipationActivity, ParticipationActivityChoice)
+                          ActivityChoice, ParticipationActivity, ParticipationActivityChoice,
+                          Question, QuestionAnswer)
 
 
 class FlowItem(NamedTuple):
@@ -65,16 +66,22 @@ def has_responsible(item: 'SubitemMixin', responsible: 'ResponsibilityPerson') -
 
 @register.assignment_tag(takes_context=True)
 def participation_items(context: Context, item: 'Union[Activity, ActivityChoice]')\
-        -> 'Iterable[ParticipationActivity, ParticipationActivityChoice]':
+        -> 'Sequence[ParticipationActivity, ParticipationActivityChoice]':
     revision_name = utils.get_report_settings(context['request'], 'revision')
     service_form = context.get('service_form')
     if revision_name == utils.RevisionOptions.ALL:
         for rev in service_form.formrevision_set.all():
-            return item.participation_items(rev)
+            yield from item.participation_items(rev)
     elif revision_name == utils.RevisionOptions.CURRENT:
-        return item.participation_items(service_form.current_revision.name)
+        yield from item.participation_items(service_form.current_revision.name)
     else:
-        return item.participation_items(revision_name)
+        yield from item.participation_items(revision_name)
+
+
+@register.assignment_tag(takes_context=True)
+def questionanswers(context: Context, item: 'Question') -> 'Sequence[QuestionAnswer]':
+    revision_name = utils.get_report_settings(context['request'], 'revision')
+    return item.questionanswers(revision_name)
 
 
 @register.assignment_tag(takes_context=True)

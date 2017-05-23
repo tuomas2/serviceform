@@ -132,7 +132,6 @@ def fetch_participants(service_form: 'ServiceForm', revision_name: str) -> None:
     qs = Participant.objects.prefetch_related('participantlog_set__written_by')
     if is_all_revisions:
         qs = qs.select_related('form_revision')
-    if is_all_revisions:
         participants = qs.filter(form_revision__form=service_form).distinct()
     elif is_current_revision:
         participants = qs.filter(form_revision=service_form.current_revision)
