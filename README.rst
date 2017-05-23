@@ -480,7 +480,7 @@ To load dump, you must first clear the current database. This can be done as fol
 
 Dump data in json format for tests::
 
-    ./manage.py dumpdata -o tests/test_data.json -e serviceform.EmailMessage -e admin.LogEntry --indent 2 -e sessions.Session -e djcelery
+    ./manage.py dumpdata -o tests/test_data.json -e serviceform.EmailMessage -e admin.LogEntry --indent 2 -e sessions.Session
 
 
 
