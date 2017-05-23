@@ -1,9 +1,10 @@
-import pytest
-from django.contrib.contenttypes.models import ContentType
+import os
+import logging
+
 from django.core.cache import caches
 from django.core.management import call_command
 from django.db import connection
-import os
+import pytest
 from serviceform.serviceform import models
 
 SLUG = 'jklvapis'
@@ -40,3 +41,11 @@ def client1(client):
 @pytest.fixture
 def client2(client):
     return client
+
+@pytest.fixture(autouse=True)
+def check_log(request, caplog):
+    yield None
+    if not getattr(caplog, 'error_ok', False):
+        for i in caplog.records():
+            if i.levelno >= logging.ERROR:
+                pytest.fail('Error: %s' % i.getMessage())

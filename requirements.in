@@ -20,6 +20,6 @@ django-celery-beat
 ipython
 pytest
 pytest-django
-pytest-xdist
 pytest-cov
 pytest-mock
+pytest-capturelog
