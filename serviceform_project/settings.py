@@ -1,5 +1,6 @@
 import os
 import socket
+import sys
 from logging.config import dictConfig
 from django.utils.translation import ugettext_lazy as _
 
@@ -8,6 +9,7 @@ IS_WEB = bool(os.environ.get('IS_WEB', False))
 
 PRODUCTION = bool(os.environ.get('PRODUCTION', False))
 STAGING = bool(os.environ.get('STAGING', False))
+TESTS_RUNNING = os.environ.get('TESTS_RUNNING', False)
 DEBUG = bool(os.environ.get('DEBUG', False))
 
 EMAIL_BACKEND = "sgbackend.SendGridBackend"
@@ -162,40 +164,7 @@ if PRODUCTION:
     SECURE_BROWSER_XSS_FILTER = True
 
 
-if not PRODUCTION:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': True,
-        'formatters': {
-            'verbose': {
-                'format': '%(levelname)s %(asctime)s %(module)s %(name)s %(message)s'
-            },
-            'simple': {
-                'format': '%(levelname)s %(message)s'
-            },
-        },
-        'handlers': {
-            'console': {
-                'class': 'logging.StreamHandler',
-            },
-        },
-        'loggers': {
-            '': {
-                'handlers': ['console'],
-                'level': 'INFO',
-                'propagate': True,
-            },
-            'celery': {
-                'handlers': ['console'],
-                'level': 'INFO',
-                'propagate': False,
-            },
-        },
-    }
-    dictConfig(LOGGING)
-
-else:
+if PRODUCTION:
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': True,
@@ -235,17 +204,70 @@ else:
             },
             'django': {
                 'handlers': ['console', 'sentry'],
-                'level': 'DEBUG',
+                'level': 'INFO',
                 'propagate': False,
             },
             'celery': {
                 'handlers': ['console', 'sentry'],
-                'level': 'DEBUG',
+                'level': 'INFO',
                 'propagate': False,
             },
         },
     }
-    dictConfig(LOGGING)
+
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': True,
+        'formatters': {
+            'verbose': {
+                'format': '%(levelname)s %(asctime)s %(module)s %(name)s %(message)s'
+            },
+            'simple': {
+                'format': '%(levelname)s %(message)s'
+            },
+        },
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'verbose',
+            },
+            'crash': {
+                'class': 'serviceform_project.crash_logger.CrashHandler',
+                'level': 'ERROR',
+            }
+        },
+        'loggers': {
+            '': {
+                'handlers': ['console'],
+                'level': 'INFO',
+                'propagate': True,
+            },
+            'celery': {
+                'handlers': ['console'],
+                'level': 'INFO',
+                'propagate': False,
+            },
+            'django.template': {
+                'handlers': ['console'],
+                'level': 'WARNING',
+                'propagate': False,
+            },
+            'django': {
+                'handlers': ['console'],
+                'level': 'INFO',
+                'propagate': False,
+            },
+        },
+    }
+
+if TESTS_RUNNING:
+    LOGGING['loggers']['']['handlers'].append('crash')
+    LOGGING['loggers']['django.template']['handlers'].append('crash')
+    LOGGING['loggers']['django']['handlers'].append('crash')
+
+dictConfig(LOGGING)
 
 
 # Password validation

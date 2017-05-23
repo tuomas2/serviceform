@@ -52,6 +52,7 @@ case "$1" in
   ;;
   'tests')
     wait_redis
+    export TESTS_RUNNING=1
     py.test -v tests/
   ;;
   'travis-tests')
@@ -59,6 +60,7 @@ case "$1" in
     cd $2
     ./manage.py collectstatic --noinput
     ./manage.py compress
+    export TESTS_RUNNING=1
     py.test -v --cov serviceform/ --cov tasks/ tests/
   ;;
   'bash')

@@ -41,11 +41,3 @@ def client1(client):
 @pytest.fixture
 def client2(client):
     return client
-
-@pytest.fixture(autouse=True)
-def check_log(request, caplog):
-    yield None
-    if not getattr(caplog, 'error_ok', False):
-        for i in caplog.records():
-            if i.levelno >= logging.ERROR:
-                pytest.fail('Error: %s' % i.getMessage())
