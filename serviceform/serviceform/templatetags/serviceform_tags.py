@@ -68,14 +68,7 @@ def has_responsible(item: 'SubitemMixin', responsible: 'ResponsibilityPerson') -
 def participation_items(context: Context, item: 'Union[Activity, ActivityChoice]')\
         -> 'Sequence[ParticipationActivity, ParticipationActivityChoice]':
     revision_name = utils.get_report_settings(context['request'], 'revision')
-    service_form = context.get('service_form')
-    if revision_name == utils.RevisionOptions.ALL:
-        for rev in service_form.formrevision_set.all():
-            yield from item.participation_items(rev)
-    elif revision_name == utils.RevisionOptions.CURRENT:
-        yield from item.participation_items(service_form.current_revision.name)
-    else:
-        yield from item.participation_items(revision_name)
+    return item.participation_items(revision_name)
 
 
 @register.assignment_tag(takes_context=True)
