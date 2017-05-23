@@ -20,8 +20,8 @@
 import time
 from django.core.management import BaseCommand
 
-from serviceform.models import EmailMessage
-from serviceform.utils import DelayedKeyboardInterrupt
+from serviceform.serviceform.models import EmailMessage
+from serviceform.serviceform.utils import DelayedKeyboardInterrupt
 
 
 class Command(BaseCommand):

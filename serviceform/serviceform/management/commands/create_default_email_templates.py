@@ -19,7 +19,7 @@
 from django.core.management import BaseCommand
 from django.utils.translation import activate
 from django.conf import settings
-from serviceform.models import ServiceForm
+from serviceform.serviceform.models import ServiceForm
 
 
 class Command(BaseCommand):

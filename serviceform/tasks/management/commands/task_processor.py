@@ -20,8 +20,8 @@ import time
 from django.core.management import BaseCommand
 from django.utils import timezone
 
-from tasks.models import Task
-from serviceform.utils import DelayedKeyboardInterrupt
+from serviceform.tasks.models import Task
+from serviceform.serviceform.utils import DelayedKeyboardInterrupt
 
 
 class Command(BaseCommand):
