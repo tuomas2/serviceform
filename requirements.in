@@ -16,7 +16,7 @@ django-debug-toolbar
 sendgrid-django
 django-guardian
 django-select2-forms
-django-celery
+django-celery-beat
 ipython
 pytest
 pytest-django

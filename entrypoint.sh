@@ -48,7 +48,7 @@ case "$1" in
   ;;
   'celery-beat')
     wait_redis
-    celery -A serviceform_project beat -l info --pidfile /store/beat.pid --schedule /store/beat.db
+    celery -A serviceform_project beat -l info -S django --pidfile /store/beat.pid --schedule /store/beat.db
   ;;
   'tests')
     wait_redis

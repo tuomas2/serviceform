@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'compressor',
     'crispy_forms',
     'nested_admin',
-    'djcelery',
+    'django_celery_beat',
     'colorful',
     'cachalot',
     'guardian',
@@ -304,8 +304,6 @@ SERVER_URL = 'http://localhost:8000' if not PRODUCTION else f'https://{SERVICEFO
 BROKER_URL = 'redis://redis:6379/15'
 
 LOGIN_URL = '/admin/login/'
-CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
-CELERYBEAT_SCHEDULER='djcelery.schedulers.DatabaseScheduler'
 CELERYD_HIJACK_ROOT_LOGGER = False
 CELERY_TASK_SERIALIZER='json'
 CELERY_ACCEPT_CONTENT = ['json']
