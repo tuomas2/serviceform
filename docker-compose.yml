@@ -2,6 +2,9 @@
 
 version: "2"
 
+volumes:
+  dev-db:
+
 services:
   redis:
     image: redis:3.2.8-alpine
@@ -10,13 +13,13 @@ services:
     volumes:
       - /data
 
-  db:
+  dev-db:
      image: postgres:9.6.2
      container_name: serviceform-dev-db
      ports:
         - "5432:5432"
      volumes:
-      - /var/lib/postgresql
+      - dev-db:/var/lib/postgresql
       #- ./init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
      environment:
       - POSTGRES_USER=serviceform

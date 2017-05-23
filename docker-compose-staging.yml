@@ -31,7 +31,7 @@ services:
     env_file: env/staging.list
     command: upgrade
     links:
-      - staging-db
+      - staging-db:db
       - staging-redis
     volumes:
       - static:/code/static
@@ -45,7 +45,7 @@ services:
     env_file: env/staging.list
     links:
       - staging-redis
-      - staging-db
+      - staging-db:db
     depends_on:
       - upgrade
 
@@ -54,7 +54,7 @@ services:
     command: celery-beat
     env_file: env/staging.list
     links:
-      - staging-db
+      - staging-db:db
       - staging-redis
     volumes:
       - celery-beat-store:/store
@@ -66,7 +66,7 @@ services:
     command: task-processor
     env_file: env/staging.list
     links:
-      - staging-db
+      - staging-db:db
       - staging-redis
     depends_on:
       - upgrade
@@ -76,7 +76,7 @@ services:
     image: tuomasairaksinen/serviceform:latest
     env_file: env/staging.list
     links:
-      - staging-db
+      - staging-db:db
     depends_on:
       - upgrade
 
@@ -85,7 +85,7 @@ services:
     env_file: env/staging.list
     command: app
     links:
-      - staging-db
+      - staging-db:db
       - staging-redis
     volumes:
      - static:/code/static:ro
