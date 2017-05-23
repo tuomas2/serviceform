@@ -928,7 +928,7 @@ class ActivityChoice(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem
             activity__participant__status__in=Participant.READY_STATUSES)
 
         if revision_name == utils.RevisionOptions.ALL:
-            qs = qs.order_by('participant__form_revision')
+            qs = qs.order_by('activity__participant__form_revision')
         elif revision_name == utils.RevisionOptions.CURRENT:
             qs = qs.filter(activity__participant__form_revision=current_revision)
         else:
