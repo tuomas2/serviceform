@@ -51,10 +51,10 @@ from django.utils.translation import ugettext_lazy as _
 from colorful.fields import RGBColorField
 from serviceform.tasks.models import Task
 
-from . import utils, emails
+from .. import utils, emails
 
 if TYPE_CHECKING:
-    from .utils import ColorStr
+    from ..utils import ColorStr
 
 
 class ColorField(RGBColorField):
@@ -1194,7 +1194,7 @@ class Participant(ContactDetailsMixin, PasswordMixin, models.Model):
 
     @property
     def flow(self) -> List[str]:
-        from .urls import participant_flow_urls
+        from ..urls import participant_flow_urls
 
         rv = [i.name for i in participant_flow_urls]
         if not self.form.questions:
