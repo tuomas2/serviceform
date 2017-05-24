@@ -8,4 +8,4 @@ RUN mkdir /code
 ADD ./requirements-base.txt /
 RUN pip install -r requirements-base.txt
 RUN adduser -D web
-RUN apk del postgresql-dev make linux-headers python3-dev
+RUN apk del postgresql-dev make linux-headers
