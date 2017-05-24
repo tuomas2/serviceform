@@ -41,7 +41,7 @@ from .. import emails, utils
 from ..utils import ColorStr
 
 from .mixins import SubitemMixin, NameDescriptionMixin, CopyMixin
-from .people import Participant, ResponsibilityPerson
+from .people import Participation, Member, Organization
 from .email import EmailTemplate
 from .participation import QuestionAnswer
 
@@ -118,7 +118,8 @@ class ServiceForm(SubitemMixin, models.Model):
                                     on_delete=models.SET_NULL)
 
     # Ownership
-    responsible = models.ForeignKey(ResponsibilityPerson, null=True, blank=True,
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    responsible = models.ForeignKey(Member, null=True, blank=True,
                                     verbose_name=_('Responsible'), on_delete=models.SET_NULL)
 
     # Email settings
@@ -155,7 +156,7 @@ class ServiceForm(SubitemMixin, models.Model):
         help_text=_('Email that is sent to responsible when he requests auth link'),
         on_delete=models.SET_NULL)
 
-    # Participant emails:
+    # Participation emails:
 
     # on_finish
     email_to_participant = models.ForeignKey(
@@ -275,7 +276,7 @@ class ServiceForm(SubitemMixin, models.Model):
         self.create_email_templates()
         self.current_revision = FormRevision.objects.create(name='%s' % timezone.now().year,
                                                             form=self)
-        self.responsible = ResponsibilityPerson.objects.create(
+        self.responsible = Member.objects.create(
             forenames=_('Default'),
             surname=_('Responsible'),
             email=_('defaultresponsible@email.com'),
@@ -354,19 +355,19 @@ class ServiceForm(SubitemMixin, models.Model):
         """
         logger.info('Invite user %s %s', self, email)
 
-        participant = Participant.objects.filter(email=email, form_revision__form=self).first()
+        participant = Participation.objects.filter(email=email, form_revision__form=self).first()
         if participant:
             if old_participants and participant.form_revision != self.current_revision:
-                rv = participant.send_participant_email(Participant.EmailIds.INVITE)
+                rv = participant.send_participant_email(Participation.EmailIds.INVITE)
                 return (self.InviteUserResponse.EMAIL_SENT
                         if rv else self.InviteUserResponse.USER_DENIED_EMAIL)
             else:
                 return self.InviteUserResponse.USER_EXISTS
         else:
-            participant = Participant.objects.create(email=email,
-                                                     form_revision=self.current_revision,
-                                                     status=Participant.STATUS_INVITED)
-            participant.send_participant_email(Participant.EmailIds.INVITE)
+            participant = Participation.objects.create(email=email,
+                                                       form_revision=self.current_revision,
+                                                       status=Participation.STATUS_INVITED)
+            participant.send_participant_email(Participation.EmailIds.INVITE)
             return self.InviteUserResponse.EMAIL_SENT
 
     @cached_property
@@ -426,9 +427,9 @@ class ServiceForm(SubitemMixin, models.Model):
         if self.current_revision:
             old_time = timezone.now() - datetime.timedelta(minutes=20)
             ready = self.current_revision.participant_set.filter(
-                status__in=Participant.READY_STATUSES)
+                status__in=Participation.READY_STATUSES)
             recent_ongoing = self.current_revision.participant_set.filter(
-                status__in=[Participant.STATUS_ONGOING],
+                status__in=[Participation.STATUS_ONGOING],
                 last_modified__gt=old_time)
 
             return '%s + %s' % (ready.count(), recent_ongoing.count())
@@ -445,11 +446,11 @@ class ServiceForm(SubitemMixin, models.Model):
 
     def bulk_email_former_participants(self) -> None:
         logger.info('Bulk email former participants %s', self)
-        for p in Participant.objects.filter(send_email_allowed=True,
-                                            form_revision__send_bulk_email_to_participants=True,
-                                            form_revision__form=self,
-                                            form_revision__valid_to__lt=timezone.now()).distinct():
-            p.send_participant_email(Participant.EmailIds.NEW_FORM_REVISION)
+        for p in Participation.objects.filter(send_email_allowed=True,
+                                              form_revision__send_bulk_email_to_participants=True,
+                                              form_revision__form=self,
+                                              form_revision__valid_to__lt=timezone.now()).distinct():
+            p.send_participant_email(Participation.EmailIds.NEW_FORM_REVISION)
 
     def reschedule_bulk_email(self) -> None:
         now = timezone.now()
@@ -469,7 +470,7 @@ class ServiceForm(SubitemMixin, models.Model):
 
 
 class AbstractServiceFormItem(models.Model):
-    _responsibles: Set[ResponsibilityPerson]
+    _responsibles: Set[Member]
     sub_items: 'Iterable[AbstractServiceFormItem]'
 
     class Meta:
@@ -478,7 +479,7 @@ class AbstractServiceFormItem(models.Model):
 
     order = models.PositiveIntegerField(default=0, blank=False, null=False, db_index=True,
                                         verbose_name=_('Order'))
-    responsibles = select2_fields.ManyToManyField(ResponsibilityPerson, blank=True,
+    responsibles = select2_fields.ManyToManyField(Member, blank=True,
                                                   verbose_name=_('Responsible persons'),
                                                   related_name='%(class)s_related',
                                                   overlay=_('Choose responsibles'),
@@ -558,7 +559,7 @@ class Activity(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem):
         current_revision = self.category.category.form.current_revision
 
         qs = self.participationactivity_set.filter(
-            participant__status__in=Participant.READY_STATUSES)
+            participant__status__in=Participation.READY_STATUSES)
 
         if revision_name == utils.RevisionOptions.ALL:
             qs = qs.order_by('participant__form_revision')
@@ -601,7 +602,7 @@ class ActivityChoice(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem
         current_revision = self.activity.category.category.form.current_revision
 
         qs = self.participationactivitychoice_set.filter(
-            activity__participant__status__in=Participant.READY_STATUSES)
+            activity__participant__status__in=Participation.READY_STATUSES)
 
         if revision_name == utils.RevisionOptions.ALL:
             qs = qs.order_by('activity__participant__form_revision')
@@ -648,7 +649,7 @@ class Question(CopyMixin, AbstractServiceFormItem):
 
     def questionanswers(self, revision_name: str) -> 'Sequence[QuestionAnswer]':
         qs = QuestionAnswer.objects.filter(question=self,
-                                           participant__status__in=Participant.READY_STATUSES)
+                                           participant__status__in=Participation.READY_STATUSES)
 
         current_revision = self.form.current_revision
 

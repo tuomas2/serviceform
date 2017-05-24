@@ -74,9 +74,9 @@ def require_authenticated_participant(function=None, check_flow=True):
             participant_pk = request.session.get('authenticated_participant')
             if participant_pk:
                 request.participant = participant = get_object_or_404(
-                    models.Participant.objects.all(),
+                    models.Participation.objects.all(),
                     pk=participant_pk,
-                    status__in=models.Participant.EDIT_STATUSES)
+                    status__in=models.Participation.EDIT_STATUSES)
                 if check_flow:
                     # Check flow status
                     participant._current_view = current_view
@@ -103,7 +103,7 @@ def require_authenticated_participant(function=None, check_flow=True):
 
 def require_published_form(func):
     @wraps(func)
-    def wrapper(request: HttpRequest, participant: models.Participant,
+    def wrapper(request: HttpRequest, participant: models.Participation,
                 *args, **kwargs) -> HttpResponse:
         if not participant.form.is_published:
             raise PermissionDenied

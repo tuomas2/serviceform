@@ -1135,7 +1135,7 @@ msgid "Answer required?"
 msgstr "Vaaditaanko vastaus?"
 
 #: models.py:973
-msgid "Participant"
+msgid "Participation"
 msgstr "Osallistuja"
 
 #: models.py:974 urls.py:90
@@ -1189,7 +1189,7 @@ msgstr ""
 "lainkaan. Voit myös myöhemmin muuttaa tätä asetusta."
 
 #: models.py:1041
-msgid "Participant created in system"
+msgid "Participation created in system"
 msgstr "Osallistuja talletettu ensimmäisen kerran järjestelmään"
 
 #: models.py:1044

@@ -7,7 +7,7 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe, SafeString
 from django.utils.translation import gettext_lazy as _
 
-from ..models import Participant
+from ..models import Participation
 from ..utils import safe_join, ColorStr
 from .. import utils
 from ..urls import participant_flow_urls, menu_urls, Requires
@@ -15,7 +15,7 @@ from ..utils import lighter_color as lighter_color_util, darker_color
 
 register = template.Library()
 if TYPE_CHECKING:
-    from ..models import (AbstractServiceFormItem, ResponsibilityPerson, SubitemMixin, Activity,
+    from ..models import (AbstractServiceFormItem, Member, SubitemMixin, Activity,
                           ActivityChoice, ParticipationActivity, ParticipationActivityChoice,
                           Question, QuestionAnswer)
 
@@ -60,7 +60,7 @@ def responsible_link(context: Context, item: 'AbstractServiceFormItem') -> SafeS
 
 
 @register.assignment_tag
-def has_responsible(item: 'SubitemMixin', responsible: 'ResponsibilityPerson') -> bool:
+def has_responsible(item: 'SubitemMixin', responsible: 'Member') -> bool:
     return item.has_responsible(responsible)
 
 
@@ -84,12 +84,12 @@ def all_revisions(context: Context) -> bool:
 
 
 @register.assignment_tag(takes_context=True)
-def participants(context: Context) -> 'Sequence[Participant]':
+def participants(context: Context) -> 'Sequence[Participation]':
     revision_name = utils.get_report_settings(context['request'], 'revision')
     service_form = context.get('service_form')
 
-    qs = Participant.objects.filter(form_revision__form=service_form,
-                                    status__in=Participant.READY_STATUSES).order_by('surname')
+    qs = Participation.objects.filter(form_revision__form=service_form,
+                                      status__in=Participation.READY_STATUSES).order_by('surname')
     if revision_name == utils.RevisionOptions.CURRENT:
         qs = qs.filter(form_revision__id=service_form.current_revision_id)
     elif revision_name == utils.RevisionOptions.ALL:

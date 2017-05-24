@@ -38,13 +38,13 @@ def authenticate_responsible_old(request: HttpRequest, uuid: str) -> HttpRespons
     """
     if not uuid:
         raise Http404
-    responsible = get_object_or_404(models.ResponsibilityPerson.objects.all(), secret_key=uuid)
+    responsible = get_object_or_404(models.Member.objects.all(), secret_key=uuid)
     return expire_auth_link(request, responsible)
 
 
 def authenticate_responsible(request: HttpRequest, responsible_id: int,
                              password: str) -> HttpResponse:
-    responsible = get_object_or_404(models.ResponsibilityPerson.objects.all(), pk=responsible_id)
+    responsible = get_object_or_404(models.Member.objects.all(), pk=responsible_id)
     result = responsible.check_auth_key(password)
     if result == responsible.PasswordStatus.PASSWORD_NOK:
         messages.error(request, _(
@@ -63,7 +63,7 @@ def authenticate_responsible_mock(request: HttpRequest, responsible_id: int) -> 
     """
     Mocked authentication to responsible view from admin panel
     """
-    responsible = get_object_or_404(models.ResponsibilityPerson.objects.all(), pk=responsible_id)
+    responsible = get_object_or_404(models.Member.objects.all(), pk=responsible_id)
     user_has_serviceform_permission(request.user, responsible.form, raise_permissiondenied=True)
 
     request.session['authenticated_responsibility'] = responsible.pk
@@ -110,9 +110,9 @@ def all_questions(request: HttpRequest, service_form: models.ServiceForm) -> Htt
 
 
 @require_authenticated_responsible
-def view_participant(request: HttpRequest, responsible: models.ResponsibilityPerson,
+def view_participant(request: HttpRequest, responsible: models.Member,
                      participant_id: int) -> HttpResponse:
-    participant = get_object_or_404(models.Participant.objects, pk=participant_id)
+    participant = get_object_or_404(models.Participation.objects, pk=participant_id)
     anonymous = False
 
     if request.user.pk:
@@ -138,9 +138,9 @@ def view_participant(request: HttpRequest, responsible: models.ResponsibilityPer
 
 
 @require_authenticated_responsible
-def view_responsible(request: HttpRequest, auth_responsible: models.ResponsibilityPerson,
+def view_responsible(request: HttpRequest, auth_responsible: models.Member,
                      responsible_pk: int) -> HttpResponse:
-    responsible = models.ResponsibilityPerson.objects.get(pk=responsible_pk)
+    responsible = models.Member.objects.get(pk=responsible_pk)
     if not (user_has_serviceform_permission(request.user, responsible.form,
                                             raise_permissiondenied=False)
             or (auth_responsible and auth_responsible.show_full_report
@@ -156,7 +156,7 @@ def view_responsible(request: HttpRequest, auth_responsible: models.Responsibili
 
 
 @require_authenticated_responsible
-def preview_form(request: HttpRequest, responsible: models.ResponsibilityPerson,
+def preview_form(request: HttpRequest, responsible: models.Member,
                  slug: str) -> HttpResponse:
     service_form = get_object_or_404(models.ServiceForm.objects, slug=slug)
     user_has_serviceform_permission(request.user, service_form)
@@ -167,7 +167,7 @@ def preview_form(request: HttpRequest, responsible: models.ResponsibilityPerson,
 
 
 @require_authenticated_responsible
-def preview_printable(request: HttpRequest, responsible: models.ResponsibilityPerson,
+def preview_printable(request: HttpRequest, responsible: models.Member,
                       slug: str) -> HttpResponse:
     service_form = get_object_or_404(models.ServiceForm.objects, slug=slug)
     user_has_serviceform_permission(request.user, service_form)
@@ -178,7 +178,7 @@ def preview_printable(request: HttpRequest, responsible: models.ResponsibilityPe
 
 @require_authenticated_responsible
 def edit_responsible(request: HttpRequest,
-                     responsible: models.ResponsibilityPerson) -> HttpResponse:
+                     responsible: models.Member) -> HttpResponse:
     if responsible is None:
         raise PermissionDenied
     service_form = responsible.form
@@ -194,7 +194,7 @@ def edit_responsible(request: HttpRequest,
 
 @require_authenticated_responsible
 def responsible_report(request: HttpRequest,
-                       responsible: models.ResponsibilityPerson) -> HttpResponse:
+                       responsible: models.Member) -> HttpResponse:
     if responsible is None:
         raise PermissionDenied
     service_form = responsible.form
@@ -209,7 +209,7 @@ def logout_view(request: HttpRequest, **kwargs) -> HttpResponse:
     logout(request)
     messages.info(request, _('You have been logged out'))
     if responsible_pk:
-        responsible = models.ResponsibilityPerson.objects.get(pk=responsible_pk)
+        responsible = models.Member.objects.get(pk=responsible_pk)
         return HttpResponseRedirect(reverse('password_login', args=(responsible.form.slug,)))
     return HttpResponseRedirect(reverse('main_page'))
 
@@ -234,14 +234,14 @@ def invite(request: HttpRequest, serviceform_slug: str, **kwargs) -> HttpRespons
 
 
 @require_authenticated_responsible
-def to_full_report(request: HttpRequest, responsible: models.ResponsibilityPerson) -> HttpResponse:
+def to_full_report(request: HttpRequest, responsible: models.Member) -> HttpResponse:
     if not responsible.show_full_report:
         raise PermissionDenied
     return redirect('report', responsible.form.slug)
 
 
 def unsubscribe(request: HttpRequest, secret_id: str) -> HttpResponse:
-    responsible = get_object_or_404(models.ResponsibilityPerson.objects, pk=decode(secret_id))
+    responsible = get_object_or_404(models.Member.objects, pk=decode(secret_id))
     responsible.send_email_notifications = False
     responsible.save(update_fields=['send_email_notifications'])
     return render(request, 'serviceform/login/unsubscribe_responsible.html',

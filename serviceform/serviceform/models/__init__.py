@@ -19,7 +19,7 @@
 from .email import EmailMessage, EmailTemplate
 from .participation import (ParticipationActivity, ParticipationActivityChoice, ParticipantLog,
                             QuestionAnswer)
-from .people import Participant, ResponsibilityPerson
+from .people import Participation, Organization, Member
 from .serviceform import (ServiceForm, FormRevision, Activity, ActivityChoice, Level1Category,
                           Level2Category, Question, ColorField)
 

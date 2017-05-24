@@ -190,13 +190,13 @@ class RevisionInline(NestedStackedInline):
     extra = 0
 
 
-class ResponsibilityPersonInline(NestedStackedInline):
-    model = models.ResponsibilityPerson
-    extra = 0
-    fields = (('forenames', 'surname'), ('email', 'phone_number'), 'street_address',
-              ('postal_code', 'city'), 'send_email_notifications', 'hide_contact_details',
-              'show_full_report', 'personal_link')
-    readonly_fields = ('personal_link',)
+#class ResponsibilityPersonInline(NestedStackedInline):
+#    model = models.Member
+#    extra = 0
+#    fields = (('forenames', 'surname'), ('email', 'phone_number'), 'street_address',
+#              ('postal_code', 'city'), 'send_email_notifications', 'hide_contact_details',
+#              'show_full_report', 'personal_link')
+#    readonly_fields = ('personal_link',)
 
 
 @admin.register(models.ServiceForm)
@@ -205,8 +205,7 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
     class Media:
         css = {'all': ('serviceform/serviceform_admin.css',)}
 
-    inlines = [RevisionInline, EmailTemplateInline, ResponsibilityPersonInline,
-               Level1CategoryInline, QuestionInline]
+    inlines = [RevisionInline, EmailTemplateInline, Level1CategoryInline, QuestionInline]
 
     superuser_actions = ['bulk_email_former_participants', 'bulk_email_responsibles']
     if settings.DEBUG:
@@ -311,7 +310,7 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
     def get_form(self, request: HttpRequest, obj: models.ServiceForm=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         if obj:
-            request._responsibles = responsibles = models.ResponsibilityPerson.objects.filter(
+            request._responsibles = responsibles = models.Member.objects.filter(
                 form=obj)
             form.base_fields['responsible'].queryset = responsibles
             form.base_fields['current_revision'].queryset = models.FormRevision.objects.filter(
@@ -353,7 +352,7 @@ class EmailMessageAdmin(ExtendedLogMixin, admin.ModelAdmin):
                     'content_display',)
 
 
-@admin.register(models.Participant)
+@admin.register(models.Participation)
 class ParticipantAdmin(ExtendedLogMixin, admin.ModelAdmin):
     list_display = (
         'id', '__str__', 'form_display', 'form_revision', 'status', 'activities_display',

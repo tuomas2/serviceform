@@ -122,7 +122,7 @@ class ParticipantSendEmailForm(Form):
     def clean_email(self):
         email = self.cleaned_data['email']
         if email and 'email' in self.changed_data:
-            participant = models.Participant.objects.filter(
+            participant = models.Participation.objects.filter(
                 email=email,
                 form_revision__form=self.instance).first()
             if not participant:
@@ -131,9 +131,9 @@ class ParticipantSendEmailForm(Form):
         return email
 
     def save(self):
-        participant = models.Participant.objects.filter(email=self.cleaned_data['email'],
-                                                        form_revision__form=self.instance).first()
-        success = participant.send_participant_email(models.Participant.EmailIds.RESEND)
+        participant = models.Participation.objects.filter(email=self.cleaned_data['email'],
+                                                          form_revision__form=self.instance).first()
+        success = participant.send_participant_email(models.Participation.EmailIds.RESEND)
         if success:
             messages.info(self.request,
                           _('Access link sent to email address {}').format(participant.email))
@@ -158,16 +158,16 @@ class ResponsibleSendEmailForm(Form):
     def clean_email(self) -> str:
         email = self.cleaned_data['email']
         if email and 'email' in self.changed_data:
-            responsible = models.ResponsibilityPerson.objects.filter(email=email,
-                                                                     form=self.instance).first()
+            responsible = models.Member.objects.filter(email=email,
+                                                       form=self.instance).first()
             if not responsible:
                 raise ValidationError(
                     _('There were no responsible with email address {}').format(email))
         return email
 
     def save(self) -> Optional[models.EmailMessage]:
-        responsible = models.ResponsibilityPerson.objects.filter(email=self.cleaned_data['email'],
-                                                                 form=self.instance).first()
+        responsible = models.Member.objects.filter(email=self.cleaned_data['email'],
+                                                   form=self.instance).first()
         success = responsible.resend_auth_link()
         if success:
             messages.info(self.request,
@@ -180,9 +180,9 @@ class ResponsibleSendEmailForm(Form):
 
 class ContactForm(ModelForm):
     class Meta:
-        model = models.Participant
+        model = models.Member
         fields = ('forenames', 'surname', 'year_of_birth', 'street_address',
-                  'postal_code', 'city', 'email', 'phone_number', 'send_email_allowed')
+                  'postal_code', 'city', 'email', 'phone_number', 'send_email_notifications')
 
     def __init__(self, *args, user: 'AbstractUser'=None, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -249,8 +249,8 @@ class ContactForm(ModelForm):
     def clean_email(self):
         email = self.cleaned_data['email']
         if email and 'email' in self.changed_data and \
-                models.Participant.objects.filter(email=email,
-                                                  form_revision__form=self.service_form) \
+                models.Participation.objects.filter(email=email,
+                                                    form_revision__form=self.service_form) \
                         .exclude(pk=self.participant.pk):
             logger.info('User tried to enter same email address %s again.', email)
             email_link = '<a href="{}">{}</a>'.format(reverse('send_auth_link', args=(email,)),
@@ -268,7 +268,7 @@ class ContactForm(ModelForm):
 
 class ResponsibleForm(ModelForm):
     class Meta:
-        model = models.ResponsibilityPerson
+        model = models.Member
         fields = ('forenames', 'surname', 'street_address',
                   'postal_code', 'city', 'email', 'phone_number', 'send_email_notifications')
 
@@ -285,7 +285,7 @@ class LogForm(ModelForm):
         model = models.ParticipantLog
         fields = ('message',)
 
-    def __init__(self, participant: models.Participant, user: 'AbstractUser',
+    def __init__(self, participant: models.Participation, user: 'AbstractUser',
                  *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.instance.participant = participant
@@ -308,7 +308,7 @@ class ParticipationForm:
     Not any standard Django form.
     """
 
-    def __init__(self, request: HttpRequest, participant: models.Participant,
+    def __init__(self, request: HttpRequest, participant: models.Participation,
                  category: models.Level1Category=None, post_data: 'QueryDict'=None,
                  service_form: models.ServiceForm=None) -> None:
         self.instance = participant
@@ -454,7 +454,7 @@ class QuestionForm:
     Not any standard Django form.
     """
 
-    def __init__(self, request: HttpRequest, participant: models.Participant,
+    def __init__(self, request: HttpRequest, participant: models.Participation,
                  post_data: 'QueryDict'=None) -> None:
         self.instance = participant
         self.request = request

@@ -27,7 +27,7 @@ from itertools import chain
 from typing import Match, Optional, TYPE_CHECKING, Iterable, Union
 
 if TYPE_CHECKING:
-    from .models import ServiceForm, Participant, ResponsibilityPerson, AbstractServiceFormItem
+    from .models import ServiceForm, Participation, Member, AbstractServiceFormItem
 
 from colorful.forms import RGB_REGEX
 from django.contrib import messages
@@ -116,20 +116,20 @@ def user_has_serviceform_permission(user: settings.AUTH_USER_MODEL, service_form
 _participants = {}
 
 
-def get_participant(_id: int) -> 'Participant':
+def get_participant(_id: int) -> 'Participation':
     p = _participants.get(_id)
     if p is None:
-        logger.error('Participant %d was not in cache!', _id)
+        logger.error('Participation %d was not in cache!', _id)
     return p
 
 
 def fetch_participants(service_form: 'ServiceForm', revision_name: str) -> None:
     global _participants
-    from .models import Participant
+    from .models import Participation
     is_all_revisions = revision_name == RevisionOptions.ALL
     is_current_revision = revision_name == RevisionOptions.CURRENT
 
-    qs = Participant.objects.prefetch_related('participantlog_set__written_by')
+    qs = Participation.objects.prefetch_related('participantlog_set__written_by')
     if is_all_revisions:
         qs = qs.select_related('form_revision')
         participants = qs.filter(form_revision__form=service_form).distinct()
@@ -177,7 +177,7 @@ def init_serviceform_counters(service_form: 'ServiceForm', all_responsibles: boo
     cat1_counter = 0
     _responsible_counts.clear()
 
-    def _add_responsible(responsibles: 'Iterable[ResponsibilityPerson]',
+    def _add_responsible(responsibles: 'Iterable[Member]',
                          *targets: 'AbstractServiceFormItem',
                          resp_count: bool=False) -> None:
         if resp_count:
@@ -222,12 +222,12 @@ def init_serviceform_counters(service_form: 'ServiceForm', all_responsibles: boo
 
 
 def shuffle_person_data(service_form: 'ServiceForm') -> None:
-    from .models import Participant, ResponsibilityPerson, Question
+    from .models import Participation, Member, Question
     letters = len(string.ascii_letters)
     forenames = set()
     surnames = set()
-    participants = Participant.objects.filter(form_revision__form=service_form)
-    responsibles = ResponsibilityPerson.objects.filter(form=service_form)
+    participants = Participation.objects.filter(form_revision__form=service_form)
+    responsibles = Member.objects.filter(form=service_form)
     for p in chain(participants, responsibles):
         for n in p.forenames.split(' '):
             if n:
@@ -288,7 +288,7 @@ def shuffle_person_data(service_form: 'ServiceForm') -> None:
             shuffle_question(q)
 
 
-def count_for_responsible(resp: 'ResponsibilityPerson') -> int:
+def count_for_responsible(resp: 'Member') -> int:
     return _responsible_counts[resp.pk]
 
 
@@ -346,9 +346,9 @@ def clean_session(request: HttpRequest):
 
 
 def get_responsible(request: HttpRequest):
-    from .models import ResponsibilityPerson
+    from .models import Member
     responsible_pk = request.session.get('authenticated_responsibility')
-    return ResponsibilityPerson.objects.filter(pk=responsible_pk).first()
+    return Member.objects.filter(pk=responsible_pk).first()
 
 
 def safe_join(sep: str, args_generator: Iterable[str]):
@@ -362,12 +362,12 @@ def safe_join(sep: str, args_generator: Iterable[str]):
     return result
 
 
-def expire_auth_link(request: HttpRequest, obj: 'Union[Participant, ResponsibilityPerson]') \
+def expire_auth_link(request: HttpRequest, obj: 'Union[Participation, Member]') \
         -> HttpResponse:
     """
 
     :param request: WSGI request
-    :param obj: either Participant or ResponsibilityPerson
+    :param obj: either Participation or Member
     :return: HttpResponse
     """
     obj.resend_auth_link()

@@ -975,7 +975,7 @@ msgid "Answer required?"
 msgstr ""
 
 #: models.py:973
-msgid "Participant"
+msgid "Participation"
 msgstr ""
 
 #: models.py:974 urls.py:90
@@ -1024,7 +1024,7 @@ msgid ""
 msgstr ""
 
 #: models.py:1041
-msgid "Participant created in system"
+msgid "Participation created in system"
 msgstr ""
 
 #: models.py:1044

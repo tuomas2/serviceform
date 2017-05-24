@@ -32,7 +32,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 if TYPE_CHECKING:
-    from .people import ResponsibilityPerson
+    from .people import Member
 
 from .. import utils
 
@@ -131,7 +131,7 @@ class SubitemMixin(CopyMixin):
     def sub_items(self):
         return getattr(self, self.subitem_name + '_set').all()
 
-    def has_responsible(self, r: 'ResponsibilityPerson') -> bool:
+    def has_responsible(self, r: 'Member') -> bool:
         return r in self._responsibles
 
 

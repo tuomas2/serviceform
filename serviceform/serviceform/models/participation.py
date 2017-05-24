@@ -25,11 +25,11 @@ from django.utils.functional import cached_property
 from .. import utils
 
 if TYPE_CHECKING:
-    from .people import Participant
+    from .people import Participation
 
 class ParticipantLog(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    participant = models.ForeignKey('serviceform.Participant', on_delete=models.CASCADE)
+    participant = models.ForeignKey('serviceform.Participation', on_delete=models.CASCADE)
     writer_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     writer_id = models.PositiveIntegerField()
     # Can be either responsible or django user
@@ -43,13 +43,13 @@ class ParticipationActivity(models.Model):
         ordering = (
         'activity__category__category__order', 'activity__category__order', 'activity__order',)
 
-    participant = models.ForeignKey('serviceform.Participant', on_delete=models.CASCADE)
+    participant = models.ForeignKey('serviceform.Participation', on_delete=models.CASCADE)
     activity = models.ForeignKey('serviceform.Activity', on_delete=models.CASCADE)
     additional_info = models.CharField(max_length=1024, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     @cached_property
-    def cached_participant(self) -> 'Participant':
+    def cached_participant(self) -> 'Participation':
         return utils.get_participant(self.participant_id)
 
     def __str__(self):
@@ -76,7 +76,7 @@ class ParticipationActivityChoice(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     @cached_property
-    def cached_participant(self) -> 'Participant':
+    def cached_participant(self) -> 'Participation':
         return utils.get_participant(self.activity.participant_id)
 
     def __str__(self):
@@ -88,7 +88,7 @@ class ParticipationActivityChoice(models.Model):
 
 
 class QuestionAnswer(models.Model):
-    participant = models.ForeignKey('serviceform.Participant', on_delete=models.CASCADE)
+    participant = models.ForeignKey('serviceform.Participation', on_delete=models.CASCADE)
     question = models.ForeignKey('serviceform.Question', on_delete=models.CASCADE)
     answer = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True, null=True)
@@ -97,7 +97,7 @@ class QuestionAnswer(models.Model):
         ordering = ('question__order',)
 
     @cached_property
-    def cached_participant(self) -> 'Participant':
+    def cached_participant(self) -> 'Participation':
         return utils.get_participant(self.participant_id)
 
     def __str__(self):
