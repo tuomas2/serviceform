@@ -16,8 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Serviceform.  If not, see <http://www.gnu.org/licenses/>.
 
+from .email import EmailMessage, EmailTemplate
+from .participation import (ParticipationActivity, ParticipationActivityChoice, ParticipantLog,
+                            QuestionAnswer)
+from .people import Participant, ResponsibilityPerson
+from .serviceform import (ServiceForm, FormRevision, Activity, ActivityChoice, Level1Category,
+                          Level2Category, Question, ColorField)
 
-from .email import *
-from .participation import *
-from .people import *
-from .serviceform import *
+
+from .mixins import (ContactDetailsMixinEmail, ContactDetailsMixin, CopyMixin, NameDescriptionMixin,
+                     PasswordMixin, SubitemMixin)
