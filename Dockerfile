@@ -1,4 +1,5 @@
 FROM tuomasairaksinen/serviceform-base:latest
+MAINTAINER Tuomas Airaksinen <tuomas.airaksinen@gmail.com>
 ADD ./requirements.txt /
 RUN pip install -r requirements.txt
 ADD . /code/
