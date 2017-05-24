@@ -31,11 +31,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from .. import utils
 from .mixins import CopyMixin, PasswordMixin, ContactDetailsMixinEmail, ContactDetailsMixin
+from .email import EmailMessage
 
 if TYPE_CHECKING:
     from .participation import ParticipationActivity, QuestionAnswer, ParticipantLog
     from .serviceform import ServiceForm
-    from .email import EmailMessage
 
 
 class ResponsibilityPerson(CopyMixin, PasswordMixin, ContactDetailsMixinEmail, models.Model):

@@ -22,7 +22,7 @@ def test_hit_admin_pages(report_settings, db, admin_client: Client):
     assert res.status_code == Http.OK
     res = admin_client.get('/admin/serviceform/serviceform/11/change/') # TODO hard-coded id.
     assert res.status_code == Http.OK
-    assert b'Tutustu palvelulomakkeeseen' in res.content
+    assert b'asdf asfd asdf asdf' in res.content
 
 
 def test_hit_admin_reports(db, report_settings, admin_client: Client):
