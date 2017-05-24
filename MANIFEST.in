@@ -1,6 +1,6 @@
 include README.rst
 include LICENCE.txt
-
+recursive-include serviceform *.html *.css *.scss fontawesome* *.js
+recursive-include * *.mo
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
-

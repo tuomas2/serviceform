@@ -8,7 +8,7 @@ with open('README.rst') as readme_file:
 
 setup(
     name="serviceform",
-    version="0.9.4",
+    version="0.9.5",
     description="Django web application to collect volunteering willingness "
                 "data and report to responsible people",
     long_description=readme,
@@ -17,9 +17,6 @@ setup(
     url="https://github.com/tuomas2/serviceform",
     packages=['serviceform.'+i for i in find_packages('serviceform')],
     include_package_data=True,
-    package_data={
-        '': ["*.html", "*.css", "*.scss", "fontawesome*", "*.js"],
-    },
     install_requires=[
         "Django",
         "django-libsass",
