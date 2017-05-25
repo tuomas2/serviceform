@@ -302,7 +302,7 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
         form = super().get_form(request, obj, **kwargs)
         if obj:
             request._responsibles = responsibles = models.Member.objects.filter(
-                form=obj)
+                organization_id=obj.organization_id)
             form.base_fields['responsible'].queryset = responsibles
             form.base_fields['current_revision'].queryset = models.FormRevision.objects.filter(
                 form=obj)

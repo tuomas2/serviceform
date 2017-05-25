@@ -429,7 +429,7 @@ class ServiceForm(SubitemMixin, models.Model):
             old_time = timezone.now() - datetime.timedelta(minutes=20)
             ready = self.current_revision.participation_set.filter(
                 status__in=Participation.READY_STATUSES)
-            recent_ongoing = self.current_revision.participant_set.filter(
+            recent_ongoing = self.current_revision.participation_set.filter(
                 status__in=[Participation.STATUS_ONGOING],
                 last_modified__gt=old_time)
 
