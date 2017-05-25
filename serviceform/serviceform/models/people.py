@@ -30,6 +30,9 @@ from .mixins import PasswordMixin, postalcode_regex, phone_regex
 from .. import utils
 
 
+if TYPE_CHECKING
+    from .participation import Participation
+
 class Organization(models.Model):
     name = models.CharField(_('Organization name'), max_length=64)
 
@@ -134,8 +137,6 @@ class Member(PasswordMixin, models.Model):
         return settings.SERVER_URL + reverse('unsubscribe_responsible', args=(self.secret_id,))
 
     def resend_auth_link(self) -> 'EmailMessage':
-        # TODO
-        raise NotImplementedError
         context = {'responsible': str(self),
                    'form': str(self.form),
                    'url': self.make_new_auth_url(),
@@ -145,8 +146,6 @@ class Member(PasswordMixin, models.Model):
         return EmailMessage.make(self.form.email_to_responsible_auth_link, context, self.email)
 
     def send_responsibility_email(self, participant: 'Participation') -> None:
-        # TODO
-        raise NotImplementedError
         if self.send_email_notifications:
             context = {'responsible': str(self),
                        'participant': str(participant),
@@ -159,8 +158,6 @@ class Member(PasswordMixin, models.Model):
             EmailMessage.make(self.form.email_to_responsibles, context, self.email)
 
     def send_bulk_mail(self) -> 'Optional[EmailMessage]':
-        #TODO
-        raise NotImplementedError
         if self.send_email_notifications:
             context = {'responsible': str(self),
                        'form': str(self.form),
