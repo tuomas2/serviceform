@@ -427,7 +427,7 @@ class ServiceForm(SubitemMixin, models.Model):
     def participation_count(self) -> str:
         if self.current_revision:
             old_time = timezone.now() - datetime.timedelta(minutes=20)
-            ready = self.current_revision.participant_set.filter(
+            ready = self.current_revision.participation_set.filter(
                 status__in=Participation.READY_STATUSES)
             recent_ongoing = self.current_revision.participant_set.filter(
                 status__in=[Participation.STATUS_ONGOING],
@@ -447,7 +447,7 @@ class ServiceForm(SubitemMixin, models.Model):
 
     def bulk_email_former_participants(self) -> None:
         logger.info('Bulk email former participants %s', self)
-        for p in Participation.objects.filter(send_email_allowed=True,
+        for p in Participation.objects.filter(member__allow_participant_email=True,
                                               form_revision__send_bulk_email_to_participants=True,
                                               form_revision__form=self,
                                               form_revision__valid_to__lt=timezone.now()).distinct():
@@ -482,7 +482,7 @@ class AbstractServiceFormItem(models.Model):
                                         verbose_name=_('Order'))
     responsibles = select2_fields.ManyToManyField(Member, blank=True,
                                                   verbose_name=_('Responsible persons'),
-                                                  related_name='%(class)s_related',
+                                                  related_name='%(class)s_responsibles',
                                                   overlay=_('Choose responsibles'),
                                                   )
 
