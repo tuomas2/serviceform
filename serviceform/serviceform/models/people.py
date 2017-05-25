@@ -15,8 +15,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Serviceform.  If not, see <http://www.gnu.org/licenses/>.
+
 from enum import Enum
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, Union, Iterator
 
 import time
 
@@ -105,10 +106,29 @@ class Member(PasswordMixin, models.Model):
             'Send email notifications whenever new participation to administered activities is '
             'registered. Email contains also has a link that allows accessing raport of '
             'administered activities.'))
+        # TODO help text from participation
+        #help_text=_(
+        #'You will receive email that contains a link that allows later modification of the form. '
+        #'Also when new version of form is published, you will be notified. '
+        #'It is highly recommended that you keep this enabled unless you move away '
+        #'and do not want to participate at all any more. You can also change this setting later '
+        #'if you wish.')
+
 
     # TODO: rename: allow_showing_contact_details_in_forms
     hide_contact_details = models.BooleanField(_('Hide contact details in form'), default=False)
     show_full_report = models.BooleanField(_('Grant access to full reports'), default=False)
+
+    @cached_property
+    def age(self) -> Union[int, str]:
+        return timezone.now().year - self.year_of_birth if self.year_of_birth else '-'
+
+
+    @property
+    def contact_details(self) -> Iterator[str]:
+        yield from super().contact_details
+        yield _('Year of birth'), self.year_of_birth or '-'
+
 
     def make_new_password(self) -> str:
         valid_hashes = []

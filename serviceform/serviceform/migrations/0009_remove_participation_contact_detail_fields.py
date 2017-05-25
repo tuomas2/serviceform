@@ -60,4 +60,8 @@ class Migration(migrations.Migration):
             model_name='participation',
             name='secret_key',
         ),
+        migrations.RemoveField(
+            model_name='participation',
+            name='send_email_allowed',
+        ),
     ]

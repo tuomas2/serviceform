@@ -89,27 +89,9 @@ class Participation(models.Model):
     form_revision = models.ForeignKey('serviceform.FormRevision', null=True,
                                       on_delete=models.CASCADE)
 
-    #email_verified = models.BooleanField(_('Email verified'), default=False)
-
-    send_email_allowed = models.BooleanField(_('Sending email allowed'), default=True, help_text=_(
-        'You will receive email that contains a link that allows later modification of the form. '
-        'Also when new version of form is published, you will be notified. '
-        'It is highly recommended that you keep this enabled unless you move away '
-        'and do not want to participate at all any more. You can also change this setting later '
-        'if you wish.'))
-
-    @cached_property
-    def age(self) -> Union[int, 'str']:
-        return timezone.now().year - self.year_of_birth if self.year_of_birth else '-'
-
     @property
     def is_updating(self) -> bool:
         return self.status == self.STATUS_UPDATING
-
-    @property
-    def contact_details(self) -> Iterator[str]:
-        yield from super().contact_details
-        yield _('Year of birth'), self.year_of_birth or '-'
 
     @property
     def additional_data(self) -> Iterator[Tuple[str, str]]:
