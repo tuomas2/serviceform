@@ -233,7 +233,7 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
         _no_email_hit = False
 
         for r in resps:
-            if not r.send_email_notifications:
+            if not r.allow_responsible_email:
                 _no_email_hit = True
                 continue
 
@@ -664,11 +664,11 @@ def test_unsubscribe_participant(client: Client, participant: models.Participati
 
 def test_unsubscribe_responsible(client: Client, responsible: models.Member):
     from serviceform.serviceform.utils import encode
-    assert responsible.send_email_notifications
+    assert responsible.allow_responsible_email
     res = client.get(Pages.UNSUBSCRIBE_RESPONSIBLE % encode(responsible.pk))
     assert res.status_code == Http.OK
     responsible.refresh_from_db()
-    assert not responsible.send_email_notifications
+    assert not responsible.allow_responsible_email
 
 
 # TODO:

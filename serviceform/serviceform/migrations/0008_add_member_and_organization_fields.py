@@ -37,7 +37,7 @@ def fill_participation_member(apps, schema_editor):
 
         m.membership_type = 'external'
         m.organization = p.form_revision.form.organization
-        m.send_email_notifications = p.send_email_allowed
+        m.allow_participant_email = p.send_email_allowed
 
         m.email_verified = p.email_verified
         if p.year_of_birth:
@@ -85,6 +85,18 @@ class Migration(migrations.Migration):
             model_name='member',
             name='year_of_birth',
             field=models.SmallIntegerField(blank=True, null=True, verbose_name='Year of birth'),
+        ),
+        migrations.RenameField(
+            model_name='member',
+            old_name='send_email_notifications',
+            new_name='allow_responsible_email',
+        ),
+        migrations.AddField(
+            model_name='member',
+            name='allow_participant_email',
+            field=models.BooleanField(default=True,
+                                      help_text='You will receive email that contains a link that allows later modification of the form. Also when new version of form is published, you will be notified. It is highly recommended that you keep this enabled unless you move away and do not want to participate at all any more. You can also change this setting later if you wish.',
+                                      verbose_name='Send email notifications'),
         ),
         migrations.RunPython(fill_serviceform_organization, null),
         migrations.RunPython(fill_participation_member, null),

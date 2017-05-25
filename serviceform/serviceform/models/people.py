@@ -94,7 +94,7 @@ class Member(PasswordMixin, models.Model):
 
 
     # TODO: rename allow_send_email ?
-    send_email_notifications = models.BooleanField(
+    allow_responsible_email = models.BooleanField(
         default=True,
         verbose_name=_('Send email notifications'),
         help_text=_(
@@ -102,12 +102,16 @@ class Member(PasswordMixin, models.Model):
             'registered. Email contains also has a link that allows accessing raport of '
             'administered activities.'))
         # TODO help text from participation
-        #help_text=_(
-        #'You will receive email that contains a link that allows later modification of the form. '
-        #'Also when new version of form is published, you will be notified. '
-        #'It is highly recommended that you keep this enabled unless you move away '
-        #'and do not want to participate at all any more. You can also change this setting later '
-        #'if you wish.')
+
+    allow_participant_email = models.BooleanField(
+        default=True,
+        verbose_name=_('Send email notifications'),
+        help_text=_(
+        'You will receive email that contains a link that allows later modification of the form. '
+        'Also when new version of form is published, you will be notified. '
+        'It is highly recommended that you keep this enabled unless you move away '
+        'and do not want to participate at all any more. You can also change this setting later '
+        'if you wish.'))
 
 
     # TODO: rename: allow_showing_contact_details_in_forms
@@ -232,7 +236,7 @@ class Member(PasswordMixin, models.Model):
         return EmailMessage.make(self.form.email_to_responsible_auth_link, context, self.email)
 
     def send_responsibility_email(self, participant: 'Participation') -> None:
-        if self.send_email_notifications:
+        if self.allow_responsible_email:
             context = {'responsible': str(self),
                        'participant': str(participant),
                        'form': str(self.form),
@@ -244,7 +248,7 @@ class Member(PasswordMixin, models.Model):
             EmailMessage.make(self.form.email_to_responsibles, context, self.email)
 
     def send_bulk_mail(self) -> 'Optional[EmailMessage]':
-        if self.send_email_notifications:
+        if self.allow_responsible_email:
             context = {'responsible': str(self),
                        'form': str(self.form),
                        'url': self.make_new_auth_url(),

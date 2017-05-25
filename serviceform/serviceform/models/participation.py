@@ -48,7 +48,6 @@ class Participation(models.Model):
 
     # Current view is set by view decorator require_authenticated_participant
     _current_view = 'contact_details'
-    AUTH_VIEW = 'authenticate_participant_new'
 
     class EmailIds(Enum):
         ON_FINISH = object()

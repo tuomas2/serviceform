@@ -182,7 +182,7 @@ class ContactForm(ModelForm):
     class Meta:
         model = models.Member
         fields = ('forenames', 'surname', 'year_of_birth', 'street_address',
-                  'postal_code', 'city', 'email', 'phone_number', 'send_email_notifications')
+                  'postal_code', 'city', 'email', 'phone_number', "allow_participant_email")
 
     def __init__(self, *args, user: 'AbstractUser'=None, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -270,7 +270,7 @@ class ResponsibleForm(ModelForm):
     class Meta:
         model = models.Member
         fields = ('forenames', 'surname', 'street_address',
-                  'postal_code', 'city', 'email', 'phone_number', 'send_email_notifications')
+                  'postal_code', 'city', 'email', 'phone_number', "allow_responsible_email")
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
