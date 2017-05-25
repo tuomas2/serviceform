@@ -18,8 +18,8 @@
 
 from .email import EmailMessage, EmailTemplate
 from .participation import (ParticipationActivity, ParticipationActivityChoice, ParticipantLog,
-                            QuestionAnswer)
-from .people import Participation, Organization, Member
+                            QuestionAnswer, Participation)
+from .people import Organization, Member
 from .serviceform import (ServiceForm, FormRevision, Activity, ActivityChoice, Level1Category,
                           Level2Category, Question, ColorField)
 

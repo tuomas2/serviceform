@@ -41,9 +41,9 @@ from .. import emails, utils
 from ..utils import ColorStr
 
 from .mixins import SubitemMixin, NameDescriptionMixin, CopyMixin
-from .people import Participation, Member, Organization
+from .people import Member, Organization
 from .email import EmailTemplate
-from .participation import QuestionAnswer
+from .participation import QuestionAnswer, Participation
 
 if TYPE_CHECKING:
     from .participation import ParticipationActivity, ParticipationActivityChoice

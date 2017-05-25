@@ -34,6 +34,7 @@ from .mixins import CopyMixin
 if TYPE_CHECKING:
     from .serviceform import ServiceForm
 
+
 class EmailMessage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)

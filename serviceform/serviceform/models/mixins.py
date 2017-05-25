@@ -46,6 +46,7 @@ postalcode_regex = RegexValidator(
     code='invalid',
 )
 
+
 class ContactDetailsMixin(models.Model):
     class Meta:
         abstract = True
