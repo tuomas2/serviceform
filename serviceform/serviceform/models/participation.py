@@ -98,8 +98,9 @@ class Participation(models.Model):
         yield _('Participation created in system'), self.created_at
         yield _('Last finished'), self.last_finished
         yield _('Last modified'), self.last_modified
-        yield _('Email address verified'), (_('No'), _('Yes'))[self.email_verified]
-        yield _('Emails allowed'), (_('No'), _('Yes'))[self.send_email_allowed]
+        # TODO: these need to be shown in Member view
+        #yield _('Email address verified'), (_('No'), _('Yes'))[self.email_verified]
+        #yield _('Emails allowed'), (_('No'), _('Yes'))[self.send_email_allowed]
         yield _('Form status'), self.STATUS_DICT[self.status]
 
     @cached_property
@@ -109,10 +110,6 @@ class Participation(models.Model):
         choice_count = len(choices)
         activity_count = self.participationactivity_set.exclude(pk__in=choices).count()
         return activity_count + choice_count
-
-    def make_new_verification_url(self) -> str:
-        return settings.SERVER_URL + reverse('verify_email',
-                                             args=(self.pk, self.make_new_password()))
 
     @cached_property
     def activities(self) -> 'Sequence[ParticipationActivity]':
@@ -128,28 +125,13 @@ class Participation(models.Model):
     activities_display.short_description = _('Activities')
 
     @cached_property
-    def form(self) -> 'ServiceForm':
+    def form(self) -> 'Optional[ServiceForm]':
         return self.form_revision.form if self.form_revision else None
 
     def form_display(self) -> str:
         return str(self.form)
 
     form_display.short_description = _('Form')
-
-    def personal_link(self) -> str:
-        return format_html('<a href="{}">{}</a>',
-                           reverse('authenticate_participant_mock', args=(self.pk,)),
-                           self.pk)
-
-    personal_link.short_description = _('Link to personal report')
-
-    @property
-    def secret_id(self) -> str:
-        return utils.encode(self.id)
-
-    @property
-    def list_unsubscribe_link(self) -> str:
-        return settings.SERVER_URL + reverse('unsubscribe_participant', args=(self.secret_id,))
 
     def send_email_to_responsibles(self) -> None:
         """

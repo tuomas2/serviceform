@@ -362,7 +362,7 @@ class EmailMessageAdmin(ExtendedLogMixin, admin.ModelAdmin):
 class ParticipantAdmin(ExtendedLogMixin, admin.ModelAdmin):
     list_display = (
         'id', '__str__', 'form_display', 'form_revision', 'status', 'activities_display',
-        'created_at', 'last_modified', 'personal_link')
+        'created_at', 'last_modified')
     fields = ('forenames', 'surname')
 
     def get_queryset(self, request):

@@ -93,11 +93,6 @@ class Member(PasswordMixin, models.Model):
                                   verbose_name=_('Secret key'))
 
 
-
-
-    # TODO: this might not be appropriate there any more
-    AUTH_VIEW = 'authenticate_responsible_new'
-
     # TODO: rename allow_send_email ?
     send_email_notifications = models.BooleanField(
         default=True,
@@ -119,16 +114,32 @@ class Member(PasswordMixin, models.Model):
     hide_contact_details = models.BooleanField(_('Hide contact details in form'), default=False)
     show_full_report = models.BooleanField(_('Grant access to full reports'), default=False)
 
+    # TODO change view name
+    def personal_link(self) -> str:
+        return format_html('<a href="{}">{}</a>',
+                           reverse('authenticate_participant_mock', args=(self.pk,)),
+                           self.pk)
+
+    personal_link.short_description = _('Link to personal report')
+
+    @property
+    def secret_id(self) -> str:
+        return utils.encode(self.id)
+
+    # TODO: change view name
+    @property
+    def list_unsubscribe_link(self) -> str:
+        return settings.SERVER_URL + reverse('unsubscribe_participant', args=(self.secret_id,))
+
+
     @cached_property
     def age(self) -> Union[int, str]:
         return timezone.now().year - self.year_of_birth if self.year_of_birth else '-'
-
 
     @property
     def contact_details(self) -> Iterator[str]:
         yield from super().contact_details
         yield _('Year of birth'), self.year_of_birth or '-'
-
 
     def make_new_password(self) -> str:
         valid_hashes = []
@@ -148,9 +159,13 @@ class Member(PasswordMixin, models.Model):
         return password
 
     def make_new_auth_url(self) -> str:
-        url = settings.SERVER_URL + reverse(self.AUTH_VIEW, args=(self.pk,
-                                                                  self.make_new_password(),))
+        url = settings.SERVER_URL + reverse('authenticate_responsible_new', args=(self.pk,
+                                                                                  self.make_new_password(),))
         return url
+
+    def make_new_verification_url(self) -> str:
+        return settings.SERVER_URL + reverse('verify_email',
+                                             args=(self.pk, self.make_new_password()))
 
     def check_auth_key(self, password: str) -> PasswordStatus:
         for key, expire_timestamp in reversed(self.auth_keys_hash_storage):
