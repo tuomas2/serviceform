@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Serviceform.  If not, see <http://www.gnu.org/licenses/>.
+
 from enum import Enum
 from typing import Sequence, TYPE_CHECKING, Union, Iterator, Tuple, List, Optional
 
