@@ -15,15 +15,21 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Serviceform.  If not, see <http://www.gnu.org/licenses/>.
-
+from enum import Enum
 from typing import Optional, TYPE_CHECKING
 
+import time
+
+import datetime
 from django.conf import settings
+from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
 
 from .email import EmailMessage
 from .mixins import PasswordMixin, postalcode_regex, phone_regex
@@ -38,6 +44,10 @@ class Organization(models.Model):
 
 
 class Member(PasswordMixin, models.Model):
+    class PasswordStatus(Enum):
+        PASSWORD_EXPIRED = object()
+        PASSWORD_OK = True
+        PASSWORD_NOK = False
 
     MEMBER_EXTERNAL = 'external'
     MEMBER_NORMAL = 'normal'
@@ -47,7 +57,6 @@ class Member(PasswordMixin, models.Model):
         (MEMBER_NORMAL, _('normal')),
         (MEMBER_STAFF, _('staff'))
     )
-
 
     forenames = models.CharField(max_length=64, verbose_name=_('Forename(s)'))
     surname = models.CharField(max_length=64, verbose_name=_('Surname'))
@@ -74,6 +83,17 @@ class Member(PasswordMixin, models.Model):
 
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
 
+    # New style auth link hash
+    auth_keys_hash_storage = JSONField(default=[])  # List of (hash, expire) tuples
+
+    # TODO: remove this field (as well as views using it) when all users are having new auth_key_hash set up.
+    secret_key = models.CharField(max_length=36, default=utils.generate_uuid, db_index=True,
+                                  unique=True,
+                                  verbose_name=_('Secret key'))
+
+
+
+
     # TODO: this might not be appropriate there any more
     AUTH_VIEW = 'authenticate_responsible_new'
 
@@ -89,6 +109,37 @@ class Member(PasswordMixin, models.Model):
     # TODO: rename: allow_showing_contact_details_in_forms
     hide_contact_details = models.BooleanField(_('Hide contact details in form'), default=False)
     show_full_report = models.BooleanField(_('Grant access to full reports'), default=False)
+
+    def make_new_password(self) -> str:
+        valid_hashes = []
+        for key, expire in self.auth_keys_hash_storage:
+            if expire > time.time():
+                valid_hashes.append((key, expire))
+
+        password = utils.generate_uuid()
+
+        auth_key_hash = make_password(password)
+        auth_key_expire: datetime.datetime = (timezone.now() +
+                           datetime.timedelta(days=getattr(settings, 'AUTH_KEY_EXPIRE_DAYS', 90)))
+
+        valid_hashes.append((auth_key_hash, auth_key_expire.timestamp()))
+        self.auth_keys_hash_storage = valid_hashes[-getattr(settings, 'AUTH_STORE_KEYS', 10):]
+        self.save(update_fields=['auth_keys_hash_storage'])
+        return password
+
+    def make_new_auth_url(self) -> str:
+        url = settings.SERVER_URL + reverse(self.AUTH_VIEW, args=(self.pk,
+                                                                  self.make_new_password(),))
+        return url
+
+    def check_auth_key(self, password: str) -> PasswordStatus:
+        for key, expire_timestamp in reversed(self.auth_keys_hash_storage):
+            if check_password(password, key):
+                if expire_timestamp < time.time():
+                    return self.PasswordStatus.PASSWORD_EXPIRED
+                return self.PasswordStatus.PASSWORD_OK
+
+        return self.PasswordStatus.PASSWORD_NOK
 
     def __str__(self):
         if self.forenames or self.surname:

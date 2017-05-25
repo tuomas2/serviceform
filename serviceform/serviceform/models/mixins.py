@@ -84,6 +84,7 @@ class SubitemMixin(CopyMixin):
         return r in self._responsibles
 
 
+#TODO: remove this
 class PasswordMixin(models.Model):
     """
     New 'password' is generated every time user requests a auth email to be sent
