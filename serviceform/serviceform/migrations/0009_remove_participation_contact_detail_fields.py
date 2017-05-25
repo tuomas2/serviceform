@@ -52,4 +52,12 @@ class Migration(migrations.Migration):
             name='participation',
             options={'verbose_name': 'Participation', 'verbose_name_plural': 'Participations'},
         ),
+        migrations.RemoveField(
+            model_name='participation',
+            name='auth_keys_hash_storage',
+        ),
+        migrations.RemoveField(
+            model_name='participation',
+            name='secret_key',
+        ),
     ]

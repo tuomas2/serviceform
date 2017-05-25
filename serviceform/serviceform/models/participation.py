@@ -41,7 +41,7 @@ if TYPE_CHECKING:
     from .serviceform import ServiceForm
 
 
-class Participation(PasswordMixin, models.Model):
+class Participation(models.Model):
     class Meta:
         verbose_name = _('Participation')
         verbose_name_plural = _('Participations')
