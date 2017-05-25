@@ -190,15 +190,6 @@ class RevisionInline(NestedStackedInline):
     extra = 0
 
 
-#class ResponsibilityPersonInline(NestedStackedInline):
-#    model = models.Member
-#    extra = 0
-#    fields = (('forenames', 'surname'), ('email', 'phone_number'), 'street_address',
-#              ('postal_code', 'city'), 'send_email_notifications', 'hide_contact_details',
-#              'show_full_report', 'personal_link')
-#    readonly_fields = ('personal_link',)
-
-
 @admin.register(models.ServiceForm)
 class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
                        GuardedModelAdminMixin, admin.ModelAdmin):
@@ -346,16 +337,26 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
         return rv
 
 
-
 @admin.register(models.EmailMessage)
 class EmailMessageAdmin(ExtendedLogMixin, admin.ModelAdmin):
     list_display = ('to_address', 'created_at', 'sent_at', 'subject_display', 'template',
                     'content_display',)
 
 
+class MemberInline(NestedStackedInline):
+    model = models.Member
+    extra = 0
+    fields = (('forenames', 'surname'), ('email', 'phone_number'), 'street_address',
+              ('postal_code', 'city'), 'allow_responsible_email',
+              'allow_participant_email', 'hide_contact_details',
+              'show_full_report', 'personal_link')
+    readonly_fields = ('personal_link',)
+
+
 @admin.register(models.Organization)
-class EmailMessageAdmin(ExtendedLogMixin, admin.ModelAdmin):
+class OrganizationAdmin(ExtendedLogMixin, admin.ModelAdmin):
     list_display = ('name',)
+    inlines = [MemberInline]
 
 
 @admin.register(models.Participation)

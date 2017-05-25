@@ -93,7 +93,6 @@ class Member(models.Model):
                                   verbose_name=_('Secret key'))
 
 
-    # TODO: rename allow_send_email ?
     allow_responsible_email = models.BooleanField(
         default=True,
         verbose_name=_('Send email notifications'),
@@ -101,7 +100,6 @@ class Member(models.Model):
             'Send email notifications whenever new participation to administered activities is '
             'registered. Email contains also has a link that allows accessing raport of '
             'administered activities.'))
-        # TODO help text from participation
 
     allow_participant_email = models.BooleanField(
         default=True,
@@ -114,7 +112,7 @@ class Member(models.Model):
         'if you wish.'))
 
 
-    # TODO: rename: allow_showing_contact_details_in_forms
+    # TODO: rename: allow_showing_contact_details_in_forms etc.
     hide_contact_details = models.BooleanField(_('Hide contact details in form'), default=False)
     show_full_report = models.BooleanField(_('Grant access to full reports'), default=False)
 
