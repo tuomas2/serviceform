@@ -42,7 +42,12 @@ def fill_participation_member(apps, schema_editor):
         m.email_verified = p.email_verified
         if p.year_of_birth:
             m.year_of_birth = p.year_of_birth
-        
+
+        for a in p.auth_keys_hash_storage:
+            m.auth_keys_hash_storage.append(a)
+
+        m.auth_keys_hash_storage.sort(key=lambda x: x[1])
+
         m.save()
 
         p.member = m
