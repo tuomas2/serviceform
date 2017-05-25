@@ -65,32 +65,36 @@ def require_authenticated_responsible(func):
     return wrapper
 
 
-def require_authenticated_participant(function=None, check_flow=True):
+def require_authenticated_participation(function=None, check_flow=True, accept_anonymous=False):
     def actual_decorator(func):
         @wraps(func)
         def wrapper(request: HttpRequest, *args, title: str='', **kwargs) -> HttpResponse:
             current_view = request.resolver_match.view_name
 
-            participant_pk = request.session.get('authenticated_participant')
-            if participant_pk:
-                request.participant = participant = get_object_or_404(
+            # TODO: rename key
+            participation_pk = request.session.get('authenticated_participant')
+            if participation_pk:
+                # TODO: rename request.participant
+                request.participant = participation = get_object_or_404(
                     models.Participation.objects.all(),
-                    pk=participant_pk,
+                    pk=participation_pk,
                     status__in=models.Participation.EDIT_STATUSES)
                 if check_flow:
                     # Check flow status
-                    participant._current_view = current_view
-                    if not participant.can_access_view(current_view, auth=True):
-                        return participant.redirect_last()
-                    rv = func(request, participant, *args, **kwargs)
+                    participation._current_view = current_view
+                    if not participation.can_access_view(current_view, auth=True):
+                        return participation.redirect_last()
+                    rv = func(request, participation, *args, **kwargs)
                     if isinstance(rv, HttpResponseRedirect):
                         url = resolve(rv.url)
                         next_view = url.view_name
-                        participant.proceed_to_view(next_view)
+                        participation.proceed_to_view(next_view)
                     return rv
                 else:
-                    return func(request, participant, *args, **kwargs)
-
+                    return func(request, participation, *args, **kwargs)
+            # TODO: rename key
+            if request.session.get('anonymous_participant'):
+                return func(request, None, *args, **kwargs)
             else:
                 raise PermissionDenied
 

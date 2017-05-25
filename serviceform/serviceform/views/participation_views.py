@@ -28,37 +28,37 @@ from django.utils.translation import ugettext_lazy as _
 
 from .. import forms, models
 from ..utils import clean_session, user_has_serviceform_permission, expire_auth_link, decode
-from .decorators import require_authenticated_participant, require_published_form
+from .decorators import require_authenticated_participation, require_published_form
 
 logger = logging.getLogger(__name__)
 
 
-@require_authenticated_participant
-def contact_details(request: HttpRequest, participant: models.Participation) -> HttpResponse:
-    if participant and participant.status == models.Participation.STATUS_FINISHED:
+@require_authenticated_participation(accept_anonymous=True)
+def contact_details(request: HttpRequest, participation: models.Participation) -> HttpResponse:
+    if participation and participation.status == models.Participation.STATUS_FINISHED:
         return HttpResponseRedirect(reverse('submitted'))
 
-    form = forms.ContactForm(instance=participant, user=request.user)
+    form = forms.ContactForm(instance=participation, user=request.user)
 
     if request.method == 'POST':
-        form = forms.ContactForm(request.POST, instance=participant, user=request.user)
+        form = forms.ContactForm(request.POST, instance=participation, user=request.user)
         if form.is_valid():
-            participant = form.save()
-            if participant.form.is_published:
-                return participant.redirect_next(request)
+            participation = form.save()
+            if participation.form.is_published:
+                return participation.redirect_next(request)
             else:
-                participant.status = models.Participation.STATUS_FINISHED
-                participant.save(update_fields=['status'])
+                participation.status = models.Participation.STATUS_FINISHED
+                participation.save(update_fields=['status'])
                 return HttpResponseRedirect(reverse('submitted'))
 
     return render(request, 'serviceform/participation/contact_view.html',
                   {'form': form,
-                   'participant': participant,
-                   'service_form': participant.form,
+                   'participant': participation,
+                   'service_form': participation.form,
                    'bootstrap_checkbox_disabled': True})
 
 
-@require_authenticated_participant
+@require_authenticated_participation
 @require_published_form
 def email_verification(request: HttpRequest, participant: models.Participation) -> HttpResponse:
     service_form = participant.form
@@ -75,7 +75,7 @@ def email_verification(request: HttpRequest, participant: models.Participation) 
                    'bootstrap_checkbox_disabled': True})
 
 
-@require_authenticated_participant
+@require_authenticated_participation
 @require_published_form
 def participation(request: HttpRequest, participant: models.Participation,
                   cat_num: int) -> HttpResponse:
@@ -114,7 +114,7 @@ def participation(request: HttpRequest, participant: models.Participation,
                    'max_cat': max_cat})
 
 
-@require_authenticated_participant
+@require_authenticated_participation
 @require_published_form
 def questions(request: HttpRequest, participant: models.Participation) -> HttpResponse:
     if not participant.form.questions:
@@ -132,7 +132,7 @@ def questions(request: HttpRequest, participant: models.Participation) -> HttpRe
                   {'form': form, 'service_form': participant.form})
 
 
-@require_authenticated_participant
+@require_authenticated_participation
 @require_published_form
 def preview(request: HttpRequest, participant: models.Participation) -> HttpResponse:
     if request.method == 'POST' and 'submit' in request.POST:
@@ -142,7 +142,7 @@ def preview(request: HttpRequest, participant: models.Participation) -> HttpResp
                       {'service_form': participant.form, 'participant': participant})
 
 
-@require_authenticated_participant
+@require_authenticated_participation
 def submitted(request: HttpRequest, participant: models.Participation) -> HttpResponse:
     participant.finish()
     clean_session(request)
@@ -150,7 +150,7 @@ def submitted(request: HttpRequest, participant: models.Participation) -> HttpRe
                   {'service_form': participant.form, 'participant': participant})
 
 
-@require_authenticated_participant(check_flow=False)
+@require_authenticated_participation(check_flow=False)
 def send_auth_link(request: HttpRequest, participant: models.Participation,
                    email: str) -> HttpResponse:
     if not email:
@@ -220,7 +220,7 @@ def authenticate_participant_mock(request: HttpRequest, participant_id: int,
     return auth_participant_common(request, participant, next_view, email_verified=False)
 
 
-@require_authenticated_participant(check_flow=False)
+@require_authenticated_participation(check_flow=False)
 def delete_participation(request: HttpRequest, participant: models.Participation) -> HttpResponse:
     form = forms.DeleteParticipationForm()
     service_form = participant.form
