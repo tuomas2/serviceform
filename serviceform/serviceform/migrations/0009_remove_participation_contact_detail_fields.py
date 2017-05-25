@@ -48,4 +48,8 @@ class Migration(migrations.Migration):
             model_name='participation',
             name='year_of_birth',
         ),
+        migrations.AlterModelOptions(
+            name='participation',
+            options={'verbose_name': 'Participation', 'verbose_name_plural': 'Participations'},
+        ),
     ]

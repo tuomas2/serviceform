@@ -30,7 +30,7 @@ from .mixins import PasswordMixin, postalcode_regex, phone_regex
 from .. import utils
 
 
-if TYPE_CHECKING
+if TYPE_CHECKING:
     from .participation import Participation
 
 class Organization(models.Model):

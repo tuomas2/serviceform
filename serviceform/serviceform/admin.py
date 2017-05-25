@@ -346,10 +346,16 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
         return rv
 
 
+
 @admin.register(models.EmailMessage)
 class EmailMessageAdmin(ExtendedLogMixin, admin.ModelAdmin):
     list_display = ('to_address', 'created_at', 'sent_at', 'subject_display', 'template',
                     'content_display',)
+
+
+@admin.register(models.Organization)
+class EmailMessageAdmin(ExtendedLogMixin, admin.ModelAdmin):
+    list_display = ('name',)
 
 
 @admin.register(models.Participation)

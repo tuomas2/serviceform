@@ -44,7 +44,7 @@ if TYPE_CHECKING:
 class Participation(PasswordMixin, models.Model):
     class Meta:
         verbose_name = _('Participation')
-        verbose_name_plural = _('Participants')
+        verbose_name_plural = _('Participations')
 
     # Current view is set by view decorator require_authenticated_participant
     _current_view = 'contact_details'
