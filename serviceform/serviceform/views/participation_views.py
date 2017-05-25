@@ -18,6 +18,8 @@
 
 import logging
 
+from typing import Optional
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -34,16 +36,22 @@ logger = logging.getLogger(__name__)
 
 
 @require_authenticated_participation(accept_anonymous=True)
-def contact_details(request: HttpRequest, participation: models.Participation) -> HttpResponse:
+def contact_details(request: HttpRequest,
+                    participation: Optional[models.Participation]) -> HttpResponse:
     if participation and participation.status == models.Participation.STATUS_FINISHED:
         return HttpResponseRedirect(reverse('submitted'))
 
-    form = forms.ContactForm(instance=participation, user=request.user)
+    if participation:
+        member = participation.member
+    else:
+        member = None
+
+    form = forms.ContactForm(instance=member, user=request.user)
 
     if request.method == 'POST':
-        form = forms.ContactForm(request.POST, instance=participation, user=request.user)
+        form = forms.ContactForm(request.POST, instance=member, user=request.user)
         if form.is_valid():
-            participation = form.save()
+            member = form.save()
             if participation.form.is_published:
                 return participation.redirect_next(request)
             else:
