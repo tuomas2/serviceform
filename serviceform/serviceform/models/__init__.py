@@ -24,4 +24,4 @@ from .serviceform import (ServiceForm, FormRevision, Activity, ActivityChoice, L
                           Level2Category, Question, ColorField)
 
 
-from .mixins import (CopyMixin, NameDescriptionMixin, PasswordMixin, SubitemMixin)
+from .mixins import (CopyMixin, NameDescriptionMixin, SubitemMixin)

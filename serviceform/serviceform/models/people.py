@@ -33,7 +33,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
 from .email import EmailMessage
-from .mixins import PasswordMixin, postalcode_regex, phone_regex
+from .mixins import postalcode_regex, phone_regex
 from .. import utils
 
 
@@ -44,7 +44,7 @@ class Organization(models.Model):
     name = models.CharField(_('Organization name'), max_length=64)
 
 
-class Member(PasswordMixin, models.Model):
+class Member(models.Model):
     class PasswordStatus(Enum):
         PASSWORD_EXPIRED = object()
         PASSWORD_OK = True
@@ -221,7 +221,7 @@ class Member(PasswordMixin, models.Model):
     def secret_id(self) -> str:
         return utils.encode(self.id)
 
-    # TODO: common unsubscribe
+    # TODO: common unsubscribe -- rename view
     @property
     def list_unsubscribe_link(self) -> str:
         return settings.SERVER_URL + reverse('unsubscribe_responsible', args=(self.secret_id,))

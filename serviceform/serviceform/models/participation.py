@@ -19,7 +19,6 @@
 from enum import Enum
 from typing import Sequence, TYPE_CHECKING, Union, Iterator, Tuple, List, Optional
 
-from django.conf import settings
 from django.contrib import messages
 
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -30,10 +29,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.formats import localize
 from django.utils.functional import cached_property
-from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
-from .mixins import PasswordMixin
 from .. import utils
 
 if TYPE_CHECKING:
@@ -77,7 +74,6 @@ class Participation(models.Model):
     STATUS_DICT = dict(STATUS_CHOICES)
 
     member = models.ForeignKey('serviceform.Member', on_delete=models.CASCADE)
-    #year_of_birth = models.SmallIntegerField(_('Year of birth'), null=True, blank=True)
     status = models.CharField(max_length=16, choices=STATUS_CHOICES, default=STATUS_ONGOING)
     last_finished_view = models.CharField(max_length=32, default='')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
@@ -173,7 +169,7 @@ class Participation(models.Model):
         Send email to participant
         :return: False if email was not sent. Message if it was sent.
         """
-        if not self.send_email_allowed and event not in self.SEND_ALWAYS_EMAILS:
+        if not self.member.allow_participant_email and event not in self.SEND_ALWAYS_EMAILS:
             return
 
         self.form.create_email_templates()
@@ -188,20 +184,20 @@ class Participation(models.Model):
                           }
 
         emailtemplate = emailtemplates[event]
-        url = (self.make_new_verification_url()
+        url = (self.member.make_new_verification_url()
                if event == self.EmailIds.EMAIL_VERIFICATION
-               else self.make_new_auth_url())
+               else self.member.make_new_auth_url())
         context = {
             'participant': str(self),
             'contact': self.form.responsible.contact_display,
             'form': str(self.form),
             'url': str(url),
             'last_modified': localize(self.last_modified, use_l10n=True),
-            'list_unsubscribe': self.list_unsubscribe_link,
+            'list_unsubscribe': self.member.list_unsubscribe_link,
         }
         if extra_context:
             context.update(extra_context)
-        return EmailMessage.make(emailtemplate, context, self.email)
+        return EmailMessage.make(emailtemplate, context, self.member.email)
 
     def resend_auth_link(self) -> 'Optional[EmailMessage]':
         return self.send_participant_email(self.EmailIds.RESEND)
@@ -213,9 +209,9 @@ class Participation(models.Model):
         rv = [i.name for i in participant_flow_urls]
         if not self.form.questions:
             rv.remove('questions')
-        if not self.form.require_email_verification or self.email_verified:
+        if not self.form.require_email_verification or self.member.email_verified:
             rv.remove('email_verification')
-        if self.form.require_email_verification and not self.email:
+        if self.form.require_email_verification and not self.member.email:
             rv.remove('email_verification')
         if not self.form.is_published:
             rv = ['contact_details', 'submitted']
