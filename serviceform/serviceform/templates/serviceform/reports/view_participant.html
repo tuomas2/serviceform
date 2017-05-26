@@ -5,7 +5,7 @@
   <div class="preview-contactdetails">
     <h3>{% blocktrans %}Contact details{% endblocktrans %}:</h3>
 
-    {% for detail, data in participant.contact_details %}
+    {% for detail, data in participant.member.contact_details %}
       <div class="row activity-preview-row">
         <div class="col-xs-4">
           {{ detail }}

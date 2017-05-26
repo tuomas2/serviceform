@@ -15,9 +15,10 @@ from ..utils import lighter_color as lighter_color_util, darker_color
 
 register = template.Library()
 if TYPE_CHECKING:
-    from ..models import (AbstractServiceFormItem, Member, SubitemMixin, Activity,
+    from ..models import (Member, SubitemMixin, Activity,
                           ActivityChoice, ParticipationActivity, ParticipationActivityChoice,
                           Question, QuestionAnswer)
+    from ..models.serviceform import AbstractServiceFormItem
 
 
 class FlowItem(NamedTuple):
@@ -88,8 +89,9 @@ def participants(context: Context) -> 'Sequence[Participation]':
     revision_name = utils.get_report_settings(context['request'], 'revision')
     service_form = context.get('service_form')
 
-    qs = Participation.objects.filter(form_revision__form=service_form,
-                                      status__in=Participation.READY_STATUSES).order_by('surname')
+    qs = Participation.objects.filter(
+        form_revision__form=service_form,
+        status__in=Participation.READY_STATUSES).order_by('member__surname')
     if revision_name == utils.RevisionOptions.CURRENT:
         qs = qs.filter(form_revision__id=service_form.current_revision_id)
     elif revision_name == utils.RevisionOptions.ALL:

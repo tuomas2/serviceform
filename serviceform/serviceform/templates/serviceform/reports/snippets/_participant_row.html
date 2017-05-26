@@ -8,25 +8,25 @@
   {% endif %}
   <div class="col-report-participant">
     {% if anonymous_hide_details %}
-      {{ participant }}
+      {{ participant.member }}
     {% else %}
       {% if is_responsible %}
-        <a href="{% url "view_responsible" participant.pk %}">{{ participant }}</a>
+        <a href="{% url "view_responsible" participant.pk %}">{{ participant.member }}</a>
       {% else %}
-      <a href="{% url "view_user" participant.pk %}">{{ participant }}</a>
+      <a href="{% url "view_user" participant.pk %}">{{ participant.member }}</a>
       {% endif %}
     {% endif %}
   </div>
   <div class="col-report-phone">
-    {{ participant.phone_number }}
+    {{ participant.member.phone_number }}
   </div>
   <div class="col-report-email">
-    {{ participant.email }}
+    {{ participant.member.email }}
   </div>
   <div class="col-items">
     <div class="row">
     <div class="col-age">
-        {{ participant.age }}
+        {{ participant.member.age }}
     </div>
     <div class="col-report-count">
       <a class="tooltip-only" data-toggle="tooltip" title="{% trans "Number of activities" %}">
@@ -35,7 +35,7 @@
     </div>
 
     <div class="col-report-extra-link">
-      {% if item.additional_info or participant.address or participant.log %}
+      {% if item.additional_info or participant.member.address or participant.log %}
         <a href="#item-{{participant.pk}}-{{ item.pk }}-extra" data-toggle="collapse">
         {% if item.additional_info %}
           <span class="fa fa-info"></span>
