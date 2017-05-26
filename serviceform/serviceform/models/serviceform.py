@@ -684,6 +684,11 @@ class Question(CopyMixin, AbstractServiceFormItem):
             qs = qs.filter(participant__form_revision__name=revision_name)
         return qs
 
+    @property
+    def id_display(self):
+        # TODO: perhaps we could implement also here some kind of numbering
+        return ''
+
     def __str__(self):
         return self.question
 
