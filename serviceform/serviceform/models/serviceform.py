@@ -508,6 +508,20 @@ class AbstractServiceFormItem(models.Model):
                                                   overlay=_('Choose responsibles'),
                                                   )
 
+    def __init__(self, *args, **kwargs) -> None:
+        self._responsibles = set()
+        super().__init__(*args, **kwargs)
+
+    def has_responsible(self, r: 'Member') -> bool:
+        return r in self._responsibles
+
+    subitem_name: str
+    _counter: int
+
+    @cached_property
+    def sub_items(self):
+        return getattr(self, self.subitem_name + '_set').all()
+
     @cached_property
     def responsibles_display(self) -> str:
         first_resp = ''

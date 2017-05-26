@@ -49,28 +49,3 @@ class NameDescriptionMixin(models.Model):
     description = models.TextField(blank=True, verbose_name=_('Description'))
 
 
-class CopyMixin:
-    _meta: Options
-    def create_copy(self):
-        fr = self.__class__()
-        for field in self._meta.fields:
-            setattr(fr, field.name, getattr(self, field.name))
-        fr.pk = None
-        return fr
-
-
-class SubitemMixin(CopyMixin):
-    subitem_name: str
-    _counter: int
-
-    def __init__(self, *args, **kwargs):
-        self._responsibles = set()
-        super().__init__(*args, **kwargs)
-
-    @cached_property
-    def sub_items(self):
-        return getattr(self, self.subitem_name + '_set').all()
-
-    def has_responsible(self, r: 'Member') -> bool:
-        return r in self._responsibles
-
