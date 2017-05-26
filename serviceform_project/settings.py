@@ -255,7 +255,7 @@ else:
             },
             'django.template': {
                 'handlers': ['console'],
-                'level': 'WARNING',
+                'level': 'DEBUG',
                 'propagate': False,
             },
             'django': {
