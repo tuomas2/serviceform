@@ -11,7 +11,7 @@
       {{ participant.member }}
     {% else %}
       {% if is_responsible %}
-        <a href="{% url "view_responsible" participant.pk %}">{{ participant.member }}</a>
+        <a href="{% url "view_responsible" participant.pk service_form.slug %}">{{ participant.member }}</a>
       {% else %}
       <a href="{% url "view_user" participant.pk %}">{{ participant.member }}</a>
       {% endif %}

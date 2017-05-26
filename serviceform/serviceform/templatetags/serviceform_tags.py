@@ -46,13 +46,16 @@ def responsible_link(context: Context, item: 'AbstractServiceFormItem') -> SafeS
     Used in category captions in report views, for example
     """
     responsible = context.get('responsible')
+    service_form = context.get('service_form')
     item_responsibles = item.responsibles.all()
     links = []
     for item_responsible in item_responsibles:
         if responsible != item_responsible:
-            links.append(format_html('<a class="responsible-link" href="{}">{}</a>',
-                                     reverse('view_responsible', args=(item_responsible.pk,)),
-                                     item_responsible))
+            links.append(
+                format_html('<a class="responsible-link" href="{}">{}</a>',
+                            reverse('view_responsible',
+                                    args=(item_responsible.pk, service_form.slug)),
+                            item_responsible))
         else:
             links.append(mark_safe(responsible))
 
@@ -61,7 +64,7 @@ def responsible_link(context: Context, item: 'AbstractServiceFormItem') -> SafeS
 
 
 @register.assignment_tag
-def has_responsible(item: 'SubitemMixin', responsible: 'Member') -> bool:
+def has_responsible(item: 'AbstractServiceFormItem', responsible: 'Member') -> bool:
     return item.has_responsible(responsible)
 
 

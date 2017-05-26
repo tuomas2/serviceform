@@ -37,14 +37,16 @@ from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import get_users_with_perms
 from select2 import fields as select2_fields
 
-from ..fields import ColorField
 from serviceform.tasks.models import Task
+
+from ..fields import ColorField
+from .. import emails, utils
+from ..utils import ColorStr, django_cache, invalidate_cache
+
 from .email import EmailTemplate
 from .mixins import NameDescriptionMixin
 from .participation import QuestionAnswer, Participation
 from .people import Member, Organization
-from .. import emails, utils
-from ..utils import ColorStr, django_cache, invalidate_cache
 
 if TYPE_CHECKING:
     from .participation import ParticipationActivity, ParticipationActivityChoice
@@ -79,8 +81,23 @@ class AbstractServiceFormItem(models.Model):
     def has_responsible(self, r: 'Member') -> bool:
         return r in self._responsibles
 
+    @property
+    def all_responsibles(self) -> List[Member]:
+        rs = set()
+        rs.update(self.responsibles.all())
+
+        for subitem in self.sub_items:
+            rs.update(subitem.all_responsibles)
+
+        rs = list(rs)
+        rs.sort(key=lambda x: (x.surname, x.forenames))
+        return rs
+
     @cached_property
     def sub_items(self) -> 'Iterable[AbstractServiceFormItem]':
+        if not self.subitem_name:
+            return []
+
         return getattr(self, self.subitem_name + '_set').all()
 
     @cached_property
@@ -151,6 +168,8 @@ class ServiceForm(AbstractServiceFormItem):
 
     # Ownership
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+
+    #TODO: migrate to .responsibles and remove field
     responsible = models.ForeignKey(Member, null=True, blank=True,
                                     verbose_name=_('Responsible'), on_delete=models.SET_NULL)
 
@@ -292,20 +311,10 @@ class ServiceForm(AbstractServiceFormItem):
 
     can_access.short_description = _('Can access')
 
+    @property
     @django_cache('all_responsibles')
-    def all_responsibles(self) -> List[Member]:
-        rs = {self.responsible}
-        for cat1 in self.sub_items:
-            rs.update(cat1.responsibles.all())
-            for cat2 in cat1.sub_items:
-                rs.update(cat2.responsibles.all())
-                for act in cat2.sub_items:
-                    rs.update(act.responsibles.all())
-                    for choice in act.sub_items:
-                        rs.update(choice.responsibles.all())
-        rs = list(rs)
-        rs.sort(key=lambda x: (x.surname, x.forenames))
-        return rs
+    def all_responsibles(self):
+        return super().all_responsibles
 
     @cached_property
     def sub_items(self) -> 'Sequence[AbstractServiceFormItem]':
@@ -518,7 +527,7 @@ class ServiceForm(AbstractServiceFormItem):
 
 @receiver(post_save, sender=ServiceForm)
 def invalidate_serviceform_caches(sender: ServiceForm, **kwargs):
-    invalidate_cache(sender, 'all_participants')
+    invalidate_cache(sender, 'all_responsibles')
 
 
 class Level1Category(NameDescriptionMixin, AbstractServiceFormItem):

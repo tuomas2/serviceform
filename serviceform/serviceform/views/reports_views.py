@@ -139,19 +139,21 @@ def view_participant(request: HttpRequest, responsible: models.Member,
 
 @require_authenticated_responsible
 def view_responsible(request: HttpRequest, auth_responsible: models.Member,
-                     responsible_pk: int) -> HttpResponse:
+                     responsible_pk: int, form_slug: str) -> HttpResponse:
     responsible = models.Member.objects.get(pk=responsible_pk)
-    if not (user_has_serviceform_permission(request.user, responsible.form,
-                                            raise_permissiondenied=False)
-            or (auth_responsible and auth_responsible.show_full_report
-                and responsible.form == auth_responsible.form)):
+    service_form = models.ServiceForm.objects.get(slug=form_slug)
+    if not user_has_serviceform_permission(request.user, service_form,
+                                           raise_permissiondenied=False):
+            # TODO: show_full_report must be changed to be per-form m2m list
+#            or (auth_responsible and auth_responsible.show_full_report
+#                and responsible.form == auth_responsible.form)):
         raise PermissionDenied
-    service_form = responsible.form
+    # TODO why do we do this?
     request.service_form = service_form
     service_form.init_counters()
     fetch_participants(service_form, revision_name=RevisionOptions.ALL)
     return render(request, 'serviceform/reports/responsible.html',
-                  {'service_form': responsible.form, 'responsible': responsible,
+                  {'service_form': service_form, 'responsible': responsible,
                    'show_report_btn': True})
 
 

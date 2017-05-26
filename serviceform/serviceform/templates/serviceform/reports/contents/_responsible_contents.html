@@ -49,7 +49,8 @@
 
 <h2>{% trans "Answers to questions" %}</h2>
 {% for q in service_form.questions %}
-  {% if q.responsible == responsible %}
+  {% has_responsible q responsible as q_hr %}
+  {% if q_hr %}
     <div class="report-question-title">{{ q.id_display }} {{ q.question }}</div>
     <ul>
       {% for pq in q.questionanswers %}
