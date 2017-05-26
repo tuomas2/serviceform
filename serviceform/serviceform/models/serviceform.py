@@ -17,12 +17,11 @@
 # along with Serviceform.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-import string
 import logging
+import string
 from enum import Enum
-from typing import Tuple, Set, Optional, Sequence, Iterator, Iterable, TYPE_CHECKING, List
+from typing import Tuple, Set, Sequence, Iterator, Iterable, TYPE_CHECKING, List
 
-from colorful.fields import RGBColorField
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
@@ -38,15 +37,14 @@ from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import get_users_with_perms
 from select2 import fields as select2_fields
 
+from ..fields import ColorField
 from serviceform.tasks.models import Task
-
+from .email import EmailTemplate
+from .mixins import NameDescriptionMixin
+from .participation import QuestionAnswer, Participation
+from .people import Member, Organization
 from .. import emails, utils
 from ..utils import ColorStr, django_cache, invalidate_cache
-
-from .mixins import SubitemMixin, NameDescriptionMixin, CopyMixin
-from .people import Member, Organization
-from .email import EmailTemplate
-from .participation import QuestionAnswer, Participation
 
 if TYPE_CHECKING:
     from .participation import ParticipationActivity, ParticipationActivityChoice
@@ -55,18 +53,47 @@ local_tz = timezone.get_default_timezone()
 logger = logging.getLogger(__name__)
 
 
-class ColorField(RGBColorField):
-    def get_prep_value(self, value: 'ColorStr') -> 'Optional[ColorStr]':
-        rv = super().get_prep_value(value)
-        if rv == '#000000':
-            rv = None
-        return rv
+class AbstractServiceFormItem(models.Model):
+    subitem_name: str
+    _responsibles: Set[Member]
 
-    def from_db_value(self, value: 'Optional[ColorStr]', *args):
-        if value is None:
-            return '#000000'
-        return value
+    class Meta:
+        abstract = True
+        ordering = ('order',)
 
+    order = models.PositiveIntegerField(default=0, blank=False, null=False, db_index=True,
+                                        verbose_name=_('Order'))
+    responsibles = select2_fields.ManyToManyField(Member, blank=True,
+                                                  verbose_name=_('Responsible persons'),
+                                                  related_name='%(class)s_responsibles',
+                                                  overlay=_('Choose responsibles'),
+                                                  )
+
+    def __init__(self, *args, **kwargs) -> None:
+        self._responsibles = set()
+        super().__init__(*args, **kwargs)
+
+    # TODO: change this dirty caching to something more clever
+    def has_responsible(self, r: 'Member') -> bool:
+        return r in self._responsibles
+
+    @cached_property
+    def sub_items(self) -> 'Iterable[AbstractServiceFormItem]':
+        return getattr(self, self.subitem_name + '_set').all()
+
+    @cached_property
+    def responsibles_display(self) -> str:
+        first_resp = ''
+        responsibles = self.responsibles.all()
+        if responsibles:
+            first_resp = str(self.responsibles.first())
+        if len(responsibles) > 1:
+            return _('{} (and others)').format(first_resp)
+        else:
+            return first_resp
+
+    def background_color_display(self) -> 'ColorStr':
+        raise NotImplementedError
 
 
 class FormRevision(models.Model):
@@ -98,7 +125,7 @@ class FormRevision(models.Model):
         return self.name
 
 
-class ServiceForm(SubitemMixin, models.Model):
+class ServiceForm(AbstractServiceFormItem):
     subitem_name = 'level1category'
 
     class Meta:
@@ -491,53 +518,7 @@ class ServiceForm(SubitemMixin, models.Model):
 def invalidate_serviceform_caches(sender: ServiceForm, **kwargs):
     invalidate_cache(sender, 'all_participants')
 
-
-class AbstractServiceFormItem(models.Model):
-    _responsibles: Set[Member]
-    sub_items: 'Iterable[AbstractServiceFormItem]'
-
-    class Meta:
-        abstract = True
-        ordering = ('order',)
-
-    order = models.PositiveIntegerField(default=0, blank=False, null=False, db_index=True,
-                                        verbose_name=_('Order'))
-    responsibles = select2_fields.ManyToManyField(Member, blank=True,
-                                                  verbose_name=_('Responsible persons'),
-                                                  related_name='%(class)s_responsibles',
-                                                  overlay=_('Choose responsibles'),
-                                                  )
-
-    def __init__(self, *args, **kwargs) -> None:
-        self._responsibles = set()
-        super().__init__(*args, **kwargs)
-
-    def has_responsible(self, r: 'Member') -> bool:
-        return r in self._responsibles
-
-    subitem_name: str
-    _counter: int
-
-    @cached_property
-    def sub_items(self):
-        return getattr(self, self.subitem_name + '_set').all()
-
-    @cached_property
-    def responsibles_display(self) -> str:
-        first_resp = ''
-        responsibles = self.responsibles.all()
-        if responsibles:
-            first_resp = str(self.responsibles.first())
-        if len(responsibles) > 1:
-            return _('{} (and others)').format(first_resp)
-        else:
-            return first_resp
-
-    def background_color_display(self) -> 'ColorStr':
-        raise NotImplementedError
-
-
-class Level1Category(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem):
+class Level1Category(NameDescriptionMixin, AbstractServiceFormItem):
     subitem_name = 'level2category'
     background_color = ColorField(_('Background color'), blank=True, null=True)
 
@@ -552,7 +533,7 @@ class Level1Category(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem
         return utils.not_black(self.background_color) or utils.not_black(self.form.level1_color)
 
 
-class Level2Category(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem):
+class Level2Category(NameDescriptionMixin, AbstractServiceFormItem):
     subitem_name = 'activity'
     background_color = ColorField(_('Background color'), blank=True, null=True)
 
@@ -571,7 +552,7 @@ class Level2Category(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem
                 utils.not_black(self.category.form.level2_color))
 
 
-class Activity(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem):
+class Activity(NameDescriptionMixin, AbstractServiceFormItem):
     subitem_name = 'activitychoice'
 
     class Meta(AbstractServiceFormItem.Meta):
@@ -617,7 +598,7 @@ class Activity(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem):
             self.category.background_color_display)
 
 
-class ActivityChoice(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem):
+class ActivityChoice(NameDescriptionMixin, AbstractServiceFormItem):
     class Meta(AbstractServiceFormItem.Meta):
         verbose_name = _('Activity choice')
         verbose_name_plural = _('Activity choices')
@@ -655,7 +636,7 @@ class ActivityChoice(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem
             self.activity.category.background_color_display)
 
 
-class Question(CopyMixin, AbstractServiceFormItem):
+class Question(AbstractServiceFormItem):
     class Meta(AbstractServiceFormItem.Meta):
         verbose_name = _('Question')
         verbose_name_plural = _('Questions')

@@ -30,7 +30,6 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 logger = logging.getLogger(__name__)
-from .mixins import CopyMixin
 
 if TYPE_CHECKING:
     from .serviceform import ServiceForm
@@ -104,7 +103,7 @@ class EmailMessage(models.Model):
         return msg
 
 
-class EmailTemplate(CopyMixin, models.Model):
+class EmailTemplate(models.Model):
     class Meta:
         verbose_name = _('Email template')
         verbose_name_plural = _('Email templates')

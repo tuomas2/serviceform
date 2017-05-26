@@ -10,9 +10,8 @@ from django.db import migrations, models
 import django.db.models.deletion
 from django.utils.timezone import utc
 import select2.fields
-import serviceform.serviceform.models
-import serviceform.serviceform.utils
-
+from serviceform.serviceform.fields import ColorField
+from serviceform.serviceform.utils import generate_uuid
 
 
 def add_basic_rights_groups_and_permissions(apps, schema_editor):
@@ -95,7 +94,7 @@ class Migration(migrations.Migration):
                 'ordering': ('order',),
                 'abstract': False,
             },
-            bases=(serviceform.serviceform.models.SubitemMixin, models.Model),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='ActivityChoice',
@@ -114,7 +113,7 @@ class Migration(migrations.Migration):
                 'ordering': ('order',),
                 'abstract': False,
             },
-            bases=(serviceform.serviceform.models.SubitemMixin, models.Model),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='EmailMessage',
@@ -142,7 +141,7 @@ class Migration(migrations.Migration):
                 'verbose_name': 'Email template',
                 'verbose_name_plural': 'Email templates',
             },
-            bases=(serviceform.serviceform.models.CopyMixin, models.Model),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='FormRevision',
@@ -167,7 +166,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=256, verbose_name='Name')),
                 ('description', models.TextField(blank=True, verbose_name='Description')),
                 ('order', models.PositiveIntegerField(db_index=True, default=0, verbose_name='Order')),
-                ('background_color', serviceform.serviceform.models.ColorField(blank=True, null=True, verbose_name='Background color')),
+                ('background_color', ColorField(blank=True, null=True, verbose_name='Background color')),
             ],
             options={
                 'verbose_name': 'Level 1 category',
@@ -175,7 +174,7 @@ class Migration(migrations.Migration):
                 'ordering': ('order',),
                 'abstract': False,
             },
-            bases=(serviceform.serviceform.models.SubitemMixin, models.Model),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Level2Category',
@@ -184,7 +183,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=256, verbose_name='Name')),
                 ('description', models.TextField(blank=True, verbose_name='Description')),
                 ('order', models.PositiveIntegerField(db_index=True, default=0, verbose_name='Order')),
-                ('background_color', serviceform.serviceform.models.ColorField(blank=True, null=True, verbose_name='Background color')),
+                ('background_color', ColorField(blank=True, null=True, verbose_name='Background color')),
                 ('category', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='serviceform.Level1Category', verbose_name='Level 1 category')),
             ],
             options={
@@ -193,7 +192,7 @@ class Migration(migrations.Migration):
                 'ordering': ('order',),
                 'abstract': False,
             },
-            bases=(serviceform.serviceform.models.SubitemMixin, models.Model),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Participant',
@@ -207,7 +206,7 @@ class Migration(migrations.Migration):
                 ('email', models.EmailField(db_index=True, max_length=254, verbose_name='Email')),
                 ('phone_number', models.CharField(max_length=32, validators=[django.core.validators.RegexValidator(message="Phone number must be entered in the format: '050123123' or '+35850123123'. Up to 15 digits allowed.", regex='^\\+?1?\\d{9,15}$')], verbose_name='Phone number')),
                 ('auth_keys_hash_storage', django.contrib.postgres.fields.jsonb.JSONField(default=[])),
-                ('secret_key', models.CharField(db_index=True, default=serviceform.serviceform.utils.generate_uuid, max_length=36, unique=True, verbose_name='Secret key')),
+                ('secret_key', models.CharField(db_index=True, default=generate_uuid, max_length=36, unique=True, verbose_name='Secret key')),
                 ('year_of_birth', models.SmallIntegerField(blank=True, null=True, verbose_name='Year of birth')),
                 ('status', models.CharField(choices=[('invited', 'invited'), ('ongoing', 'ongoing'), ('updating', 'updating'), ('finished', 'finished')], default='ongoing', max_length=16)),
                 ('last_finished_view', models.CharField(default='', max_length=32)),
@@ -275,7 +274,7 @@ class Migration(migrations.Migration):
                 'ordering': ('order',),
                 'abstract': False,
             },
-            bases=(serviceform.serviceform.models.CopyMixin, models.Model),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='QuestionAnswer',
@@ -302,7 +301,7 @@ class Migration(migrations.Migration):
                 ('email', models.EmailField(db_index=True, max_length=254, verbose_name='Email')),
                 ('phone_number', models.CharField(blank=True, max_length=32, validators=[django.core.validators.RegexValidator(message="Phone number must be entered in the format: '050123123' or '+35850123123'. Up to 15 digits allowed.", regex='^\\+?1?\\d{9,15}$')], verbose_name='Phone number')),
                 ('auth_keys_hash_storage', django.contrib.postgres.fields.jsonb.JSONField(default=[])),
-                ('secret_key', models.CharField(db_index=True, default=serviceform.serviceform.utils.generate_uuid, max_length=36, unique=True, verbose_name='Secret key')),
+                ('secret_key', models.CharField(db_index=True, default=generate_uuid, max_length=36, unique=True, verbose_name='Secret key')),
                 ('send_email_notifications', models.BooleanField(default=True, help_text='Send email notifications whenever new participation to administered activities is registered. Email contains also has a link that allows accessing raport of administered activities.', verbose_name='Send email notifications')),
                 ('hide_contact_details', models.BooleanField(default=False, verbose_name='Hide contact details in form')),
                 ('show_full_report', models.BooleanField(default=False, verbose_name='Grant access to full reports')),
@@ -312,7 +311,7 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Responsibility persons',
                 'ordering': ('surname',),
             },
-            bases=(serviceform.serviceform.models.CopyMixin, models.Model),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='ServiceForm',
@@ -327,9 +326,9 @@ class Migration(migrations.Migration):
                 ('hide_contact_details', models.BooleanField(default=False, verbose_name='Hide contact details (other than email) in form')),
                 ('flow_by_categories', models.BooleanField(default=False, help_text='Please note that preview shows full form despite this option', verbose_name='Split participation form to level 1 categories')),
                 ('allow_skipping_categories', models.BooleanField(default=False, help_text='In effect only if flow by categories option is enabled. If this option is enabled, user can jump between categories. If disabled, he must proceed them one by one.', verbose_name='Allow jumping between categories')),
-                ('level1_color', serviceform.serviceform.models.ColorField(blank=True, help_text='If left blank (black), default coloring will be used', null=True, verbose_name='Level 1 category default background color')),
-                ('level2_color', serviceform.serviceform.models.ColorField(blank=True, help_text='If left blank (black), it will be derived from level 1 background color', null=True, verbose_name='Level 2 category default background color')),
-                ('activity_color', serviceform.serviceform.models.ColorField(blank=True, help_text='If left blank (black), it will be derived from level 2 background color', null=True, verbose_name='Activity default background color')),
+                ('level1_color', ColorField(blank=True, help_text='If left blank (black), default coloring will be used', null=True, verbose_name='Level 1 category default background color')),
+                ('level2_color', ColorField(blank=True, help_text='If left blank (black), it will be derived from level 1 background color', null=True, verbose_name='Level 2 category default background color')),
+                ('activity_color', ColorField(blank=True, help_text='If left blank (black), it will be derived from level 2 background color', null=True, verbose_name='Activity default background color')),
                 ('description', models.TextField(blank=True, help_text='Description box will be shown before instruction box in participation view.', verbose_name='Description')),
                 ('instructions', models.TextField(blank=True, help_text='Use HTML formatting. Leave this empty to use default. This is shown in participation view.', null=True, verbose_name='Instructions')),
                 ('login_text', models.TextField(blank=True, help_text='This will be shown in the login screen', null=True, verbose_name='Login text')),
@@ -356,7 +355,7 @@ class Migration(migrations.Migration):
                 'verbose_name': 'Service form',
                 'verbose_name_plural': 'Service forms',
             },
-            bases=(serviceform.serviceform.models.SubitemMixin, models.Model),
+            bases=(models.Model,),
         ),
         migrations.AddField(
             model_name='responsibilityperson',
