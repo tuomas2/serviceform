@@ -20,25 +20,17 @@
                   <div class="report-choice-title" {% color_style a 1%}>{{ c.id_display }}. {{ c.name }} {% responsible_link c %}
                     ({{ c.participation_items|length }}{%if c.people_needed%}/{{ c.people_needed }}{%endif%})
                   </div>
-                  {% for pc in c.participation_items %}
+                  {% participation_items c as p_items %}
+                  {% for pc in p_items %}
                     {% include "serviceform/reports/snippets/_participant_row.html" with item=pc participant=pc.cached_participant %}
-                  {% endfor %}
-                  {% for pc in c.old_participation_items %}
-                    <div class="old">
-                      {% include "serviceform/reports/snippets/_participant_row.html" with item=pc participant=pc.cached_participant %}
-                    </div>
                   {% endfor %}
                 {% endif %}
               {% endfor %}
             {% else %}
-              {% for pa in a.participation_items %}
+              {% participation_items a as p_items %}
+              {% for pa in p_items %}
                 {% include "serviceform/reports/snippets/_participant_row.html" with item=pa participant=pa.cached_participant %}
               {% endfor %}
-              <div class="old">
-                {% for pa in a.old_participation_items %}
-                  {% include "serviceform/reports/snippets/_participant_row.html" with item=pa participant=pa.cached_participant %}
-                {% endfor %}
-              </div>
             {% endif %}
           {% endif %}
         {% endfor %}
