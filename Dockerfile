@@ -4,6 +4,9 @@ ADD ./requirements.txt /
 RUN pip install -r requirements.txt
 ADD . /code/
 WORKDIR /code
+RUN git rev-parse HEAD > .git_sha
+RUN apk del git
+RUN rm -r .git
 RUN mkdir /code/static
 # Tests need these
 RUN mkdir .cache

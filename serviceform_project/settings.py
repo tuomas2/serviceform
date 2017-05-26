@@ -162,109 +162,67 @@ if PRODUCTION:
     CSRF_COOKIE_HTTPONLY = True
     X_FRAME_OPTIONS = 'DENY'
     SECURE_BROWSER_XSS_FILTER = True
-
-
-if PRODUCTION:
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': True,
-        'formatters': {
-            'verbose': {
-                'format': '%(levelname)s %(asctime)s %(module)s %(name)s %(message)s'
-            },
-            'simple': {
-                'format': '%(levelname)s %(message)s'
-            },
-        },
-        'handlers': {
-            'mail_admins': {
-                'level': 'ERROR',
-                'class': 'django.utils.log.AdminEmailHandler',
-                'include_html': True,
-            },
-            'console': {
-                'class': 'logging.StreamHandler',
-            },
-            'sentry': {
-                'level': 'WARNING',  # To capture more than ERROR, change to WARNING, INFO, etc.
-                'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
-                #'tags': {'custom-tag': 'x'},
-            },
-        },
-        'loggers': {
-            '': {
-                'handlers': ['console', 'sentry'],
-                'level': 'DEBUG',
-                'propagate': True,
-            },
-            'django.template': {
-                'handlers': ['console', 'sentry'],
-                'level': 'WARNING',
-                'propagate': False,
-            },
-            'django': {
-                'handlers': ['console', 'sentry'],
-                'level': 'INFO',
-                'propagate': False,
-            },
-            'celery': {
-                'handlers': ['console', 'sentry'],
-                'level': 'INFO',
-                'propagate': False,
-            },
-        },
-    }
-
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': True,
-        'formatters': {
-            'verbose': {
-                'format': '%(levelname)s %(asctime)s %(module)s %(name)s %(message)s'
-            },
-            'simple': {
-                'format': '%(levelname)s %(message)s'
-            },
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(name)s %(message)s'
         },
-        'handlers': {
-            'console': {
-                'class': 'logging.StreamHandler',
-                'formatter': 'verbose',
-            },
-            'crash': {
-                'class': 'serviceform_project.crash_logger.CrashHandler',
-                'level': 'ERROR',
-            },
-            'warningcrash': {
-                'class': 'serviceform_project.crash_logger.CrashHandler',
-                'level': 'WARNING',
-            }
+        'simple': {
+            'format': '%(levelname)s %(message)s'
         },
-        'loggers': {
-            '': {
-                'handlers': ['console'],
-                'level': 'INFO',
-                'propagate': True,
-            },
-            'celery': {
-                'handlers': ['console'],
-                'level': 'INFO',
-                'propagate': False,
-            },
-            'django.template': {
-                'handlers': ['console'],
-                'level': 'DEBUG',
-                'propagate': False,
-            },
-            'django': {
-                'handlers': ['console'],
-                'level': 'INFO',
-                'propagate': False,
-            },
+    },
+     'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
         },
-    }
+        'sentry': {
+            'level': 'WARNING',  # To capture more than ERROR, change to WARNING, INFO, etc.
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+            #'tags': {'custom-tag': 'x'},
+        },
+         'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'crash': {
+            'class': 'serviceform_project.crash_logger.CrashHandler',
+            'level': 'ERROR',
+        },
+        'warningcrash': {
+            'class': 'serviceform_project.crash_logger.CrashHandler',
+            'level': 'WARNING',
+        }
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console', 'sentry'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.template': {
+            'handlers': ['console', 'sentry'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'django': {
+            'handlers': ['console', 'sentry'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'celery': {
+            'handlers': ['console', 'sentry'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
 
 if TESTS_RUNNING:
     LOGGING['loggers']['']['handlers'].append('crash')
@@ -377,13 +335,13 @@ CACHALOT_CACHE = 'cachalot'
 from django.conf.locale.fi import formats as fi_formats
 fi_formats.DATETIME_FORMAT = "d.m.Y H:i"
 
-if PRODUCTION:
+if RAVEN_DSN:
     import raven
     RAVEN_CONFIG = {
         'dsn': RAVEN_DSN,
         # If you are using git, you can also automatically configure the
         # release based on the git info.
-        #'release': raven.fetch_git_sha(os.path.dirname(__file__) + '/..'),
+        'release': open('.git_sha').read(),
     }
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 20000

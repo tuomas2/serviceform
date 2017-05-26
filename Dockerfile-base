@@ -2,7 +2,7 @@ FROM python:3.6.1-alpine
 MAINTAINER Tuomas Airaksinen <tuomas.airaksinen@gmail.com>
 ENV PYTHONUNBUFFERED 1
 RUN apk update && apk upgrade && apk add --no-cache gettext postgresql-dev gcc g++ make \
-    linux-headers musl-dev postgresql-client bash
+    linux-headers musl-dev postgresql-client bash git
 RUN pip install --upgrade pip setuptools
 RUN mkdir /code
 ADD ./requirements-base.txt /
