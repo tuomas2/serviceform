@@ -20,3 +20,4 @@ CODE_LETTERS=ABCDE
 # Available: en, fi
 LANGUAGE_CODE=fi
 TIME_ZONE=Europe/Helsinki
+RAVEN_DSN=https://0429a9285d45463fbacf28020065c008:b190c7a29bf34a3a8c4c3c913ffa465a@sentry.tuomasairaksinen.fi/4
