@@ -237,9 +237,9 @@ else:
                 'class': 'serviceform_project.crash_logger.CrashHandler',
                 'level': 'ERROR',
             },
-            'warningcrash': {
+            'debugcrash': {
                 'class': 'serviceform_project.crash_logger.CrashHandler',
-                'level': 'WARNING',
+                'level': 'DEBUG',
             }
         },
         'loggers': {
@@ -255,7 +255,7 @@ else:
             },
             'django.template': {
                 'handlers': ['console'],
-                'level': 'WARNING',
+                'level': 'DEBUG',
                 'propagate': False,
             },
             'django': {
@@ -269,7 +269,7 @@ else:
 if TESTS_RUNNING:
     LOGGING['loggers']['']['handlers'].append('crash')
     LOGGING['loggers']['celery']['handlers'].append('crash')
-    LOGGING['loggers']['django.template']['handlers'].append('warningcrash')
+    LOGGING['loggers']['django.template']['handlers'].append('debugcrash')
     LOGGING['loggers']['django']['handlers'].append('crash')
 
 dictConfig(LOGGING)
