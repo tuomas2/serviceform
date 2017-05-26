@@ -55,6 +55,7 @@ logger = logging.getLogger(__name__)
 
 class AbstractServiceFormItem(models.Model):
     subitem_name: str
+    _counter: int
     _responsibles: Set[Member]
 
     class Meta:
@@ -63,6 +64,7 @@ class AbstractServiceFormItem(models.Model):
 
     order = models.PositiveIntegerField(default=0, blank=False, null=False, db_index=True,
                                         verbose_name=_('Order'))
+    skip_numbering = models.BooleanField(_('Skip'), default=False)
     responsibles = select2_fields.ManyToManyField(Member, blank=True,
                                                   verbose_name=_('Responsible persons'),
                                                   related_name='%(class)s_responsibles',
@@ -518,6 +520,7 @@ class ServiceForm(AbstractServiceFormItem):
 def invalidate_serviceform_caches(sender: ServiceForm, **kwargs):
     invalidate_cache(sender, 'all_participants')
 
+
 class Level1Category(NameDescriptionMixin, AbstractServiceFormItem):
     subitem_name = 'level2category'
     background_color = ColorField(_('Background color'), blank=True, null=True)
@@ -563,7 +566,6 @@ class Activity(NameDescriptionMixin, AbstractServiceFormItem):
                                  on_delete=models.CASCADE)
     multiple_choices_allowed = models.BooleanField(default=True, verbose_name=_('Multichoice'))
     people_needed = models.PositiveIntegerField(_('Needed'), default=0)
-    skip_numbering = models.BooleanField(_('Skip'), default=False)
 
     @property
     def has_choices(self) -> bool:
@@ -605,7 +607,6 @@ class ActivityChoice(NameDescriptionMixin, AbstractServiceFormItem):
 
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     people_needed = models.PositiveIntegerField(_('Needed'), default=0)
-    skip_numbering = models.BooleanField(_('Skip'), default=False)
 
     @property
     def id_display(self) -> str:
