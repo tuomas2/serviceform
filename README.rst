@@ -396,7 +396,7 @@ and then start database server (see external_).
 
 And then::
 
-   docker exec -u postgres serviceform-db psql serviceform < backup.sql
+   docker exec -i -u postgres serviceform-db psql serviceform < backup.sql
 
 ===========
 Development
@@ -476,7 +476,7 @@ Database can be dumped with the following command::
 
 To load dump, you must first clear the current database. This can be done as follows::
 
-    docker-compose exec -u postgres -i db psql serviceform < init.sql
+    docker-compose exec -i -u postgres db psql serviceform < init.sql
 
 Dump data in json format for tests::
 
