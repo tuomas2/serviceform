@@ -20,13 +20,15 @@ import datetime
 import string
 import logging
 from enum import Enum
-from typing import Tuple, Set, Optional, Sequence, Iterator, Iterable, TYPE_CHECKING
+from typing import Tuple, Set, Optional, Sequence, Iterator, Iterable, TYPE_CHECKING, List
 
 from colorful.fields import RGBColorField
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.db.models import Prefetch
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
@@ -39,7 +41,7 @@ from select2 import fields as select2_fields
 from serviceform.tasks.models import Task
 
 from .. import emails, utils
-from ..utils import ColorStr
+from ..utils import ColorStr, django_cache, invalidate_cache
 
 from .mixins import SubitemMixin, NameDescriptionMixin, CopyMixin
 from .people import Member, Organization
@@ -261,6 +263,21 @@ class ServiceForm(SubitemMixin, models.Model):
 
     can_access.short_description = _('Can access')
 
+    @django_cache('all_responsibles')
+    def all_responsibles(self) -> List[Member]:
+        rs = {self.responsible}
+        for cat1 in self.sub_items:
+            rs.update(cat1.responsibles.all())
+            for cat2 in cat1.sub_items:
+                rs.update(cat2.responsibles.all())
+                for act in cat2.sub_items:
+                    rs.update(act.responsibles.all())
+                    for choice in act.sub_items:
+                        rs.update(choice.responsibles.all())
+        rs = list(rs)
+        rs.sort(key=lambda x: (x.surname, x.forenames))
+        return rs
+
     @cached_property
     def sub_items(self) -> 'Sequence[AbstractServiceFormItem]':
         lvl2s = Prefetch('level2category_set',
@@ -442,7 +459,7 @@ class ServiceForm(SubitemMixin, models.Model):
     def bulk_email_responsibles(self) -> None:
         logger.info('Bulk email responsibles %s', self)
 
-        for r in self.responsibilityperson_set.all():
+        for r in self.all_responsibles:
             r.send_bulk_mail()
 
     def bulk_email_former_participants(self) -> None:
@@ -468,6 +485,11 @@ class ServiceForm(SubitemMixin, models.Model):
         if self.current_revision.valid_from > now:
             tp = Task.make(self.bulk_email_former_participants,
                            scheduled_time=self.current_revision.valid_from)
+
+
+@receiver(post_save, sender=ServiceForm)
+def invalidate_serviceform_caches(sender: ServiceForm, **kwargs):
+    invalidate_cache(sender, 'all_participants')
 
 
 class AbstractServiceFormItem(models.Model):

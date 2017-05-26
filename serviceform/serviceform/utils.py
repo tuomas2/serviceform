@@ -23,15 +23,20 @@ import uuid
 import random
 import string
 import logging
+from functools import wraps
 from itertools import chain
-from typing import Match, Optional, TYPE_CHECKING, Iterable, Union
+from typing import Optional, TYPE_CHECKING, Iterable, Union, Callable
+
+from django.core.serializers import serialize, deserialize
+from django.db.models import Model
 
 if TYPE_CHECKING:
-    from .models import ServiceForm, Participation, Member, AbstractServiceFormItem
+    from .models import ServiceForm, Participation, Member
+    from .models.serviceform import AbstractServiceFormItem
 
 from colorful.forms import RGB_REGEX
 from django.contrib import messages
-from django.core.cache import caches
+from django.core.cache import caches, BaseCache
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.utils.safestring import mark_safe
@@ -399,4 +404,38 @@ def decode(number: str) -> Optional[int]:
     if result < 0:
         result = None
     return result
+
+
+def django_cache(key, cache_name='default'):
+    """
+    Decorator that caches list of django models into Django cache.
+    
+    Decorated function must return an iterable of django models.
+    
+    """
+    cache: BaseCache = caches[cache_name]
+
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(obj: Model, *args, **kwargs) -> Iterable[Model]:
+            cache_key = f'{obj.__class__.__name__}_{obj.pk}_{key}'
+            result_json = cache.get(cache_key)
+
+            if result_json:
+                result = (i.object for i in deserialize('json', result_json))
+            else:
+                result = fn(obj, *args, **kwargs)
+                cache.set(cache_key, serialize('json', result))
+
+            return result
+        return wrapper
+
+    return decorator
+
+
+def invalidate_cache(obj, key, cache_name='default'):
+    cache: BaseCache = caches[cache_name]
+    cache_key = f'{obj.__class__.__name__}_{obj.pk}_{key}'
+    cache.delete(cache_key)
+
 
