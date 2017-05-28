@@ -20,7 +20,7 @@ import datetime
 import logging
 import string
 from enum import Enum
-from typing import Tuple, Set, Sequence, Iterator, Iterable, TYPE_CHECKING, List
+from typing import Tuple, Set, Sequence, Iterator, Iterable, TYPE_CHECKING, List, Optional
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
@@ -57,6 +57,8 @@ logger = logging.getLogger(__name__)
 
 class AbstractServiceFormItem(models.Model):
     subitem_name: str
+    parent_name: str
+
     _counter: int
     _responsibles: Set[Member]
 
@@ -82,19 +84,30 @@ class AbstractServiceFormItem(models.Model):
         return r in self._responsibles
 
     @property
+    def real_responsibles(self) -> List[Member]:
+        """All responsibles of this item + its parents """
+        rs = set(self.responsibles.all())
+        parent = self.parent
+        if parent:
+            rs.update(parent.real_responsibles)
+        return sorted(rs, key=lambda x: (x.surname, x.forenames))
+
+    @property
     def all_responsibles(self) -> List[Member]:
-        rs = set()
-        rs.update(self.responsibles.all())
+        """Collect recursively get all responsibles of this item + all its subitems"""
+        rs = set(self.responsibles.all())
 
         for subitem in self.sub_items:
             rs.update(subitem.all_responsibles)
 
-        rs = list(rs)
-        rs.sort(key=lambda x: (x.surname, x.forenames))
-        return rs
+        return sorted(rs, key=lambda x: (x.surname, x.forenames))
+
+    @property
+    def parent(self) -> 'Optional[AbstractServiceFormItem]':
+        return getattr(self, self.parent_name, None)
 
     @cached_property
-    def sub_items(self) -> 'Iterable[AbstractServiceFormItem]':
+    def sub_items(self) -> 'Sequence[AbstractServiceFormItem]':
         if not self.subitem_name:
             return []
 
@@ -531,6 +544,7 @@ def invalidate_serviceform_caches(sender: ServiceForm, **kwargs):
 
 
 class Level1Category(NameDescriptionMixin, AbstractServiceFormItem):
+    parent_name = 'form'
     subitem_name = 'level2category'
     background_color = ColorField(_('Background color'), blank=True, null=True)
 
@@ -546,6 +560,7 @@ class Level1Category(NameDescriptionMixin, AbstractServiceFormItem):
 
 
 class Level2Category(NameDescriptionMixin, AbstractServiceFormItem):
+    parent_name = 'category'
     subitem_name = 'activity'
     background_color = ColorField(_('Background color'), blank=True, null=True)
 
@@ -566,6 +581,7 @@ class Level2Category(NameDescriptionMixin, AbstractServiceFormItem):
 
 class Activity(NameDescriptionMixin, AbstractServiceFormItem):
     subitem_name = 'activitychoice'
+    parent_name = 'category'
 
     class Meta(AbstractServiceFormItem.Meta):
         verbose_name = _('Activity')
@@ -610,6 +626,7 @@ class Activity(NameDescriptionMixin, AbstractServiceFormItem):
 
 
 class ActivityChoice(NameDescriptionMixin, AbstractServiceFormItem):
+    parent_name = 'activity'
     class Meta(AbstractServiceFormItem.Meta):
         verbose_name = _('Activity choice')
         verbose_name_plural = _('Activity choices')
