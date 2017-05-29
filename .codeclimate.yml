@@ -1,7 +1,10 @@
-JavaScript: false
-Ruby: false
-Python: true
-PHP: false
+engines:
+  pep8:
+    enabled: true
+ratings:
+  paths:
+  - serviceform/**
+  - "**.py"
 exclude_paths:
  - "serviceform/serviceform/static/assets/"
  - "serviceform/serviceform/static/Font-Awesome/"
