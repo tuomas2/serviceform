@@ -1,10 +1,12 @@
 engines:
+  radon:
+    enabled: true
   pep8:
     enabled: true
   fixme:
     enabled: true
-  pylint:
-    enabled: true
+#  pylint:
+#    enabled: true
   eslint:
     enabled: true
   csslint:
