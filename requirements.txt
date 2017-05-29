@@ -10,7 +10,7 @@ celery==4.0.2
 click==6.7                # via pip-tools
 colour==0.1.4
 contextlib2==0.5.5        # via raven
-coverage==4.4.1           # via pytest-cov
+coverage==4.3.4
 decorator==4.0.11         # via ipython, traitlets
 django-appconf==1.0.2     # via django-compressor
 django-cachalot==1.4.1
