@@ -1,6 +1,21 @@
 engines:
   pep8:
     enabled: true
+  fixme:
+    enabled: true
+  pylint:
+    enabled: true
+  eslint:
+    enabled: true
+  csslint:
+    enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - ruby:
+      	  mass_threshold: 30
+      - javascript
 ratings:
   paths:
   - serviceform/**
