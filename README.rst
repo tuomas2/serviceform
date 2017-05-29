@@ -13,7 +13,7 @@
 .. image:: https://img.shields.io/pypi/pyversions/serviceform.svg
    :target: https://pypi.python.org/pypi/serviceform
 
-.. image:: https://img.shields.io/badge/licence-GPL%203.svg
+.. image:: https://img.shields.io/badge/licence-GPL--3-blue.svg
    :target: https://github.com/tuomas2/serviceform/blob/master/LICENSE.txt
 
 ===========
