@@ -90,7 +90,7 @@ DEBUG_TOOLBAR_PANELS = [
 
 GRAPPELLI_CLEAN_INPUT_TYPES = False
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
-MIDDLEWARE = [
+MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -104,7 +104,7 @@ MIDDLEWARE = [
 ]
 
 if DEBUG:
-    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+    MIDDLEWARE_CLASSES += ['debug_toolbar.middleware.DebugToolbarMiddleware']
 
 ROOT_URLCONF = 'serviceform_project.urls'
 
