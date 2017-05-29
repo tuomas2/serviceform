@@ -7,6 +7,15 @@
 .. image:: https://www.versioneye.com/user/projects/5922f7e68dcc41003af21f61/badge.svg
    :target: https://www.versioneye.com/user/projects/5922f7e68dcc41003af21f61
 
+.. image:: https://img.shields.io/pypi/v/serviceform.svg
+   :target: https://pypi.python.org/pypi/serviceform
+
+.. image:: https://img.shields.io/pypi/pyversions/serviceform.svg
+   :target: https://pypi.python.org/pypi/serviceform
+
+.. image:: https://img.shields.io/badge/licence-GPL%203.svg
+   :target: https://github.com/tuomas2/serviceform/blob/master/LICENSE.txt
+
 ===========
 Serviceform
 ===========
