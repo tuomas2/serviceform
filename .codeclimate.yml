@@ -1,0 +1,6 @@
+exclude_paths:
+ - "serviceform/serviceform/static/assets/"
+ - "serviceform/serviceform/static/Font-Awesome/"
+ - "serviceform/serviceform/static/select2/"
+ - "tests/"
+ - "**/migrations/"
