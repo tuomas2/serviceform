@@ -1,3 +1,7 @@
+JavaScript: false
+Ruby: false
+Python: true
+PHP: false
 exclude_paths:
  - "serviceform/serviceform/static/assets/"
  - "serviceform/serviceform/static/Font-Awesome/"
