@@ -35,7 +35,43 @@ from .decorators import require_authenticated_participation, require_published_f
 logger = logging.getLogger(__name__)
 
 
-@require_authenticated_participation(accept_anonymous=True)
+def contact_details_anonymous(request: HttpRequest) -> HttpResponse:
+    """
+    Contact details form when there is not yet any data in database.
+    """
+
+    # Redirect to contact_details if member is stored in db.
+
+    serviceform_pk = request.session.get('serviceform_pk')
+    serviceform = models.ServiceForm.objects.get(pk=serviceform_pk)
+
+    form = forms.ContactForm(user=request.user)
+
+    if request.method == 'POST':
+        form = forms.ContactForm(request.POST, user=request.user)
+        if form.is_valid():
+            member = form.save()
+            # Now we can create participation object
+            # Try to find existing participation for member on form
+
+
+            if participation.form.is_published:
+                return participation.redirect_next(request)
+            else:
+                participation.status = models.Participation.STATUS_FINISHED
+                participation.save(update_fields=['status'])
+                return HttpResponseRedirect(reverse('submitted'))
+
+    return render(request, 'serviceform/participation/contact_view.html',
+                  {'form': form,
+                   'participant': participation,
+                   'service_form': participation.form,
+                   'bootstrap_checkbox_disabled': True})
+
+
+
+
+@require_authenticated_participation
 def contact_details(request: HttpRequest,
                     participation: Optional[models.Participation]) -> HttpResponse:
     if participation and participation.status == models.Participation.STATUS_FINISHED:

@@ -33,7 +33,7 @@ def password_login(request: HttpRequest, service_form: models.ServiceForm) -> Ht
     if request.method == 'POST':
         password_form = forms.PasswordForm(service_form, request.POST)
         if password_form.is_valid():
-            request.session['anonymous_participant'] = True
+            request.session['serviceform_pk'] = service_form.pk
             return HttpResponseRedirect(reverse('contact_details'))
 
     return render(request, 'serviceform/login/password_login.html',
