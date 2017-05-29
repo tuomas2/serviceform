@@ -13,9 +13,7 @@ engines:
     enabled: true
     config:
       languages:
-      - ruby:
-      	  mass_threshold: 30
-      - javascript
+      - python:
 ratings:
   paths:
   - serviceform/**
