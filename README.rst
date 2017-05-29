@@ -4,6 +4,9 @@
 .. image:: https://coveralls.io/repos/github/tuomas2/serviceform/badge.svg?branch=master
    :target: https://coveralls.io/github/tuomas2/serviceform?branch=master
 
+.. image:: https://img.shields.io/codeclimate/github/kabisaict/flow.svg?style=plastic
+   :target: https://codeclimate.com/github/tuomas2/serviceform
+
 .. image:: https://www.versioneye.com/user/projects/5922f7e68dcc41003af21f61/badge.svg
    :target: https://www.versioneye.com/user/projects/5922f7e68dcc41003af21f61
 
@@ -15,6 +18,7 @@
 
 .. image:: https://img.shields.io/badge/licence-GPL--3-blue.svg
    :target: https://github.com/tuomas2/serviceform/blob/master/LICENSE.txt
+
 
 ===========
 Serviceform
