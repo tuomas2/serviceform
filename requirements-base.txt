@@ -16,7 +16,3 @@ rcssmin==1.0.6            # via django-compressor
 rjsmin==1.0.12            # via django-compressor
 six==1.10.0               # via libsass, pip-tools
 uwsgi==2.0.15
-wheel==0.29.0
-
-# The following packages are considered to be unsafe in a requirements file:
-pip==9.0.1
