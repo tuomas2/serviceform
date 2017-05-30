@@ -225,15 +225,13 @@ Or alternatively, pull it from the repository::
 Initialization / upgrade.
 -------------------------
 
-This migrates database and (re-)creates static files in shared volume (for nginx)::
+This migrates database::
 
     docker run --rm -u root \
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --env-file $SERVICEFORM_ENV_FILE \
             --volume serviceform-media:/code/media \
-            --volume serviceform-static:/code/static \
-            --volume serviceform-nginx-config:/nginx-config \
             --volume serviceform-celery-beat-store:/celery-beat-store \
             tuomasairaksinen/serviceform:latest upgrade
 
@@ -284,7 +282,6 @@ Main app (HTTP server)::
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --env-file $SERVICEFORM_ENV_FILE \
-            --volume serviceform-static:/code/static:ro \
             --volume serviceform-media:/code/media \
             tuomasairaksinen/serviceform:latest app
 
@@ -298,15 +295,14 @@ Shutting down and starting (system reboot procedures)
 
 Shutting down::
 
-    docker stop serviceform-nginx serviceform-app serviceform-send-emails \
+    docker stop serviceform-app serviceform-send-emails \
                 serviceform-task-processor serviceform-celery-beat serviceform-celery \
                 serviceform-redis serviceform-db
 
 Starting again (set this into your system startup). Notice order.::
 
     docker start serviceform-db serviceform-redis serviceform-celery serviceform-celery-beat \
-                 serviceform-task-processor serviceform-send-emails serviceform-app \
-                 serviceform-nginx
+                 serviceform-task-processor serviceform-send-emails serviceform-app
 
 .. _upgrading:
 
@@ -316,14 +312,14 @@ Upgrading system
 Simple upgrade procedure::
 
     docker pull tuomasairaksinen/serviceform:latest
-    docker stop serviceform-nginx serviceform-app serviceform-send-emails \
-            serviceform-task-processor serviceform-celery-beat serviceform-celery
+    docker stop serviceform-app serviceform-send-emails serviceform-task-processor \
+    serviceform-celery-beat serviceform-celery
 
 Run `upgrade`_ command.
 If that is fine, we can remove old containers::
 
-    docker rm serviceform-nginx serviceform-app serviceform-send-emails \
-            serviceform-task-processor serviceform-celery-beat serviceform-celery
+    docker rm serviceform-app serviceform-send-emails serviceform-task-processor \
+              serviceform-celery-beat serviceform-celery
 
 Then run all docker run all `services`_ and `http_server`_.
 
@@ -362,8 +358,6 @@ Bash shell (to investigate/edit volumes etc.)::
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --volume serviceform-media:/code/media:ro \
-            --volume serviceform-static:/code/static \
-            --volume serviceform-nginx-config:/nginx-config \
             --env-file $SERVICEFORM_ENV_FILE \
             tuomasairaksinen/serviceform:latest bash
 

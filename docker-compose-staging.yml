@@ -3,7 +3,6 @@ version: "2"
 # Environment is similar to production
 
 volumes:
-  static:
   media:
   nginx-config:
   celery-beat-store:
@@ -34,7 +33,6 @@ services:
       - staging-db:db
       - staging-redis:redis
     volumes:
-      - static:/code/static
       - media:/code/media
       - nginx-config:/nginx-config
       - celery-beat-store:/celery-beat-store
@@ -90,7 +88,6 @@ services:
       - staging-db:db
       - staging-redis:redis
     volumes:
-     - static:/code/static:ro
      - media:/code/media
     depends_on:
       - upgrade

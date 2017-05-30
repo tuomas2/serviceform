@@ -16,20 +16,9 @@ wait_db
 
 case "$1" in
   'upgrade')
-    # Update nginx configuration
-    rm -f /nginx-config/*
-    cd nginx-config
-    for i in *; do
-        envsubst < $i > /nginx-config/$i
-    done
-    cd ..
     # Set media volume permissions
     chown -R web /code/media
     chown -R web /celery-beat-store
-    # Update static files
-    ./manage.py collectstatic --noinput
-    ./manage.py compress
-    # Perform database migrations
     ./manage.py migrate
   ;;
   'app')
