@@ -35,6 +35,7 @@ TIME_ZONE = os.getenv('TIME_ZONE', 'Europe/Helsinki')
 
 ALLOWED_HOSTS = [SERVICEFORM_HOST]
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Application definition
 
 INSTALLED_APPS = [
