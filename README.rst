@@ -277,30 +277,16 @@ Send-emails::
             --env-file $SERVICEFORM_ENV_FILE \
             tuomasairaksinen/serviceform:latest send-emails
 
-App::
+Main app (HTTP server)::
 
     docker run -d --name serviceform-app \
+            --publish 8038:8080 \
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --env-file $SERVICEFORM_ENV_FILE \
             --volume serviceform-static:/code/static:ro \
             --volume serviceform-media:/code/media \
             tuomasairaksinen/serviceform:latest app
-
-.. _http_server:
-
-HTTP server
------------
-
-Web server::
-
-    docker run -d --name serviceform-nginx \
-            --publish 8038:80 \
-            --link serviceform-app:app \
-            --volume serviceform-static:/serviceform-static:ro \
-            --volume serviceform-media:/serviceform-media:ro \
-            --volume serviceform-nginx-config:/etc/nginx/conf.d:ro \
-            nginx:1.13-alpine
 
 With this configuration serviceform will listen HTTP connections to port 8038.
 Now you need to set up your web server (https) to redirect connections to this port.
