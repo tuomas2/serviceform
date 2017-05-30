@@ -26,6 +26,8 @@ Serviceform
 
 RELEASE IS STILL WORK IN PROGRESS. PLEASE WAIT...
 
+Introduction
+============
 
 Web application for collecting data from volunteers of willingness to participate.
 
@@ -192,7 +194,7 @@ External services
 
 Docker commands to start external services needed by Serviceform
 
-Postgresql::
+PostgreSQL::
 
    docker run -d --name serviceform-db \
             --env-file $SERVICEFORM_ENV_FILE \
@@ -321,9 +323,7 @@ If that is fine, we can remove old containers::
     docker rm serviceform-app serviceform-send-emails serviceform-task-processor \
               serviceform-celery-beat serviceform-celery
 
-Then run all docker run all `services`_ and `http_server`_.
-
-Zero-downtime upgrade method is planned in the future.
+Then run all docker run again all `services`_.
 
 .. _troubleshooting:
 
@@ -374,7 +374,7 @@ Run::
 Load data from file.
 --------------------
 
-First you need to destroy current database from postgres shell::
+First you need to destroy current database from PostgreSQL shell::
 
    DROP DATABASE serviceform;
    CREATE DATABASE serviceform;
@@ -418,7 +418,8 @@ How to set things up and run your local development environment:
 
 Install dependencies::
 
-    sudo apt-get install docker.io git python-dev python-pip virtualenv libpq-dev postgresql-server-dev-all virtualenvwrapper
+    sudo apt-get install python-dev python-pip virtualenv libpq-dev\
+                         postgresql-server-dev-all virtualenvwrapper
 
 Note: Python 3.6 or newer is required.
 
@@ -474,8 +475,6 @@ To load dump, you must first clear the current database. This can be done as fol
 Dump data in json format for tests::
 
     ./manage.py dumpdata -o tests/test_data.json -e serviceform.EmailMessage -e admin.LogEntry --indent 2 -e sessions.Session
-
-
 
 
 Translations
