@@ -497,7 +497,7 @@ Then commit your changes (.po and .mo files) to repository.
 LICENSE
 =======
 
-(c) 2017 Tuomas Airaksinen
+Copyright (C) 2017 Tuomas Airaksinen
 
 Serviceform is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
