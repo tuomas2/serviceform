@@ -22,3 +22,5 @@ pytest
 pytest-django
 pytest-cov
 pytest-mock
+coverage>4.0,<4.4
+whitenoise

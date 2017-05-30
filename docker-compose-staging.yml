@@ -3,7 +3,6 @@ version: "2"
 # Environment is similar to production
 
 volumes:
-  static:
   media:
   nginx-config:
   celery-beat-store:
@@ -32,9 +31,8 @@ services:
     command: upgrade
     links:
       - staging-db:db
-      - staging-redis
+      - staging-redis:redis
     volumes:
-      - static:/code/static
       - media:/code/media
       - nginx-config:/nginx-config
       - celery-beat-store:/celery-beat-store
@@ -44,7 +42,7 @@ services:
     command: celery
     env_file: env/staging.list
     links:
-      - staging-redis
+      - staging-redis:redis
       - staging-db:db
     depends_on:
       - upgrade
@@ -55,7 +53,7 @@ services:
     env_file: env/staging.list
     links:
       - staging-db:db
-      - staging-redis
+      - staging-redis:redis
     volumes:
       - celery-beat-store:/store
     depends_on:
@@ -67,7 +65,7 @@ services:
     env_file: env/staging.list
     links:
       - staging-db:db
-      - staging-redis
+      - staging-redis:redis
     depends_on:
       - upgrade
 
@@ -83,24 +81,13 @@ services:
   app:
     image: tuomasairaksinen/serviceform:latest
     env_file: env/staging.list
+    ports:
+     - "8080:8080"
     command: app
     links:
       - staging-db:db
-      - staging-redis
+      - staging-redis:redis
     volumes:
-     - static:/code/static:ro
      - media:/code/media
     depends_on:
       - upgrade
-
-  web:
-    image: nginx:1.11
-    env_file: env/staging.list
-    ports:
-      - 8080:80
-    links:
-      - app
-    volumes:
-      - static:/serviceform-static:ro
-      - media:/serviceform-media:ro
-      - nginx-config:/etc/nginx/conf.d:ro

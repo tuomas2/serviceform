@@ -35,6 +35,7 @@ TIME_ZONE = os.getenv('TIME_ZONE', 'Europe/Helsinki')
 
 ALLOWED_HOSTS = [SERVICEFORM_HOST]
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Application definition
 
 INSTALLED_APPS = [
@@ -92,6 +93,7 @@ GRAPPELLI_CLEAN_INPUT_TYPES = False
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

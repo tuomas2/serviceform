@@ -1,0 +1,28 @@
+engines:
+  radon:
+    enabled: true
+  pep8:
+    enabled: true
+  fixme:
+    enabled: true
+#  pylint:
+#    enabled: true
+  eslint:
+    enabled: true
+  csslint:
+    enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - python:
+ratings:
+  paths:
+  - serviceform/**
+  - "**.py"
+exclude_paths:
+ - "serviceform/serviceform/static/assets/"
+ - "serviceform/serviceform/static/Font-Awesome/"
+ - "serviceform/serviceform/static/select2/"
+ - "tests/"
+ - "**/migrations/"

@@ -3,7 +3,7 @@ MAINTAINER Tuomas Airaksinen <tuomas.airaksinen@gmail.com>
 ENV PYTHONUNBUFFERED 1
 RUN apk update && apk upgrade && apk add --no-cache gettext postgresql-dev gcc g++ make \
     linux-headers musl-dev postgresql-client bash git
-RUN pip install --upgrade pip setuptools
+RUN pip install --upgrade pip setuptools wheel
 RUN mkdir /code
 ADD ./requirements-base.txt /
 RUN pip install -r requirements-base.txt

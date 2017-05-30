@@ -14,9 +14,11 @@ before_install:
 install:
  - docker build -t serviceform .
  - docker ps -a
- - pip install coveralls
+ - pip install coveralls codeclimate-test-reporter coverage==4.3.4
 
 script:
  - docker run -u root --link redis:redis --link postgres:db --volume $(pwd):$(pwd) serviceform travis-tests $(pwd)
 
-after_success: coveralls
+after_success:
+ - coveralls
+ - codeclimate-test-reporter

@@ -10,7 +10,7 @@ celery==4.0.2
 click==6.7                # via pip-tools
 colour==0.1.4
 contextlib2==0.5.5        # via raven
-coverage==4.4.1           # via pytest-cov
+coverage==4.3.4
 decorator==4.0.11         # via ipython, traitlets
 django-appconf==1.0.2     # via django-compressor
 django-cachalot==1.4.1
@@ -19,7 +19,7 @@ django-colorful==1.2
 django-compressor==2.1.1
 django-crispy-forms==1.6.1
 django-debug-toolbar==1.8
-django-grappelli==2.9.1
+django-grappelli==2.10.1
 django-guardian==1.4.8
 django-libsass==0.7
 django-nested-admin==3.0.17
@@ -49,7 +49,7 @@ pytest==3.1.0
 python-http-client==2.2.1  # via sendgrid
 python-monkey-business==1.0.0  # via django-nested-admin
 pytz==2017.2              # via celery, django
-raven==6.0.0
+raven==6.1.0
 rcssmin==1.0.6            # via django-compressor
 redis==2.10.5
 rjsmin==1.0.12            # via django-compressor
@@ -62,7 +62,4 @@ traitlets==4.3.2          # via ipython
 uwsgi==2.0.15
 vine==1.1.3               # via amqp
 wcwidth==0.1.7            # via prompt-toolkit
-wheel==0.29.0
-
-# The following packages are considered to be unsafe in a requirements file:
-pip==9.0.1
+whitenoise==3.3.0

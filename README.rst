@@ -4,8 +4,21 @@
 .. image:: https://coveralls.io/repos/github/tuomas2/serviceform/badge.svg?branch=master
    :target: https://coveralls.io/github/tuomas2/serviceform?branch=master
 
+.. image:: https://img.shields.io/codeclimate/github/tuomas2/serviceform.svg
+   :target: https://codeclimate.com/github/tuomas2/serviceform
+
 .. image:: https://www.versioneye.com/user/projects/5922f7e68dcc41003af21f61/badge.svg
    :target: https://www.versioneye.com/user/projects/5922f7e68dcc41003af21f61
+
+.. image:: https://img.shields.io/pypi/v/serviceform.svg
+   :target: https://pypi.python.org/pypi/serviceform
+
+.. image:: https://img.shields.io/pypi/pyversions/serviceform.svg
+   :target: https://pypi.python.org/pypi/serviceform
+
+.. image:: https://img.shields.io/badge/licence-GPL--3-blue.svg
+   :target: https://github.com/tuomas2/serviceform/blob/master/LICENSE.txt
+
 
 ===========
 Serviceform
@@ -13,6 +26,8 @@ Serviceform
 
 RELEASE IS STILL WORK IN PROGRESS. PLEASE WAIT...
 
+Introduction
+============
 
 Web application for collecting data from volunteers of willingness to participate.
 
@@ -179,7 +194,7 @@ External services
 
 Docker commands to start external services needed by Serviceform
 
-Postgresql::
+PostgreSQL::
 
    docker run -d --name serviceform-db \
             --env-file $SERVICEFORM_ENV_FILE \
@@ -212,15 +227,13 @@ Or alternatively, pull it from the repository::
 Initialization / upgrade.
 -------------------------
 
-This migrates database and (re-)creates static files in shared volume (for nginx)::
+This migrates database::
 
     docker run --rm -u root \
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --env-file $SERVICEFORM_ENV_FILE \
             --volume serviceform-media:/code/media \
-            --volume serviceform-static:/code/static \
-            --volume serviceform-nginx-config:/nginx-config \
             --volume serviceform-celery-beat-store:/celery-beat-store \
             tuomasairaksinen/serviceform:latest upgrade
 
@@ -264,30 +277,15 @@ Send-emails::
             --env-file $SERVICEFORM_ENV_FILE \
             tuomasairaksinen/serviceform:latest send-emails
 
-App::
+Main app (HTTP server)::
 
     docker run -d --name serviceform-app \
+            --publish 8038:8080 \
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --env-file $SERVICEFORM_ENV_FILE \
-            --volume serviceform-static:/code/static:ro \
             --volume serviceform-media:/code/media \
             tuomasairaksinen/serviceform:latest app
-
-.. _http_server:
-
-HTTP server
------------
-
-Web server::
-
-    docker run -d --name serviceform-nginx \
-            --publish 8038:80 \
-            --link serviceform-app:app \
-            --volume serviceform-static:/serviceform-static:ro \
-            --volume serviceform-media:/serviceform-media:ro \
-            --volume serviceform-nginx-config:/etc/nginx/conf.d:ro \
-            nginx:1.13-alpine
 
 With this configuration serviceform will listen HTTP connections to port 8038.
 Now you need to set up your web server (https) to redirect connections to this port.
@@ -299,15 +297,14 @@ Shutting down and starting (system reboot procedures)
 
 Shutting down::
 
-    docker stop serviceform-nginx serviceform-app serviceform-send-emails \
+    docker stop serviceform-app serviceform-send-emails \
                 serviceform-task-processor serviceform-celery-beat serviceform-celery \
                 serviceform-redis serviceform-db
 
 Starting again (set this into your system startup). Notice order.::
 
     docker start serviceform-db serviceform-redis serviceform-celery serviceform-celery-beat \
-                 serviceform-task-processor serviceform-send-emails serviceform-app \
-                 serviceform-nginx
+                 serviceform-task-processor serviceform-send-emails serviceform-app
 
 .. _upgrading:
 
@@ -317,18 +314,16 @@ Upgrading system
 Simple upgrade procedure::
 
     docker pull tuomasairaksinen/serviceform:latest
-    docker stop serviceform-nginx serviceform-app serviceform-send-emails \
-            serviceform-task-processor serviceform-celery-beat serviceform-celery
+    docker stop serviceform-app serviceform-send-emails serviceform-task-processor \
+    serviceform-celery-beat serviceform-celery
 
 Run `upgrade`_ command.
 If that is fine, we can remove old containers::
 
-    docker rm serviceform-nginx serviceform-app serviceform-send-emails \
-            serviceform-task-processor serviceform-celery-beat serviceform-celery
+    docker rm serviceform-app serviceform-send-emails serviceform-task-processor \
+              serviceform-celery-beat serviceform-celery
 
-Then run all docker run all `services`_ and `http_server`_.
-
-Zero-downtime upgrade method is planned in the future.
+Then run all docker run again all `services`_.
 
 .. _troubleshooting:
 
@@ -363,8 +358,6 @@ Bash shell (to investigate/edit volumes etc.)::
             --link serviceform-db:db \
             --link serviceform-redis:redis \
             --volume serviceform-media:/code/media:ro \
-            --volume serviceform-static:/code/static \
-            --volume serviceform-nginx-config:/nginx-config \
             --env-file $SERVICEFORM_ENV_FILE \
             tuomasairaksinen/serviceform:latest bash
 
@@ -381,7 +374,7 @@ Run::
 Load data from file.
 --------------------
 
-First you need to destroy current database from postgres shell::
+First you need to destroy current database from PostgreSQL shell::
 
    DROP DATABASE serviceform;
    CREATE DATABASE serviceform;
@@ -396,7 +389,7 @@ and then start database server (see external_).
 
 And then::
 
-   docker exec -u postgres serviceform-db psql serviceform < backup.sql
+   docker exec -i -u postgres serviceform-db psql serviceform < backup.sql
 
 ===========
 Development
@@ -425,7 +418,8 @@ How to set things up and run your local development environment:
 
 Install dependencies::
 
-    sudo apt-get install docker.io git python-dev python-pip virtualenv libpq-dev postgresql-server-dev-all virtualenvwrapper
+    sudo apt-get install python-dev python-pip virtualenv libpq-dev\
+                         postgresql-server-dev-all virtualenvwrapper
 
 Note: Python 3.6 or newer is required.
 
@@ -476,13 +470,11 @@ Database can be dumped with the following command::
 
 To load dump, you must first clear the current database. This can be done as follows::
 
-    docker-compose exec -u postgres -i db psql serviceform < init.sql
+    docker-compose exec -i -u postgres db psql serviceform < init.sql
 
 Dump data in json format for tests::
 
     ./manage.py dumpdata -o tests/test_data.json -e serviceform.EmailMessage -e admin.LogEntry --indent 2 -e sessions.Session
-
-
 
 
 Translations

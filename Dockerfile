@@ -8,12 +8,8 @@ RUN git rev-parse HEAD > .git_sha
 RUN apk del git
 RUN rm -r .git
 RUN mkdir /code/static
-# Tests need these
-RUN mkdir .cache
-RUN touch .coverage
-RUN chmod a+rw .cache .coverage
-VOLUME /code/static
-# WSGI port defined in uwsgi.ini
-EXPOSE 9051
+RUN DOCKER_BUILD=1 ./manage.py collectstatic --noinput
+RUN DOCKER_BUILD=1 ./manage.py compress
+EXPOSE 8080
 USER web
 ENTRYPOINT ["bash", "-x", "entrypoint.sh"]

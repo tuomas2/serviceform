@@ -1,5 +1,3 @@
-pip
-wheel
 # packages that need compilation
 django-libsass
 uwsgi
