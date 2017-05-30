@@ -10,11 +10,6 @@ RUN rm -r .git
 RUN mkdir /code/static
 RUN DOCKER_BUILD=1 ./manage.py collectstatic --noinput
 RUN DOCKER_BUILD=1 ./manage.py compress
-# Tests need these
-RUN mkdir .cache
-RUN touch .coverage
-RUN chmod a+rw .cache .coverage
-# WSGI port defined in uwsgi.ini
-EXPOSE 9051
+EXPOSE 8080
 USER web
 ENTRYPOINT ["bash", "-x", "entrypoint.sh"]
