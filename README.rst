@@ -31,7 +31,7 @@ Web application for collecting data from volunteers of willingness to participat
 Documentation
 -------------
 
-.. _WIKI: wiki/
+.. _WIKI: https://github.com/tuomas2/serviceform/wiki
 
 See `WIKI`_.
 
