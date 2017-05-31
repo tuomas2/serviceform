@@ -31,9 +31,7 @@ Web application for collecting data from volunteers of willingness to participat
 Documentation
 -------------
 
-`See WIKI <https://github.com/tuomas2/serviceform/wiki>`_
-
- - `Production guide with docker <https://github.com/tuomas2/serviceform/wiki/Production-guide-with-Docker>`_
+ - `Production guide with Docker <https://github.com/tuomas2/serviceform/wiki/Production-guide-with-Docker>`_
  - `Install as Django application to your project <https://github.com/tuomas2/serviceform/wiki/Install-as-Django-application-to-your-project>`_
  - `Development <https://github.com/tuomas2/serviceform/wiki/Development>`_
 
@@ -56,4 +54,4 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Serviceform.  If not, see <http://www.gnu.org/licenses/>.
 
-For more information, `see LICENSE.txt <LICENCE.txt>`_
+For more information, `see LICENSE.txt <LICENSE.txt>`_
