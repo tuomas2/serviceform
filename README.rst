@@ -31,9 +31,15 @@ Web application for collecting data from volunteers of willingness to participat
 Documentation
 -------------
 
+User / server admin guides:
+
  - `Production guide with Docker <https://github.com/tuomas2/serviceform/wiki/Production-guide-with-Docker>`_
+
+Developer guides:
+
+ - `General developer guide <https://github.com/tuomas2/serviceform/wiki/Development>`_
  - `Install as Django application to your project <https://github.com/tuomas2/serviceform/wiki/Install-as-Django-application-to-your-project>`_
- - `Development <https://github.com/tuomas2/serviceform/wiki/Development>`_
+
 
 
 LICENSE
