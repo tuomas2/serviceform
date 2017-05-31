@@ -16,6 +16,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 
 #from django.shortcuts import render
 #handler403 = lambda request: render(request, 'serviceform/error/403.html')
@@ -29,5 +30,10 @@ urlpatterns = [
     url(r'^_select2/', include('select2.urls')),
     url(r'', include('serviceform.serviceform.urls')),
 ]
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns
 
 admin.site.site_header = admin.site.site_title = _('Serviceform admin')
