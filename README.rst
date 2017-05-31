@@ -277,9 +277,9 @@ Send-emails::
             --env-file $SERVICEFORM_ENV_FILE \
             tuomasairaksinen/serviceform:latest send-emails
 
-Main app (HTTP server)::
+Main app (HTTP server) x 2::
 
-    docker run -d --name serviceform-app \
+    docker run -d --name serviceform-app-1 \
             --publish 8038:8080 \
             --link serviceform-db:db \
             --link serviceform-redis:redis \
@@ -287,24 +287,57 @@ Main app (HTTP server)::
             --volume serviceform-media:/code/media \
             tuomasairaksinen/serviceform:latest app
 
-With this configuration serviceform will listen HTTP connections to port 8038.
-Now you need to set up your web server (https) to redirect connections to this port.
+    docker run -d --name serviceform-app-2 \
+            --publish 8039:8080 \
+            --link serviceform-db:db \
+            --link serviceform-redis:redis \
+            --env-file $SERVICEFORM_ENV_FILE \
+            --volume serviceform-media:/code/media \
+            tuomasairaksinen/serviceform:latest app
 
-.. _restarting:
+With this configuration serviceform will listen HTTP connections to ports 8038 and 8039.
+Now you need to set up your web server (https) to redirect connections to these ports::
 
-Shutting down and starting (system reboot procedures)
-=====================================================
+    upstream serviceformapp {
+       server 127.0.0.1:8038;
+       server 127.0.0.1:8039;
+    }
 
-Shutting down::
+    server{
+        listen 80;
+        charset utf-8;
+        client_max_body_size 2M;
+        server_name yourserver.com;
+        location / {
+            return 302 https://yourserver.com$request_uri;
+        }
+    }
 
-    docker stop serviceform-app serviceform-send-emails \
-                serviceform-task-processor serviceform-celery-beat serviceform-celery \
-                serviceform-redis serviceform-db
+    server {
+        listen      443;
+        ssl on;
+        ssl_certificate  /path/to/fullchain.pem;
+        ssl_certificate_key /path/to/privkey.pem;
 
-Starting again (set this into your system startup). Notice order.::
+        server_name yourserver.com;
+        charset     utf-8;
 
-    docker start serviceform-db serviceform-redis serviceform-celery serviceform-celery-beat \
-                 serviceform-task-processor serviceform-send-emails serviceform-app
+        client_max_body_size 2M;
+
+
+        location / {
+          proxy_pass         http://serviceformapp;
+          proxy_redirect     off;
+
+          proxy_set_header   Host              $host;
+          proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+          proxy_set_header   X-Forwarded-Proto $scheme;
+        }
+    }
+
+With two app instances running simultaneously it is easy to do zero-downtime
+upgrades by performing upgrade, restartin first 1 and then second instance, one
+at a time.
 
 .. _upgrading:
 
@@ -314,16 +347,40 @@ Upgrading system
 Simple upgrade procedure::
 
     docker pull tuomasairaksinen/serviceform:latest
-    docker stop serviceform-app serviceform-send-emails serviceform-task-processor \
+    docker stop serviceform-app-1 serviceform-send-emails serviceform-task-processor \
     serviceform-celery-beat serviceform-celery
 
 Run `upgrade`_ command.
 If that is fine, we can remove old containers::
 
-    docker rm serviceform-app serviceform-send-emails serviceform-task-processor \
+    docker rm serviceform-app-1 serviceform-send-emails serviceform-task-processor \
               serviceform-celery-beat serviceform-celery
 
 Then run all docker run again all `services`_.
+
+Finally stop and remove app-2::
+
+   docker stop serviceform-app-2
+   docker rm serviceform-app-2
+
+and then run it again with new image.
+
+.. _restarting:
+
+Shutting down and starting (system reboot procedures)
+=====================================================
+
+Shutting down::
+
+    docker stop serviceform-app-1 serviceform-app-2 serviceform-send-emails \
+                serviceform-task-processor serviceform-celery-beat serviceform-celery \
+                serviceform-redis serviceform-db
+
+Starting again (set this into your system startup). Notice order.::
+
+    docker start serviceform-db serviceform-redis serviceform-celery serviceform-celery-beat \
+                 serviceform-task-processor serviceform-send-emails serviceform-app-1 \
+                 serviceform-app-2
 
 .. _troubleshooting:
 
