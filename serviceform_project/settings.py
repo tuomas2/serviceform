@@ -130,14 +130,14 @@ TEMPLATES = [
     },
 ]
 
-if not DEBUG:
-    TEMPLATES[0]['OPTIONS'].update(
-        {
-            'loaders': [
-                ('django.template.loaders.cached.Loader', [
-                    'django.template.loaders.filesystem.Loader',
-                    'django.template.loaders.app_directories.Loader',
-                ])]})
+if STAGING or PRODUCTION:
+    cache_loader_options = {'loaders': [
+            ('django.template.loaders.cached.Loader', [
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ])]}
+
+    TEMPLATES[0]['OPTIONS'].update(cache_loader_options)
 
 WSGI_APPLICATION = 'serviceform_project.wsgi.application'
 
