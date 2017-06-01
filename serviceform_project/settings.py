@@ -130,7 +130,7 @@ TEMPLATES = [
     },
 ]
 
-if STAGING or PRODUCTION:
+if STAGING or PRODUCTION or TESTS_RUNNING:
     cache_loader_options = {'loaders': [
             ('django.template.loaders.cached.Loader', [
                 'django.template.loaders.filesystem.Loader',
@@ -233,8 +233,10 @@ if TESTS_RUNNING or DEBUG:
     LOGGING['loggers']['']['handlers'].append('crash')
     LOGGING['loggers']['celery']['handlers'].append('crash')
     LOGGING['loggers']['django.template']['handlers'].append('warningcrash')
-    LOGGING['loggers']['django.template']['level'] = 'DEBUG'
     LOGGING['loggers']['django']['handlers'].append('crash')
+
+if DEBUG:
+    LOGGING['loggers']['django.template']['level'] = 'DEBUG'
 
 dictConfig(LOGGING)
 
