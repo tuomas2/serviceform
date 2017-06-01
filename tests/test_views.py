@@ -25,9 +25,9 @@ def test_hit_admin_pages(report_settings, db, admin_client: Client):
     assert b'asdf asfd asdf asdf' in res.content
 
 
-def test_hit_admin_reports(db, report_settings, admin_client: Client):
+def test_hit_admin_reports(db, report_settings, responsible, admin_client: Client):
     p = models.Participation.objects.filter(form_revision__form__slug=SLUG).first()
-    r = models.Member.objects.filter(form__slug=SLUG).first()
+    #r = models.Member.objects.filter(form__slug=SLUG).first()
     pages = [
                 f"/report/{SLUG}/",
                 f"/report/{SLUG}/all_participants/",
@@ -35,7 +35,7 @@ def test_hit_admin_reports(db, report_settings, admin_client: Client):
                 f"/report/{SLUG}/settings/",
                 f"/report/{SLUG}/all_questions/",
                 f"/report/participant/{p.pk}/",
-                f"/report/responsible/{r.pk}/",
+                f"/report/responsible/{responsible.pk}/{SLUG}/",
                 f"/invite/{SLUG}/",
                 f"/preview/{SLUG}/",
                 f"/preview_printable/{SLUG}/",
