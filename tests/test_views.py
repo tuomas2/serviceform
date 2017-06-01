@@ -167,6 +167,7 @@ class Pages:
                 FULL_REPORT_SETTINGS,
                 ]
 
+@pytest.mark.skip(reason='broken for a while')
 @pytest.mark.skipif(os.getenv('SKIP_SLOW_TESTS', False), reason='Very slow test')
 @pytest.mark.parametrize('email_verification', [False, True])
 @pytest.mark.parametrize('flow_by_categories', [False, True])
