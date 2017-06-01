@@ -352,7 +352,8 @@ class ServiceForm(AbstractServiceFormItem):
             forenames=_('Default'),
             surname=_('Responsible'),
             email=_('defaultresponsible@email.com'),
-            form=self)
+            organization_id=self.organization_id
+            )
         self.save()
 
     def create_email_templates(self) -> None:
