@@ -1,4 +1,5 @@
 {% load serviceform_tags i18n %}
+{# Note: participant here is either Participation or Member #}
 <div class="row-report-participant">
   {% all_revisions as is_all_revisions %}
   {% if is_all_revisions and not is_responsible %}

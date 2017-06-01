@@ -38,6 +38,7 @@ postalcode_regex = RegexValidator(
 )
 
 
+# TODO: remove this mixin (merge fields to AbstractServiceformItem)
 class NameDescriptionMixin(models.Model):
     class Meta:
         abstract = True

@@ -185,6 +185,11 @@ class Member(models.Model):
             return self.email
 
     @property
+    def member(self):
+        """Convenience property, to make Participation and Member interfaces similar for templates"""
+        return self
+
+    @property
     def address(self):
         return ('%s\n%s %s' % (
             self.street_address.title(), self.postal_code, self.city.title())).strip()

@@ -88,6 +88,9 @@ class Participation(models.Model):
     def is_updating(self) -> bool:
         return self.status == self.STATUS_UPDATING
 
+    def __str__(self):
+        return f'Participation for {self.member} in {self.form}'
+
     @property
     def additional_data(self) -> Iterator[Tuple[str, str]]:
         yield _('Participation created in system'), self.created_at

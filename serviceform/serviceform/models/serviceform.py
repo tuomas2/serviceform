@@ -56,7 +56,7 @@ logger = logging.getLogger(__name__)
 
 
 class AbstractServiceFormItem(models.Model):
-    subitem_name: str
+    subitem_name: str = None
     parent_name: str
 
     _counter: int
@@ -126,6 +126,9 @@ class AbstractServiceFormItem(models.Model):
 
     def background_color_display(self) -> 'ColorStr':
         raise NotImplementedError
+
+    def id_display(self):
+        return ''
 
 
 class FormRevision(models.Model):
