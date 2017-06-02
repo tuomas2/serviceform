@@ -184,17 +184,18 @@ class ContactForm(ModelForm):
         fields = ('forenames', 'surname', 'year_of_birth', 'street_address',
                   'postal_code', 'city', 'email', 'phone_number', "allow_participant_email")
 
-    def __init__(self, *args, user: 'AbstractUser'=None, **kwargs) -> None:
+    def __init__(self, *args, serviceform: models.ServiceForm=None, user: 'AbstractUser'=None,
+                 **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.participant = self.instance
-        self.service_form = self.participant.form
+        self.member = self.instance
+        self.serviceform = serviceform
         self.user = user
         self.helper = helper = MyFormHelper(self)
         self._fix_fields()
 
         helper.form_id = 'contactform'
 
-        if self.service_form.is_published:
+        if self.serviceform.is_published:
             helper.layout.append(
                 Submit('submit', _('Continue'), css_class='btn-participation-continue'))
         else:
@@ -202,29 +203,29 @@ class ContactForm(ModelForm):
                 Submit('submit', _('Save details'), css_class='btn-participation-continue'))
 
     def _fix_fields(self) -> None:
-        req = self.service_form.required_street_address
+        req = self.serviceform.required_street_address
         self.fields['street_address'].required = req
         self.fields['postal_code'].required = req
         self.fields['city'].required = req
 
-        if not self.service_form.visible_street_address:
+        if not self.serviceform.visible_street_address:
             del self.fields['street_address']
             del self.fields['postal_code']
             del self.fields['city']
 
-        req = self.service_form.required_year_of_birth
+        req = self.serviceform.required_year_of_birth
         if not req:
             self.fields['year_of_birth'].help_text = _('Optional')
         self.fields['year_of_birth'].required = req
 
-        if not self.service_form.visible_year_of_birth:
+        if not self.serviceform.visible_year_of_birth:
             del self.fields['year_of_birth']
 
-        self.fields['phone_number'].required = self.service_form.required_phone_number
-        if not self.service_form.visible_phone_number:
+        self.fields['phone_number'].required = self.serviceform.required_phone_number
+        if not self.serviceform.visible_phone_number:
             del self.fields['phone_number']
 
-        if utils.user_has_serviceform_permission(self.user, self.service_form,
+        if utils.user_has_serviceform_permission(self.user, self.serviceform,
                                                  raise_permissiondenied=False):
             self.fields['email'].required = False
 
@@ -248,21 +249,26 @@ class ContactForm(ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data['email']
-        if email and 'email' in self.changed_data and \
-                models.Participation.objects.filter(email=email,
-                                                    form_revision__form=self.service_form) \
-                        .exclude(pk=self.participant.pk):
+        if (email and 'email' in self.changed_data
+            and models.Member.objects.filter(email=email,
+                                             organization_id=self.serviceform.organization_id)
+                                     .exclude(pk=self.member.pk)):
             logger.info('User tried to enter same email address %s again.', email)
             email_link = '<a href="{}">{}</a>'.format(reverse('send_auth_link', args=(email,)),
                                                       _('resend auth link to your email!'))
+            # TODO: make sure user can enter participation even if there is only member but no
+            # participation for the form. Email should contain some postfix that identifies
+            # the form from which this was sent.
             raise ValidationError(
-                mark_safe(_('There is already participation with this email address. '
-                            'To edit earlier participation, {}').format(email_link)))
+                mark_safe(_('There is already member with this email address in the system. '
+                            'To proceed in entering participation '
+                            'details, {}').format(email_link)))
         return email
 
     def save(self, commit: bool=True):
         if 'email' in self.changed_data:
             self.instance.email_verified = False
+        self.instance.organization_id = self.serviceform.organization_id
         return super().save(commit=commit)
 
 

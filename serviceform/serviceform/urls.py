@@ -68,8 +68,10 @@ class Requires:
 
 
 participant_flow_urls = [
-    url(r'^participant/contact/$', participation_views.contact_details, name='contact_details',
-        kwargs={'title': _('Contact details')}),
+    url(r'^participant/contact/new/$', participation_views.contact_details_creation,
+        name='contact_details_creation', kwargs={'title': _('Contact details')}),
+    url(r'^participant/contact/$', participation_views.contact_details_modification,
+        name='contact_details', kwargs={'title': _('Contact details')}),
     url(r'^participant/email_verification/$', participation_views.email_verification,
         name='email_verification', kwargs={'title': _('Email verification')}),
     url(r'^participant/participation/(\d+)/$', participation_views.participation,

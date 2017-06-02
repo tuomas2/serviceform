@@ -107,16 +107,19 @@ def participants(context: Context) -> 'Sequence[Participation]':
 @register.assignment_tag(takes_context=True)
 def participant_flow_menu_items(context: Context) -> List[FlowItem]:
     current_view = context['request'].resolver_match.view_name
-    participant = context['request'].participant
+    # TODO: rename participant -> participation everywhere
+    # TODO: fix menu for contact_details_creation (+ possibly all others)
+
+    participant = getattr(context['request'], 'participant', None)
     cat_num = context.get('cat_num', 0)
     lst = []
 
     for idx, f_item in enumerate(participant_flow_urls):
-        if f_item.name not in participant.flow:
+        if participant and f_item.name not in participant.flow:
             continue
         if current_view == f_item.name:
             attrs = {'current': True, 'disabled': True}
-        elif not participant.can_access_view(f_item.name):
+        elif not participant or not participant.can_access_view(f_item.name):
             attrs = {'greyed': True, 'disabled': True}
         else:
             attrs = {}

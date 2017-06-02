@@ -235,8 +235,8 @@ if TESTS_RUNNING or DEBUG:
     LOGGING['loggers']['django.template']['handlers'].append('warningcrash')
     LOGGING['loggers']['django']['handlers'].append('crash')
 
-if DEBUG:
-    LOGGING['loggers']['django.template']['level'] = 'DEBUG'
+#if DEBUG:
+#    LOGGING['loggers']['django.template']['level'] = 'DEBUG'
 
 dictConfig(LOGGING)
 

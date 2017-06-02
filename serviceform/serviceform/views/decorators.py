@@ -36,6 +36,7 @@ def serviceform(function=None, check_form_permission=False, init_counters=False,
                     *args, **kwargs) -> HttpResponse:
             service_form = get_object_or_404(models.ServiceForm.objects, slug=slug)
             request.service_form = service_form
+            # TODO: serviceform document loading form cache (-> no more init_counters etc.)
             if init_counters:
                 service_form.init_counters(all_responsibles)
             if fetch_participants:
