@@ -68,8 +68,6 @@ class Requires:
 
 
 participant_flow_urls = [
-    url(r'^participant/contact/new/$', participation_views.contact_details_creation,
-        name='contact_details_creation', kwargs={'title': _('Contact details')}),
     url(r'^participant/contact/$', participation_views.contact_details_modification,
         name='contact_details', kwargs={'title': _('Contact details')}),
     url(r'^participant/email_verification/$', participation_views.email_verification,
@@ -145,6 +143,8 @@ urlpatterns = [u for u in
               [
                   # Test erorr email
                   url(r'^test_error/$', error, name='test_error'),
+                  url(r'^participant/contact/new/$', participation_views.contact_details_creation,
+                      name='contact_details_creation', kwargs={'title': _('Contact details')}),
                   # Later actions for participant
                   url(r'^anonymous/authenticate_participant/([\w-]+)/$',
                       participation_views.authenticate_participant_old,

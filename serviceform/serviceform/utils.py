@@ -30,6 +30,8 @@ from typing import Optional, TYPE_CHECKING, Iterable, Union, Callable
 from django.core.serializers import serialize, deserialize
 from django.db.models import Model
 
+from serviceform.serviceform import models
+
 if TYPE_CHECKING:
     from .models import ServiceForm, Participation, Member
     from .models.serviceform import AbstractServiceFormItem
@@ -439,3 +441,12 @@ def invalidate_cache(obj, key, cache_name='default'):
     cache.delete(cache_key)
 
 
+def mark_as_authenticated_participant(request: HttpRequest,
+                                      participation: 'models.Participation') -> None:
+    request.session['authenticated_participant'] = participation.pk
+
+
+def get_authenticated_participant(request: HttpRequest):
+    # TODO check that this is being used everywhere
+    participant_pk = request.session.get('authenticated_participant')
+    return participant_pk and models.Participation.objects.get(pk=participant_pk)

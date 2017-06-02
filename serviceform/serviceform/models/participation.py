@@ -172,6 +172,7 @@ class Participation(models.Model):
         Send email to participant
         :return: False if email was not sent. Message if it was sent.
         """
+        from .email import EmailMessage
         if not self.member.allow_participant_email and event not in self.SEND_ALWAYS_EMAILS:
             return
 

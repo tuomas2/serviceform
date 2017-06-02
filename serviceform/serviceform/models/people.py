@@ -138,11 +138,6 @@ class Member(models.Model):
     def age(self) -> Union[int, str]:
         return timezone.now().year - self.year_of_birth if self.year_of_birth else '-'
 
-    @property
-    def contact_details(self) -> Iterator[str]:
-        yield from super().contact_details
-        yield _('Year of birth'), self.year_of_birth or '-'
-
     def make_new_password(self) -> str:
         valid_hashes = []
         for key, expire in self.auth_keys_hash_storage:
@@ -161,9 +156,9 @@ class Member(models.Model):
         return password
 
     def make_new_auth_url(self) -> str:
-        url = settings.SERVER_URL + reverse('authenticate_responsible_new', args=(self.pk,
-                                                                                  self.make_new_password(),))
-        return url
+        # TODO: rename view as generic authenticate_member
+        return settings.SERVER_URL + reverse('authenticate_responsible_new',
+                                             args=(self.pk, self.make_new_password(),))
 
     def make_new_verification_url(self) -> str:
         return settings.SERVER_URL + reverse('verify_email',
@@ -185,8 +180,9 @@ class Member(models.Model):
             return self.email
 
     @property
-    def member(self):
-        """Convenience property, to make Participation and Member interfaces similar for templates"""
+    def member(self) -> 'Member':
+        """Convenience property, to make Participation and Member interfaces
+        similar for templates"""
         return self
 
     @property
@@ -196,7 +192,7 @@ class Member(models.Model):
 
 
     @property
-    def contact_details(self):
+    def contact_details(self) -> Iterator[str]:
         yield _('Name'), '%s %s' % (self.forenames.title(), self.surname.title())
         if self.email:
             yield _('Email'), self.email
@@ -204,6 +200,7 @@ class Member(models.Model):
             yield _('Phone number'), self.phone_number
         if self.address:
             yield _('Address'), '\n' + self.address
+        yield _('Year of birth'), self.year_of_birth or '-'
 
     @property
     def contact_display(self):

@@ -17,7 +17,6 @@
 # along with Serviceform.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-
 from typing import Optional
 
 from django.conf import settings
@@ -28,9 +27,8 @@ from django.http import HttpResponseRedirect, Http404, HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import ugettext_lazy as _
 
-from .. import forms, models
-from ..utils import clean_session, user_has_serviceform_permission, expire_auth_link, decode
 from .decorators import require_authenticated_participation, require_published_form
+from .. import forms, models, utils
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +56,11 @@ def contact_details_creation(request: HttpRequest, **kwargs) -> HttpResponse:
             # This member is new, so it cannot have earlier participations in the system.
             # thus we can simply create a new one for him.
 
-            participation = models.Participation.objects.create(member=member)
+            participation = models.Participation.objects.create(
+                member=member,
+                form_revision=serviceform.current_revision)
+
+            utils.mark_as_authenticated_participant(request, participation)
 
             return participation.redirect_next(request)
 
@@ -71,21 +73,21 @@ def contact_details_creation(request: HttpRequest, **kwargs) -> HttpResponse:
 
 @require_authenticated_participation
 def contact_details_modification(request: HttpRequest,
-                                 participation: Optional[models.Participation]) -> HttpResponse:
-    if participation and participation.status == models.Participation.STATUS_FINISHED:
+                                 participation: models.Participation) -> HttpResponse:
+    if participation.status == models.Participation.STATUS_FINISHED:
         return HttpResponseRedirect(reverse('submitted'))
 
-    if participation:
-        member = participation.member
-    else:
-        member = None
-
-    form = forms.ContactForm(instance=member, user=request.user)
+    form = forms.ContactForm(instance=participation.member,
+                             serviceform=participation.form,
+                             user=request.user)
 
     if request.method == 'POST':
-        form = forms.ContactForm(request.POST, instance=member, user=request.user)
+        form = forms.ContactForm(request.POST,
+                                 instance=participation.member,
+                                 serviceform=participation.form,
+                                 user=request.user)
         if form.is_valid():
-            member = form.save()
+            form.save()
             if participation.form.is_published:
                 return participation.redirect_next(request)
             else:
@@ -104,13 +106,14 @@ def contact_details_modification(request: HttpRequest,
 @require_published_form
 def email_verification(request: HttpRequest, participant: models.Participation) -> HttpResponse:
     service_form = participant.form
-    if request.session.get('verification_sent', '') != participant.email:
-        participant.send_participant_email(models.Participation.EmailIds.EMAIL_VERIFICATION)
-        request.session['verification_sent'] = participant.email
+    member = participant.member
+    if request.session.get('verification_sent', '') != member.email:
+        participant.send_participant_email(participant.EmailIds.EMAIL_VERIFICATION)
+        request.session['verification_sent'] = member.email
     else:
         messages.warning(request,
                          _('Verification email already sent '
-                           'to {}, not sending again.').format(participant.email))
+                           'to {}, not sending again.').format(member.email))
     return render(request, 'serviceform/participation/email_verification.html',
                   {'service_form': service_form,
                    'participant': participant,
@@ -187,7 +190,7 @@ def preview(request: HttpRequest, participant: models.Participation) -> HttpResp
 @require_authenticated_participation
 def submitted(request: HttpRequest, participant: models.Participation) -> HttpResponse:
     participant.finish()
-    clean_session(request)
+    utils.clean_session(request)
     return render(request, 'serviceform/participation/submitted_view.html',
                   {'service_form': participant.form, 'participant': participant})
 
@@ -204,12 +207,13 @@ def send_auth_link(request: HttpRequest, participant: models.Participation,
     return HttpResponseRedirect(reverse('contact_details'))
 
 
-def auth_participant_common(request: HttpRequest, participant: models.Participation, next_view: str,
-                            email_verified: bool=True) -> HttpResponse:
-    if not participant.email_verified and email_verified:
-        participant.email_verified = True
+def auth_participant_common(request: HttpRequest, participant: models.Participation,
+                            next_view: str, email_verified: bool=True) -> HttpResponse:
+    member = participant.member
+    if not member.email_verified and email_verified:
+        member.email_verified = True
         messages.info(request,
-                      _('Your email {} is now verified successfully!').format(participant.email))
+                      _('Your email {} is now verified successfully!').format(member.email))
 
     if participant.status == models.Participation.STATUS_FINISHED:
         participant.status = models.Participation.STATUS_UPDATING
@@ -218,9 +222,9 @@ def auth_participant_common(request: HttpRequest, participant: models.Participat
     if participant.form_revision != participant.form_revision.form.current_revision:
         participant.last_finished_view = ''
     participant.form_revision = participant.form_revision.form.current_revision
-    participant.save(
-        update_fields=['status', 'form_revision', 'last_finished_view', 'email_verified'])
-    request.session['authenticated_participant'] = participant.pk
+    member.save(update_fields=['email_verified'])
+    participant.save(update_fields=['status', 'form_revision', 'last_finished_view'])
+    utils.mark_as_authenticated_participant(request, participant)
     return redirect(next_view)
 
 
@@ -231,24 +235,25 @@ def authenticate_participant_old(request: HttpRequest, uuid: str,
     """
     if not uuid:
         raise Http404
-    clean_session(request)
+    utils.clean_session(request)
     participant = get_object_or_404(models.Participation.objects.all(), secret_key=uuid)
-    return expire_auth_link(request, participant)
+    return utils.expire_auth_link(request, participant)
 
 
 def authenticate_participant(request: HttpRequest, participant_id: int, password: str,
                              next_view: str='contact_details') -> HttpResponse:
-    clean_session(request)
+    utils.clean_session(request)
     participant = get_object_or_404(models.Participation.objects.all(), pk=participant_id)
-    result = participant.check_auth_key(password)
-    if result == participant.PasswordStatus.PASSWORD_NOK:
+    member: models.Member = participant.member
+    result = member.check_auth_key(password)
+    if result == member.PasswordStatus.PASSWORD_NOK:
         messages.error(request, _(
             "Given URL might be expired. Please give your "
             "email address and we'll send you a new link"))
         return redirect('send_participant_email', participant.form.slug)
 
-    elif result == participant.PasswordStatus.PASSWORD_EXPIRED:
-        return expire_auth_link(request, participant)
+    elif result == member.PasswordStatus.PASSWORD_EXPIRED:
+        return utils.expire_auth_link(request, participant)
 
     return auth_participant_common(request, participant, next_view)
 
@@ -256,9 +261,9 @@ def authenticate_participant(request: HttpRequest, participant_id: int, password
 @login_required(login_url=settings.LOGIN_URL)
 def authenticate_participant_mock(request: HttpRequest, participant_id: int,
                                   next_view: str='contact_details') -> HttpResponse:
-    clean_session(request)
+    utils.clean_session(request)
     participant = get_object_or_404(models.Participation.objects.all(), pk=participant_id)
-    user_has_serviceform_permission(request.user, participant.form, raise_permissiondenied=True)
+    utils.user_has_serviceform_permission(request.user, participant.form, raise_permissiondenied=True)
     return auth_participant_common(request, participant, next_view, email_verified=False)
 
 
@@ -271,7 +276,7 @@ def delete_participation(request: HttpRequest, participant: models.Participation
         if form.is_valid():
             logger.info('Deleting participant %s, per request.', participant)
             participant.delete()
-            clean_session(request)
+            utils.clean_session(request)
             messages.info(request, _('Your participation was deleted'))
             return redirect('password_login', service_form.slug)
 

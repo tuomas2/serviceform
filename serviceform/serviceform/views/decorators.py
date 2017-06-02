@@ -73,13 +73,11 @@ def require_authenticated_participation(function=None, check_flow=True, accept_a
             current_view = request.resolver_match.view_name
 
             # TODO: rename key
-            participation_pk = request.session.get('authenticated_participant')
-            if participation_pk:
+            participation = utils.get_authenticated_participant(request)
+            if participation:
                 # TODO: rename request.participant
-                request.participant = participation = get_object_or_404(
-                    models.Participation.objects.all(),
-                    pk=participation_pk,
-                    status__in=models.Participation.EDIT_STATUSES)
+                request.participant = participation
+                # TODO: should we check if this is in EDITING_STATUS or not?
                 if check_flow:
                     # Check flow status
                     participation._current_view = current_view

@@ -231,13 +231,17 @@ LOGGING = {
     },
 }
 
-if TESTS_RUNNING or DEBUG:
+if TESTS_RUNNING:
     LOGGING['loggers']['']['handlers'].append('crash')
     LOGGING['loggers']['celery']['handlers'].append('crash')
     LOGGING['loggers']['django.template']['handlers'].append('warningcrash')
     LOGGING['loggers']['django']['handlers'].append('crash')
 
 #if DEBUG:
+#    LOGGING['loggers']['']['handlers'].append('crash')
+#    LOGGING['loggers']['celery']['handlers'].append('crash')
+#    LOGGING['loggers']['django.template']['handlers'].append('warningcrash')
+#    LOGGING['loggers']['django']['handlers'].append('crash')
 #    LOGGING['loggers']['django.template']['level'] = 'DEBUG'
 
 dictConfig(LOGGING)
