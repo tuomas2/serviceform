@@ -32,42 +32,42 @@ from ..utils import user_has_serviceform_permission, fetch_participants, expire_
 from .decorators import serviceform, require_authenticated_responsible
 
 
-def authenticate_responsible_old(request: HttpRequest, uuid: str) -> HttpResponse:
-    """
-    Just expire old and insecure authrorization link if such is being used and send a new one.
-    """
-    if not uuid:
-        raise Http404
-    responsible = get_object_or_404(models.Member.objects.all(), secret_key=uuid)
-    return expire_auth_link(request, responsible)
+#def authenticate_responsible_old(request: HttpRequest, uuid: str) -> HttpResponse:
+#    """
+#    Just expire old and insecure authrorization link if such is being used and send a new one.
+#    """
+#    if not uuid:
+#        raise Http404
+#    responsible = get_object_or_404(models.Member.objects.all(), secret_key=uuid)
+#    return expire_auth_link(request, responsible)
+#
+#
+#def authenticate_responsible(request: HttpRequest, responsible_id: int,
+#                             password: str) -> HttpResponse:
+#    responsible = get_object_or_404(models.Member.objects.all(), pk=responsible_id)
+#    result = responsible.check_auth_key(password)
+#    if result == responsible.PasswordStatus.PASSWORD_NOK:
+#        messages.error(request, _(
+#            "Given URL might be expired. Please give your email address and we'll send "
+#            "you a new link"))
+#        return redirect('send_responsible_email', responsible.form.slug)
+#    elif result == responsible.PasswordStatus.PASSWORD_EXPIRED:
+#        return expire_auth_link(request, responsible)
+#
+#    request.session['authenticated_responsibility'] = responsible.pk
+#    return HttpResponseRedirect(reverse('responsible_report'))
 
 
-def authenticate_responsible(request: HttpRequest, responsible_id: int,
-                             password: str) -> HttpResponse:
-    responsible = get_object_or_404(models.Member.objects.all(), pk=responsible_id)
-    result = responsible.check_auth_key(password)
-    if result == responsible.PasswordStatus.PASSWORD_NOK:
-        messages.error(request, _(
-            "Given URL might be expired. Please give your email address and we'll send "
-            "you a new link"))
-        return redirect('send_responsible_email', responsible.form.slug)
-    elif result == responsible.PasswordStatus.PASSWORD_EXPIRED:
-        return expire_auth_link(request, responsible)
-
-    request.session['authenticated_responsibility'] = responsible.pk
-    return HttpResponseRedirect(reverse('responsible_report'))
-
-
-@login_required(login_url=settings.LOGIN_URL)
-def authenticate_responsible_mock(request: HttpRequest, responsible_id: int) -> HttpResponse:
-    """
-    Mocked authentication to responsible view from admin panel
-    """
-    responsible = get_object_or_404(models.Member.objects.all(), pk=responsible_id)
-    user_has_serviceform_permission(request.user, responsible.form, raise_permissiondenied=True)
-
-    request.session['authenticated_responsibility'] = responsible.pk
-    return HttpResponseRedirect(reverse('responsible_report'))
+#@login_required(login_url=settings.LOGIN_URL)
+#def authenticate_responsible_mock(request: HttpRequest, responsible_id: int) -> HttpResponse:
+#    """
+#    Mocked authentication to responsible view from admin panel
+#    """
+#    responsible = get_object_or_404(models.Member.objects.all(), pk=responsible_id)
+#    user_has_serviceform_permission(request.user, responsible.form, raise_permissiondenied=True)
+#
+#    request.session['authenticated_responsibility'] = responsible.pk
+#    return HttpResponseRedirect(reverse('responsible_report'))
 
 
 @serviceform(check_form_permission=True)

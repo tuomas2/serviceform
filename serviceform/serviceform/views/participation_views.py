@@ -22,7 +22,7 @@ from typing import Optional
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, resolve
 from django.http import HttpResponseRedirect, Http404, HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import ugettext_lazy as _
@@ -207,24 +207,16 @@ def send_auth_link(request: HttpRequest, participant: models.Participation,
     return HttpResponseRedirect(reverse('contact_details'))
 
 
-def auth_participant_common(request: HttpRequest, participant: models.Participation,
-                            next_view: str, email_verified: bool=True) -> HttpResponse:
-    member = participant.member
-    if not member.email_verified and email_verified:
-        member.email_verified = True
-        messages.info(request,
-                      _('Your email {} is now verified successfully!').format(member.email))
-
-    if participant.status == models.Participation.STATUS_FINISHED:
-        participant.status = models.Participation.STATUS_UPDATING
-    elif participant.status == models.Participation.STATUS_INVITED:
-        participant.status = models.Participation.STATUS_ONGOING
-    if participant.form_revision != participant.form_revision.form.current_revision:
-        participant.last_finished_view = ''
-    participant.form_revision = participant.form_revision.form.current_revision
-    member.save(update_fields=['email_verified'])
-    participant.save(update_fields=['status', 'form_revision', 'last_finished_view'])
-    utils.mark_as_authenticated_participant(request, participant)
+#def auth_member_common(request: HttpRequest, member: models.Member, next_url: str) -> HttpResponse:
+    # TODO: move to whatever next view we are going to
+#    if participant.status == models.Participation.STATUS_FINISHED:
+#        participant.status = models.Participation.STATUS_UPDATING
+#    elif participant.status == models.Participation.STATUS_INVITED:
+#        participant.status = models.Participation.STATUS_ONGOING
+#    if participant.form_revision != participant.form_revision.form.current_revision:
+#        participant.last_finished_view = ''
+#    participant.form_revision = participant.form_revision.form.current_revision
+#    participant.save(update_fields=['status', 'form_revision', 'last_finished_view'])
     return redirect(next_view)
 
 
@@ -240,31 +232,39 @@ def authenticate_participant_old(request: HttpRequest, uuid: str,
     return utils.expire_auth_link(request, participant)
 
 
-def authenticate_participant(request: HttpRequest, participant_id: int, password: str,
-                             next_view: str='contact_details') -> HttpResponse:
+def authenticate_member(request: HttpRequest, member_id: int, password: str) -> HttpResponse:
+    # TODO: create main entrypoint for members, which is default
+    next_url = request.GET.get('next', resolve('member_main'))
+
     utils.clean_session(request)
-    participant = get_object_or_404(models.Participation.objects.all(), pk=participant_id)
-    member: models.Member = participant.member
+    member: models.Member = get_object_or_404(models.Member.objects, pk=member_id)
     result = member.check_auth_key(password)
     if result == member.PasswordStatus.PASSWORD_NOK:
         messages.error(request, _(
             "Given URL might be expired. Please give your "
             "email address and we'll send you a new link"))
-        return redirect('send_participant_email', participant.form.slug)
+        # TODO: create generic send_member_auth_link view (similar to send_participant_link view)
+        return redirect('send_member_auth_link')
 
     elif result == member.PasswordStatus.PASSWORD_EXPIRED:
-        return utils.expire_auth_link(request, participant)
+        return utils.expire_auth_link(request, member)
+    if not member.email_verified:
+        member.email_verified = True
+        member.save(update_fields=['email_verified'])
+        messages.info(request,
+                      _('Your email {} is now verified successfully!').format(member.email))
 
-    return auth_participant_common(request, participant, next_view)
+    utils.mark_as_authenticated_member(request, member)
+    return redirect(next_url)
 
 
 @login_required(login_url=settings.LOGIN_URL)
-def authenticate_participant_mock(request: HttpRequest, participant_id: int,
-                                  next_view: str='contact_details') -> HttpResponse:
+def authenticate_member_mock(request: HttpRequest, participant_id: int,
+                             next_view: str='contact_details') -> HttpResponse:
     utils.clean_session(request)
     participant = get_object_or_404(models.Participation.objects.all(), pk=participant_id)
     utils.user_has_serviceform_permission(request.user, participant.form, raise_permissiondenied=True)
-    return auth_participant_common(request, participant, next_view, email_verified=False)
+    return auth_member_common(request, participant, next_view, email_verified=False)
 
 
 @require_authenticated_participation(check_flow=False)
@@ -283,10 +283,6 @@ def delete_participation(request: HttpRequest, participant: models.Participation
     return render(request, 'serviceform/participation/delete_participation.html',
                   {'form': form, 'service_form': service_form,
                    'bootstrap_checkbox_disabled': True})
-
-
-def verify_email(request: HttpRequest, participant_id: int, password: str) -> HttpResponse:
-    return authenticate_participant(request, participant_id, password, 'participation')
 
 
 def unsubscribe(request: HttpRequest, secret_id: str) -> HttpResponse:

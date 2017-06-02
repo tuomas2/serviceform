@@ -157,12 +157,8 @@ class Member(models.Model):
 
     def make_new_auth_url(self) -> str:
         # TODO: rename view as generic authenticate_member
-        return settings.SERVER_URL + reverse('authenticate_responsible_new',
+        return settings.SERVER_URL + reverse('authenticate_member',
                                              args=(self.pk, self.make_new_password(),))
-
-    def make_new_verification_url(self) -> str:
-        return settings.SERVER_URL + reverse('verify_email',
-                                             args=(self.pk, self.make_new_password()))
 
     def check_auth_key(self, password: str) -> PasswordStatus:
         for key, expire_timestamp in reversed(self.auth_keys_hash_storage):
@@ -212,7 +208,7 @@ class Member(models.Model):
 
     def personal_link(self) -> str:
         return format_html('<a href="{}">{}</a>',
-                           reverse('authenticate_responsible_mock', args=(self.pk,)),
+                           reverse('authenticate_mock', args=(self.pk,)),
                            self.pk) if self.pk else ''
 
     personal_link.short_description = _('Link to personal report')

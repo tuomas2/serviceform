@@ -140,7 +140,7 @@ class Pages:
     REPORT_RESPONSIBLE = "/for_responsible/"
 
     DELETE_PARTICIPATION = '/participant/delete/'
-
+    # TODO fix this
     RESPONSIBLE_MOCK_AUTH = '/anonymous/authenticate_responsible_mock/%d/'
     #RESPONSIBLE_MOCK_AUTH = '/authenticate_responsible_mock/%d/'
     RESPONSIBLE_REPORT = '/for_responsible/'

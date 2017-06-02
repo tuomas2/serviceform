@@ -369,19 +369,13 @@ def safe_join(sep: str, args_generator: Iterable[str]):
     return result
 
 
-def expire_auth_link(request: HttpRequest, obj: 'Union[Participation, Member]') \
-        -> HttpResponse:
-    """
-
-    :param request: WSGI request
-    :param obj: either Participation or Member
-    :return: HttpResponse
-    """
+def expire_auth_link(request: HttpRequest, obj: 'Member') -> HttpResponse:
     obj.resend_auth_link()
     messages.info(request,
                   _('Your authentication URL was expired. New link has been sent to {}').format(
                       obj.email))
-    return redirect('password_login', obj.form.slug)
+    # TODO: organization_main page
+    return redirect('organization_main', obj.organization_id)
 
 
 def encode(number: int) -> str:
@@ -447,6 +441,15 @@ def mark_as_authenticated_participant(request: HttpRequest,
 
 
 def get_authenticated_participant(request: HttpRequest):
+    # TODO: remove participant-only authentication, or rename to active participation etc.
+    participant_pk = request.session.get('authenticated_participant')
+    return participant_pk and models.Participation.objects.get(pk=participant_pk)
+
+
+def get_authenticated_member(request: HttpRequest):
     # TODO check that this is being used everywhere
     participant_pk = request.session.get('authenticated_participant')
     return participant_pk and models.Participation.objects.get(pk=participant_pk)
+
+def mark_as_authenticated_member(request: HttpRequest, member: 'models.Member'):
+    request.session['authenticated_member'] = member.pk

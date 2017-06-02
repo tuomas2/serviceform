@@ -25,7 +25,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, resolve
 from django.utils import timezone
 from django.utils.formats import localize
 from django.utils.functional import cached_property
@@ -188,9 +188,11 @@ class Participation(models.Model):
                           }
 
         emailtemplate = emailtemplates[event]
-        url = (self.member.make_new_verification_url()
-               if event == self.EmailIds.EMAIL_VERIFICATION
-               else self.member.make_new_auth_url())
+        url_postfix = (f"?next={resolve('participation')}"
+                   if event == self.EmailIds.EMAIL_VERIFICATION
+                   else f"?next={resolve('contact_details')}")
+        url = self.member.make_new_auth_url() + url_postfix
+
         context = {
             'participant': str(self),
             'contact': self.form.responsible.contact_display,

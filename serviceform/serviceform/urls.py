@@ -149,29 +149,17 @@ urlpatterns = [u for u in
                   url(r'^anonymous/authenticate_participant/([\w-]+)/$',
                       participation_views.authenticate_participant_old,
                       name='authenticate_participant'),
-                  url(r'^anonymous/authenticate_participant/(\d+)/([\w-]+)/$',
-                      participation_views.authenticate_participant,
+                  url(r'^anonymous/authenticate/(\d+)/([\w-]+)/$',
+                      participation_views.authenticate_member,
                       name='authenticate_participant_new'),
-                  url(r'^anonymous/authenticate_participant_mock/(\d+)/$',
-                      participation_views.authenticate_participant_mock,
-                      name='authenticate_participant_mock'),
-
-                  # Anonymous report viewing pages for responsible persons
-                  url(r'^anonymous/authenticate_responsible/([\w-]+)/$',
-                      reports_views.authenticate_responsible_old, name='authenticate_responsible'),
-                  url(r'^anonymous/authenticate_responsible/(\d+)/([\w-]+)/$',
-                      reports_views.authenticate_responsible, name='authenticate_responsible_new'),
-                  url(r'^anonymous/authenticate_responsible_mock/(\d+)/$',
-                      reports_views.authenticate_responsible_mock,
-                      name='authenticate_responsible_mock'),
+                  url(r'^anonymous/authenticate_mock/(\d+)/$',
+                      participation_views.authenticate_member_mock,
+                      name='authenticate_mock'),
 
                   url(r'^email/unsubscribe_participant/(\w+)/$', participation_views.unsubscribe,
                       name='unsubscribe_participant'),
                   url(r'^email/unsubscribe_responsible/(\w+)/$', reports_views.unsubscribe,
                       name='unsubscribe_responsible'),
-
-                  url(r'^participant/verify_email/(\d+)/([\w-]+)/$',
-                      participation_views.verify_email, name='verify_email'),
 
                   # Report views
                   url(r'^report/participant/(\d+)/$', reports_views.view_participant,
