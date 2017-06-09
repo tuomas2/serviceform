@@ -28,8 +28,8 @@ from django.shortcuts import get_object_or_404
 from .. import models, utils
 
 
-def serviceform(function=None, check_form_permission=False, init_counters=False,
-                all_responsibles=True, fetch_participants=False):
+def require_serviceform(function=None, check_form_permission=False, init_counters=False,
+                        all_responsibles=True, fetch_participants=False):
     def actual_decorator(func):
         @wraps(func)
         def wrapper(request: HttpRequest, slug: str,

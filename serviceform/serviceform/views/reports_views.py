@@ -29,7 +29,7 @@ from django.utils.translation import gettext_lazy as _
 from .. import models, forms
 from ..utils import user_has_serviceform_permission, fetch_participants, expire_auth_link, decode, \
     RevisionOptions
-from .decorators import serviceform, require_authenticated_responsible
+from .decorators import require_serviceform, require_authenticated_responsible
 
 
 #def authenticate_responsible_old(request: HttpRequest, uuid: str) -> HttpResponse:
@@ -70,7 +70,7 @@ from .decorators import serviceform, require_authenticated_responsible
 #    return HttpResponseRedirect(reverse('responsible_report'))
 
 
-@serviceform(check_form_permission=True)
+@require_serviceform(check_form_permission=True)
 def settings_view(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     form = forms.ReportSettingsForm(service_form, request)
     if request.method == 'POST':
@@ -85,25 +85,25 @@ def settings_view(request: HttpRequest, service_form: models.ServiceForm) -> Htt
                   {'service_form': service_form, 'form': form})
 
 
-@serviceform(check_form_permission=True, init_counters=True)
+@require_serviceform(check_form_permission=True, init_counters=True)
 def all_responsibles(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     return render(request, 'serviceform/reports/all_responsibles.html',
                   {'service_form': service_form})
 
 
-@serviceform(check_form_permission=True, fetch_participants=True)
+@require_serviceform(check_form_permission=True, fetch_participants=True)
 def all_participants(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     return render(request, 'serviceform/reports/all_participants.html',
                   {'service_form': service_form})
 
 
-@serviceform(check_form_permission=True, init_counters=True, fetch_participants=True)
+@require_serviceform(check_form_permission=True, init_counters=True, fetch_participants=True)
 def all_activities(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     return render(request, 'serviceform/reports/all_activities.html',
                   {'service_form': service_form})
 
 
-@serviceform(check_form_permission=True, init_counters=True, fetch_participants=True)
+@require_serviceform(check_form_permission=True, init_counters=True, fetch_participants=True)
 def all_questions(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     return render(request, 'serviceform/reports/all_questions.html',
                   {'service_form': service_form})

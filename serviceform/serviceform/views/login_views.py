@@ -22,10 +22,10 @@ from django.shortcuts import render
 
 from .. import forms, models
 from ..utils import clean_session
-from ..views.decorators import serviceform
+from ..views.decorators import require_serviceform
 
 
-@serviceform
+@require_serviceform
 def password_login(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     clean_session(request)
     password_form = forms.PasswordForm(service_form)
@@ -41,7 +41,7 @@ def password_login(request: HttpRequest, service_form: models.ServiceForm) -> Ht
                   {'password_form': password_form, 'service_form': service_form})
 
 
-@serviceform
+@require_serviceform
 def send_participant_email(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     email_form = forms.ParticipantSendEmailForm(service_form, request)
 
@@ -56,7 +56,7 @@ def send_participant_email(request: HttpRequest, service_form: models.ServiceFor
                   {'email_form': email_form, 'service_form': service_form})
 
 
-@serviceform
+@require_serviceform
 def send_responsible_email(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     email_form = forms.ResponsibleSendEmailForm(service_form, request)
 
