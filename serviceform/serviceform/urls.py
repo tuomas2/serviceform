@@ -68,17 +68,17 @@ class Requires:
 
 
 participant_flow_urls = [
-    url(r'^participant/contact/$', participation_views.contact_details_modification,
+    url(r'^member/forms/([\w-]+)/contact/$', participation_views.contact_details_modification,
         name='contact_details', kwargs={'title': _('Contact details')}),
-    url(r'^participant/email_verification/$', participation_views.email_verification,
+    url(r'^member/forms/([\w-]+)/participant/email_verification/$', participation_views.email_verification,
         name='email_verification', kwargs={'title': _('Email verification')}),
     url(r'^member/forms/([\w-]+)/participation/(\d+)/$', participation_views.participation,
         name='participation', kwargs={'title': _('Participation details')}),
-    url(r'^participant/questions/$', participation_views.questions, name='questions',
+    url(r'^member/forms/([\w-]+)/participant/questions/$', participation_views.questions, name='questions',
         kwargs={'title': _('Questions')}),
-    url(r'^participant/preview/$', participation_views.preview, name='preview',
+    url(r'^member/forms/([\w-]+)/participant/preview/$', participation_views.preview, name='preview',
         kwargs={'title': _('Preview')}),
-    url(r'^participant/submitted/$', participation_views.submitted, name='submitted',
+    url(r'^member/forms/([\w-]+)/participant/submitted/$', participation_views.submitted, name='submitted',
         kwargs={'title': _('Ready!')}),
 ]
 
@@ -119,7 +119,8 @@ anonymous_report_urls = [
     url(r'^for_responsible/to_full_report/$', reports_views.to_full_report, name='to_full_report',
         kwargs={'title': _('To full report'), 'icon': 'bullseye', 'arglist': (),
                 'require': (Requires.ACCESS_FULL_REPORT,)}),
-    url(r'^member/', reports_views.member_main, name='member_main', kwargs={'title': _('Member main'), 'arglist': ()}), # TODO view
+    url(r'^member/$', reports_views.member_main, name='member_main',
+        kwargs={'title': _('Member main'), 'arglist': ()}), # TODO view
     # DummyUrl(name='report', kwargs={'title': _('To full report'), 'arglist': ()}),
     url(r'^logout/$', reports_views.logout_view, name='logout',
         kwargs={'title': _('Log out'), 'icon': 'sign-out', 'right': True, 'arglist': ()}),
@@ -144,7 +145,7 @@ urlpatterns = [u for u in
               [
                   # Test erorr email
                   url(r'^test_error/$', error, name='test_error'),
-                  url(r'^participant/contact/new/$', participation_views.contact_details_creation,
+                  url(r'^member/forms/([\w-]+)/participant/contact/new/$', participation_views.contact_details_creation,
                       name='contact_details_creation', kwargs={'title': _('Contact details')}),
                   # Later actions for participant
                   url(r'^anonymous/authenticate_participant/([\w-]+)/$',

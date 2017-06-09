@@ -22,6 +22,7 @@ from typing import Optional
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404, HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -33,16 +34,18 @@ from .. import forms, models, utils
 logger = logging.getLogger(__name__)
 
 
-def contact_details_creation(request: HttpRequest, **kwargs) -> HttpResponse:
+def contact_details_creation(request: HttpRequest, serviceform_slug: str, **kwargs) -> HttpResponse:
     """
     Member and participation creation.
 
     Contact details form when there is not yet any data in database.
     Redirect to contact_details if (when) member is stored in db.
     """
+    serviceform = get_object_or_404(models.ServiceForm.objects, slug=serviceform_slug)
 
-    serviceform_pk = request.session.get('serviceform_pk')
-    serviceform = get_object_or_404(models.ServiceForm.objects, pk=serviceform_pk)
+    if not utils.is_authenticated_to_serviceform(request, serviceform):
+        raise PermissionDenied
+
     if not serviceform.is_published:
         raise RuntimeError(f'Contact detail creation even though form {serviceform}'
                            f' is not published')
@@ -75,7 +78,7 @@ def contact_details_creation(request: HttpRequest, **kwargs) -> HttpResponse:
 def contact_details_modification(request: HttpRequest,
                                  participation: models.Participation) -> HttpResponse:
     if participation.status == models.Participation.STATUS_FINISHED:
-        return HttpResponseRedirect(reverse('submitted'))
+        return HttpResponseRedirect(reverse('submitted', args=(participation.form.slug,)))
 
     form = forms.ContactForm(instance=participation.member,
                              serviceform=participation.form,
@@ -93,7 +96,7 @@ def contact_details_modification(request: HttpRequest,
             else:
                 participation.status = models.Participation.STATUS_FINISHED
                 participation.save(update_fields=['status'])
-                return HttpResponseRedirect(reverse('submitted'))
+                return HttpResponseRedirect(reverse('submitted', args=(participation.form.slug,)))
 
     return render(request, 'serviceform/participation/contact_view.html',
                   {'form': form,
@@ -138,7 +141,7 @@ def participation(request: HttpRequest, participant: models.Participation,
         max_cat = int(request.session.get('max_category', 0))
 
     if cat_num > max_cat:
-        return HttpResponseRedirect(reverse('participation', args=(max_cat,)))
+        return HttpResponseRedirect(reverse('participation', args=(service_form.slug, max_cat,)))
 
     form = forms.ParticipationForm(request, participant, category)
     if request.method == 'POST':
@@ -150,7 +153,8 @@ def participation(request: HttpRequest, participant: models.Participation,
             if cat_num >= num_categories:
                 return participant.redirect_next(request)
             else:
-                return HttpResponseRedirect(reverse('participation', args=(cat_num,)))
+                return HttpResponseRedirect(reverse('participation',
+                                                    args=(service_form.slug, cat_num,)))
 
     return render(request, 'serviceform/participation/participation_view.html',
                   {'form': form,
@@ -204,7 +208,7 @@ def send_auth_link(request: HttpRequest, participant: models.Participation,
     p.send_participant_email(p.EmailIds.RESEND)
     messages.add_message(request, messages.INFO,
                          _('Authentication link was sent to email address {}.').format(email))
-    return HttpResponseRedirect(reverse('contact_details'))
+    return HttpResponseRedirect(reverse('contact_details', args=(participation.form.slug,)))
 
 
 #def auth_member_common(request: HttpRequest, member: models.Member, next_url: str) -> HttpResponse:
@@ -217,7 +221,7 @@ def send_auth_link(request: HttpRequest, participant: models.Participation,
 #        participant.last_finished_view = ''
 #    participant.form_revision = participant.form_revision.form.current_revision
 #    participant.save(update_fields=['status', 'form_revision', 'last_finished_view'])
-    return redirect(next_view)
+#    return redirect(next_view)
 
 
 def authenticate_participant_old(request: HttpRequest, uuid: str,

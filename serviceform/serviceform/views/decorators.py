@@ -27,7 +27,7 @@ from django.shortcuts import get_object_or_404
 
 from .. import models, utils
 
-
+# TODO: perhaps still bad name
 def require_serviceform(function=None, check_form_permission=False, init_counters=False,
                         all_responsibles=True, fetch_participants=False):
     def actual_decorator(func):
@@ -75,40 +75,30 @@ def require_authenticated_participation(function=None, check_flow=True, accept_a
     """
     def actual_decorator(func):
         @wraps(func)
-        def wrapper(request: HttpRequest, serviceform_slug, *args, title: str='', **kwargs) -> HttpResponse:
+        def wrapper(request: HttpRequest, serviceform_slug, *args, title: str='',
+                    **kwargs) -> HttpResponse:
             current_view = request.resolver_match.view_name
 
-            #serviceform = models.ServiceForm.objects.get(slug=serviceform_slug)
             member = utils.get_authenticated_member(request)
-            #participation = serviceform
+            participation = get_object_or_404(member.participation_set,
+                                              form_revision__form__slug=serviceform_slug)
 
-
-            participation = utils.get_authenticated_participant(request)
-
-            # TODO: rename key
-            participation = utils.get_authenticated_participant(request)
-            if participation:
-                # TODO: rename request.participant
-                request.participant = participation
-                # TODO: should we check if this is in EDITING_STATUS or not?
-                if check_flow:
-                    # Check flow status
-                    participation._current_view = current_view
-                    if not participation.can_access_view(current_view, auth=True):
-                        return participation.redirect_last()
-                    rv = func(request, participation, *args, **kwargs)
-                    if isinstance(rv, HttpResponseRedirect):
-                        url = resolve(rv.url)
-                        next_view = url.view_name
-                        participation.proceed_to_view(next_view)
-                    return rv
-                else:
-                    return func(request, participation, *args, **kwargs)
-            # TODO: rename key
-            if request.session.get('anonymous_participant'):
-                return func(request, None, *args, **kwargs)
+            # TODO: rename request.participant
+            request.participant = participation
+            # TODO: should we check if this is in EDITING_STATUS or not?
+            if check_flow:
+                # Check flow status
+                participation._current_view = current_view
+                if not participation.can_access_view(current_view, auth=True):
+                    return participation.redirect_last()
+                rv = func(request, participation, *args, **kwargs)
+                if isinstance(rv, HttpResponseRedirect):
+                    url = resolve(rv.url)
+                    next_view = url.view_name
+                    participation.proceed_to_view(next_view)
+                return rv
             else:
-                raise PermissionDenied
+                return func(request, participation, *args, **kwargs)
 
         return wrapper
 

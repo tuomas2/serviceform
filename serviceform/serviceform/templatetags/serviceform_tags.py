@@ -110,7 +110,9 @@ def participant_flow_menu_items(context: Context) -> List[FlowItem]:
     # TODO: rename participant -> participation everywhere
     # TODO: fix menu for contact_details_creation (+ possibly all others)
 
-    participant = getattr(context['request'], 'participant', None)
+    request = context['request']
+    participant = getattr(request, 'participant', None)
+    service_form = context['service_form']
     cat_num = context.get('cat_num', 0)
     lst = []
 
@@ -124,9 +126,9 @@ def participant_flow_menu_items(context: Context) -> List[FlowItem]:
         else:
             attrs = {}
         if f_item.name == 'participation':
-            url = reverse(f_item.name, args=(cat_num,))
+            url = reverse(f_item.name, args=(service_form.slug, cat_num))
         else:
-            url = reverse(f_item.name)
+            url = reverse(f_item.name, args=(service_form.slug,))
         flv = FlowItem(f_item.name, f_item.default_args.get('title', ''), url, attrs)
         lst.append(flv)
     return lst
@@ -147,7 +149,7 @@ def participant_flow_categories(context: Context) -> List[FlowItem]:
         else:
             attrs = {}
         attrs['category'] = category
-        url = reverse(current_view, args=(idx,))
+        url = reverse(current_view, args=(service_form.slug, idx,))
         flv = FlowItem(idx, category.name, url, attrs)
         lst.append(flv)
     return lst

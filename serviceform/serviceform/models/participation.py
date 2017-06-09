@@ -42,6 +42,7 @@ class Participation(models.Model):
     class Meta:
         verbose_name = _('Participation')
         verbose_name_plural = _('Participations')
+        # TODO: unique together: member + form?
 
     # Current view is set by view decorator require_authenticated_participant
     _current_view = 'contact_details'
@@ -190,7 +191,7 @@ class Participation(models.Model):
         emailtemplate = emailtemplates[event]
         url_postfix = (f"?next={reverse('participation', args=(self.form.slug,))}"
                        if event == self.EmailIds.EMAIL_VERIFICATION
-                       else f"?next={reverse('contact_details')}")
+                       else f"?next={reverse('contact_details', args=(self.form.slug,))}")
         url = self.member.make_new_auth_url() + url_postfix
 
         context = {
@@ -259,12 +260,12 @@ class Participation(models.Model):
         if self.status == self.STATUS_UPDATING and message:
             messages.warning(request, _(
                 'Updated information has been stored! Please proceed until the end of the form.'))
-        return HttpResponseRedirect(reverse(self.next_view_name))
+        return HttpResponseRedirect(reverse(self.next_view_name, args=(self.form.slug,)))
 
     def redirect_last(self) -> HttpResponse:
         last = self.flow.index(
             self.last_finished_view) if self.last_finished_view in self.flow else -1
-        return HttpResponseRedirect(reverse(self.flow[last + 1]))
+        return HttpResponseRedirect(reverse(self.flow[last + 1], args=(self.form.slug,)))
 
     @cached_property
     def log(self) -> 'Sequence[ParticipantLog]':

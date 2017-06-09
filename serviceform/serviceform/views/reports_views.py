@@ -250,6 +250,6 @@ def unsubscribe(request: HttpRequest, secret_id: str) -> HttpResponse:
                   {'responsible': responsible,
                    'service_form': responsible.form})
 
-
-def member_main(request: HttpRequest):
-    return None
+# TODO
+def member_main(request: HttpRequest, *args, **kwargs):
+    raise Http404

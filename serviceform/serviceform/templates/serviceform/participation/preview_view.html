@@ -7,7 +7,7 @@
   <div class="preview-contactdetails">
     <h3>{% blocktrans %}Contact details{% endblocktrans %}:</h3>
 
-    {% for detail, data in participant.contact_details %}
+    {% for detail, data in participant.member.contact_details %}
       <div class="row activity-preview-row">
         <div class="col-xs-4">
           {{ detail }}
@@ -21,7 +21,7 @@
       <div class="row activity-preview-row">
         <div class="activity-btn">
           <a class="btn btn-warning"
-             href="{% url "contact_details" %}">{% trans "Change contact details" %}</a>
+             href="{% url "contact_details" service_form.slug %}">{% trans "Change contact details" %}</a>
         </div>
       </div>
   </div>
@@ -60,7 +60,7 @@
       <div class="row activity-preview-row">
         <div class="activity-btn">
           <a class="btn btn-warning"
-             href="{% url "participation" %}">{% trans "Adjust participation information" %}</a>
+             href="{% url "participation" service_form.slug %}">{% trans "Adjust participation information" %}</a>
         </div>
       </div>
   </div>
@@ -97,7 +97,7 @@
         <div class="row activity-preview-row">
           <div class="activity-btn">
             <a class="btn btn-warning"
-               href="{% url "questions" %}">{% trans "Modify question answers" %}</a>
+               href="{% url "questions" service_form.slug %}">{% trans "Modify question answers" %}</a>
           </div>
         </div>
     </div>

@@ -21,21 +21,21 @@ from django.http import HttpResponseRedirect, HttpRequest, HttpResponse
 from django.shortcuts import render
 
 from .. import forms, models
-from ..utils import clean_session
+from .. import utils
 from ..views.decorators import require_serviceform
 
 
 @require_serviceform
 def password_login(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
-    clean_session(request)
+    utils.clean_session(request)
     password_form = forms.PasswordForm(service_form)
 
     if request.method == 'POST':
         password_form = forms.PasswordForm(service_form, request.POST)
         if password_form.is_valid():
             # mark anonymous user logged in for contact details input
-            request.session['serviceform_pk'] = service_form.pk
-            return HttpResponseRedirect(reverse('contact_details_creation'))
+            utils.authenticate_to_serviceform(request, service_form)
+            return HttpResponseRedirect(reverse('contact_details_creation', args=(service_form.slug,)))
 
     return render(request, 'serviceform/login/password_login.html',
                   {'password_form': password_form, 'service_form': service_form})

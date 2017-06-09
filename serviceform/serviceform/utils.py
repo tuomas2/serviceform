@@ -30,8 +30,6 @@ from typing import Optional, TYPE_CHECKING, Iterable, Union, Callable
 from django.core.serializers import serialize, deserialize
 from django.db.models import Model
 
-from serviceform.serviceform import models
-
 if TYPE_CHECKING:
     from .models import ServiceForm, Participation, Member
     from .models.serviceform import AbstractServiceFormItem
@@ -434,22 +432,34 @@ def invalidate_cache(obj, key, cache_name='default'):
     cache_key = f'{obj.__class__.__name__}_{obj.pk}_{key}'
     cache.delete(cache_key)
 
-
+# TODO: create authentication module and move these there.
 def mark_as_authenticated_participant(request: HttpRequest,
-                                      participation: 'models.Participation') -> None:
+                                      participation: 'Participation') -> None:
     request.session['authenticated_participant'] = participation.pk
 
 
-def get_authenticated_participant(request: HttpRequest):
+def get_authenticated_participant(request: HttpRequest) -> 'Optional[Participation]':
     # TODO: remove participant-only authentication, or rename to active participation etc.
+    from .models import Participation
     participant_pk = request.session.get('authenticated_participant')
-    return participant_pk and models.Participation.objects.get(pk=participant_pk)
+    return participant_pk and Participation.objects.get(pk=participant_pk)
 
 
-def get_authenticated_member(request: HttpRequest):
+def get_authenticated_member(request: HttpRequest) -> 'Optional[Member]':
     # TODO check that this is being used everywhere
-    participant_pk = request.session.get('authenticated_participant')
-    return participant_pk and models.Participation.objects.get(pk=participant_pk)
+    from .models import Member
+    member_pk = request.session.get('authenticated_member')
+    return member_pk and Member.objects.get(pk=member_pk)
 
-def mark_as_authenticated_member(request: HttpRequest, member: 'models.Member'):
+
+def mark_as_authenticated_member(request: HttpRequest, member: 'Member') -> None:
     request.session['authenticated_member'] = member.pk
+
+
+def authenticate_to_serviceform(request: HttpRequest, serviceform: 'ServiceForm') -> None:
+    request.session['authenticated_serviceform_pk'] = serviceform.pk
+
+
+def is_authenticated_to_serviceform(request: HttpRequest, serviceform: 'ServiceForm') -> bool:
+    serviceform_pk = request.session.get('authenticated_serviceform_pk')
+    return serviceform_pk == serviceform.pk
