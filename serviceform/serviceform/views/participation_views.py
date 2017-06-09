@@ -22,7 +22,7 @@ from typing import Optional
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse, resolve
+from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404, HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import ugettext_lazy as _
@@ -234,7 +234,7 @@ def authenticate_participant_old(request: HttpRequest, uuid: str,
 
 def authenticate_member(request: HttpRequest, member_id: int, password: str) -> HttpResponse:
     # TODO: create main entrypoint for members, which is default
-    next_url = request.GET.get('next', resolve('member_main'))
+    next_url = request.GET.get('next', reverse('member_main'))
 
     utils.clean_session(request)
     member: models.Member = get_object_or_404(models.Member.objects, pk=member_id)

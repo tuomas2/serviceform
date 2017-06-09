@@ -67,10 +67,23 @@ def require_authenticated_responsible(func):
 
 
 def require_authenticated_participation(function=None, check_flow=True, accept_anonymous=False):
+    """
+    These urls in contain serviceform_slug as first argument.
+    They require that member is authenticated, and because a member can have
+    only 1 participation in a serviceform, we can identify participation from that.
+    View itself takes participation as first argument.
+    """
     def actual_decorator(func):
         @wraps(func)
-        def wrapper(request: HttpRequest, *args, title: str='', **kwargs) -> HttpResponse:
+        def wrapper(request: HttpRequest, serviceform_slug, *args, title: str='', **kwargs) -> HttpResponse:
             current_view = request.resolver_match.view_name
+
+            #serviceform = models.ServiceForm.objects.get(slug=serviceform_slug)
+            member = utils.get_authenticated_member(request)
+            #participation = serviceform
+
+
+            participation = utils.get_authenticated_participant(request)
 
             # TODO: rename key
             participation = utils.get_authenticated_participant(request)

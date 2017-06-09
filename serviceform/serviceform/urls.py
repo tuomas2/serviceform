@@ -72,7 +72,7 @@ participant_flow_urls = [
         name='contact_details', kwargs={'title': _('Contact details')}),
     url(r'^participant/email_verification/$', participation_views.email_verification,
         name='email_verification', kwargs={'title': _('Email verification')}),
-    url(r'^participant/participation/(\d+)/$', participation_views.participation,
+    url(r'^member/forms/([\w-]+)/participation/(\d+)/$', participation_views.participation,
         name='participation', kwargs={'title': _('Participation details')}),
     url(r'^participant/questions/$', participation_views.questions, name='questions',
         kwargs={'title': _('Questions')}),
@@ -119,6 +119,7 @@ anonymous_report_urls = [
     url(r'^for_responsible/to_full_report/$', reports_views.to_full_report, name='to_full_report',
         kwargs={'title': _('To full report'), 'icon': 'bullseye', 'arglist': (),
                 'require': (Requires.ACCESS_FULL_REPORT,)}),
+    url(r'^member/', reports_views.member_main, name='member_main', kwargs={'title': _('Member main'), 'arglist': ()}), # TODO view
     # DummyUrl(name='report', kwargs={'title': _('To full report'), 'arglist': ()}),
     url(r'^logout/$', reports_views.logout_view, name='logout',
         kwargs={'title': _('Log out'), 'icon': 'sign-out', 'right': True, 'arglist': ()}),
@@ -148,10 +149,10 @@ urlpatterns = [u for u in
                   # Later actions for participant
                   url(r'^anonymous/authenticate_participant/([\w-]+)/$',
                       participation_views.authenticate_participant_old,
-                      name='authenticate_participant'),
+                      name='authenticate_participant_old'),
                   url(r'^anonymous/authenticate/(\d+)/([\w-]+)/$',
                       participation_views.authenticate_member,
-                      name='authenticate_participant_new'),
+                      name='authenticate_member'),
                   url(r'^anonymous/authenticate_mock/(\d+)/$',
                       participation_views.authenticate_member_mock,
                       name='authenticate_mock'),
@@ -178,7 +179,7 @@ urlpatterns = [u for u in
                   url(r'^participant/delete/$', participation_views.delete_participation,
                       name='delete_participation'),
                   url(r'^([\w-]+)/$', login_views.password_login, name='password_login'),
-                  url(r'^participant/participation/$', participation_views.participation,
+                  url(r'^member/forms/([\w-]+)/participation/$', participation_views.participation,
                       name='participation', kwargs={'cat_num': 0}),
                   url(r'^$', main_page, name='main_page'),
               ]

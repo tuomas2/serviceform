@@ -249,3 +249,7 @@ def unsubscribe(request: HttpRequest, secret_id: str) -> HttpResponse:
     return render(request, 'serviceform/login/unsubscribe_responsible.html',
                   {'responsible': responsible,
                    'service_form': responsible.form})
+
+
+def member_main(request: HttpRequest):
+    return None
