@@ -223,12 +223,13 @@ class Member(models.Model):
         return settings.SERVER_URL + reverse('unsubscribe_responsible', args=(self.secret_id,))
 
     def resend_auth_link(self) -> 'EmailMessage':
-        context = {'responsible': str(self),
-                   'form': str(self.form),
+        context = {'member': str(self), # TODO: check context (responsible -> member)
                    'url': self.make_new_auth_url(),
-                   'contact': self.form.responsible.contact_display,
+                   #  TODO we might need organization contact details here?
+                   #'contact': self.form.responsible.contact_display,
                    'list_unsubscribe': self.list_unsubscribe_link,
                    }
+        # TODO: more generic auth link email to member
         return EmailMessage.make(self.form.email_to_responsible_auth_link, context, self.email)
 
     def send_responsibility_email(self, participant: 'Participation') -> None:

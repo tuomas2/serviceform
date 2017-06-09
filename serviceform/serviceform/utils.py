@@ -25,7 +25,7 @@ import string
 import logging
 from functools import wraps
 from itertools import chain
-from typing import Optional, TYPE_CHECKING, Iterable, Union, Callable
+from typing import Optional, TYPE_CHECKING, Iterable, Union
 
 from django.core.serializers import serialize, deserialize
 from django.db.models import Model
@@ -34,7 +34,6 @@ if TYPE_CHECKING:
     from .models import ServiceForm, Participation, Member
     from .models.serviceform import AbstractServiceFormItem
 
-from colorful.forms import RGB_REGEX
 from django.contrib import messages
 from django.core.cache import caches, BaseCache
 from django.http import HttpRequest, HttpResponse
@@ -49,7 +48,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils import translation
 from django.conf import settings
 
-from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +77,7 @@ def _get_ident(request: HttpRequest) -> str:
     if request.user.pk:
         ident = 'user_%s' % request.user.pk
     else:
-        resp = get_responsible(request)
+        resp = get_authenticated_member(request)
         ident = 'responsible_%s' % resp.pk if resp else 'anonymous'
         service_form = resp.form if resp else None
 
@@ -300,6 +298,9 @@ def count_for_responsible(resp: 'Member') -> int:
 def generate_uuid() -> str:
     return str(uuid.uuid4())
 
+
+# TODO: move to color_utils
+
 ColorStr = str  # TODO: Type validation against RGB_REGEX.pattern?
 
 
@@ -340,20 +341,6 @@ def update_serviceform_default_emails() -> None:
     translation.activate('fi')
     for s in ServiceForm.objects.all():
         s.create_email_templates()
-
-
-def clean_session(request: HttpRequest):
-    keys = ['max_category', 'authenticated_participant', 'authenticated_responsibility',
-            'verification_sent']
-    for key in keys:
-        request.session.pop(key, None)
-        # request.session.clear()
-
-
-def get_responsible(request: HttpRequest):
-    from .models import Member
-    responsible_pk = request.session.get('authenticated_responsibility')
-    return Member.objects.filter(pk=responsible_pk).first()
 
 
 def safe_join(sep: str, args_generator: Iterable[str]):
@@ -432,17 +419,24 @@ def invalidate_cache(obj, key, cache_name='default'):
     cache_key = f'{obj.__class__.__name__}_{obj.pk}_{key}'
     cache.delete(cache_key)
 
-# TODO: create authentication module and move these there.
-def mark_as_authenticated_participant(request: HttpRequest,
-                                      participation: 'Participation') -> None:
-    request.session['authenticated_participant'] = participation.pk
+def clean_session(request: HttpRequest):
+    keys = ['max_category', 'serviceform_pk', 'authenticated_member', 'verification_sent']
+    for key in keys:
+        request.session.pop(key, None)
+        # request.session.clear()
 
 
-def get_authenticated_participant(request: HttpRequest) -> 'Optional[Participation]':
-    # TODO: remove participant-only authentication, or rename to active participation etc.
-    from .models import Participation
-    participant_pk = request.session.get('authenticated_participant')
-    return participant_pk and Participation.objects.get(pk=participant_pk)
+## TODO: create authentication module and move these there.
+#def mark_as_authenticated_participant(request: HttpRequest,
+#                                      participation: 'Participation') -> None:
+#    request.session['authenticated_participant'] = participation.pk
+
+
+#def get_authenticated_participant(request: HttpRequest) -> 'Optional[Participation]':
+#    # TODO: remove participant-only authentication, or rename to active participation etc.
+#    from .models import Participation
+#    participant_pk = request.session.get('authenticated_participant')
+#    return participant_pk and Participation.objects.get(pk=participant_pk)
 
 
 def get_authenticated_member(request: HttpRequest) -> 'Optional[Member]':
@@ -457,9 +451,9 @@ def mark_as_authenticated_member(request: HttpRequest, member: 'Member') -> None
 
 
 def authenticate_to_serviceform(request: HttpRequest, serviceform: 'ServiceForm') -> None:
-    request.session['authenticated_serviceform_pk'] = serviceform.pk
+    request.session['serviceform_pk'] = serviceform.pk
 
 
-def is_authenticated_to_serviceform(request: HttpRequest, serviceform: 'ServiceForm') -> bool:
-    serviceform_pk = request.session.get('authenticated_serviceform_pk')
+def serviceform_password_authenticated(request: HttpRequest, serviceform: 'ServiceForm') -> bool:
+    serviceform_pk = request.session.get('serviceform_pk')
     return serviceform_pk == serviceform.pk

@@ -164,7 +164,7 @@ def menu_items(context: Context, menu_name: str) -> MenuItems:
     """
     current_view = context['request'].resolver_match.view_name
     service_form = context['service_form']
-    responsible = utils.get_responsible(context['request'])
+    responsible = utils.get_authenticated_member(context['request'])
 
     def _check_requires(requires):
         for r in requires:

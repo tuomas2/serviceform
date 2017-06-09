@@ -34,7 +34,8 @@ from .. import forms, models, utils
 logger = logging.getLogger(__name__)
 
 
-def contact_details_creation(request: HttpRequest, serviceform_slug: str, **kwargs) -> HttpResponse:
+def contact_details_creation(request: HttpRequest, serviceform_slug: str,
+                             **kwargs) -> HttpResponse:
     """
     Member and participation creation.
 
@@ -43,7 +44,7 @@ def contact_details_creation(request: HttpRequest, serviceform_slug: str, **kwar
     """
     serviceform = get_object_or_404(models.ServiceForm.objects, slug=serviceform_slug)
 
-    if not utils.is_authenticated_to_serviceform(request, serviceform):
+    if not utils.serviceform_password_authenticated(request, serviceform):
         raise PermissionDenied
 
     if not serviceform.is_published:
@@ -58,13 +59,12 @@ def contact_details_creation(request: HttpRequest, serviceform_slug: str, **kwar
             member = form.save()
             # This member is new, so it cannot have earlier participations in the system.
             # thus we can simply create a new one for him.
-
             participation = models.Participation.objects.create(
                 member=member,
+                last_finished_view='contact_details',
                 form_revision=serviceform.current_revision)
 
-            utils.mark_as_authenticated_participant(request, participation)
-
+            utils.mark_as_authenticated_member(request, member)
             return participation.redirect_next(request)
 
     return render(request, 'serviceform/participation/contact_view.html',
@@ -103,6 +103,14 @@ def contact_details_modification(request: HttpRequest,
                    'participant': participation,
                    'service_form': participation.form,
                    'bootstrap_checkbox_disabled': True})
+
+
+def contact_details(request: HttpRequest, service_form_slug: str, **kwargs) -> HttpResponse:
+    member = utils.get_authenticated_member(request)
+    if member:
+        return contact_details_modification(request, service_form_slug, **kwargs)
+    else:
+        return contact_details_creation(request, service_form_slug, **kwargs)
 
 
 @require_authenticated_participation
@@ -204,8 +212,8 @@ def send_auth_link(request: HttpRequest, participant: models.Participation,
                    email: str) -> HttpResponse:
     if not email:
         raise Http404
-    p = get_object_or_404(models.Participation, email=email, form_revision__form=participant.form)
-    p.send_participant_email(p.EmailIds.RESEND)
+    m = get_object_or_404(models.Member, email=email, form_revision__form=participant.form)
+    m.resend_auth_link()
     messages.add_message(request, messages.INFO,
                          _('Authentication link was sent to email address {}.').format(email))
     return HttpResponseRedirect(reverse('contact_details', args=(participation.form.slug,)))
@@ -264,12 +272,14 @@ def authenticate_member(request: HttpRequest, member_id: int, password: str) -> 
 
 
 @login_required(login_url=settings.LOGIN_URL)
-def authenticate_member_mock(request: HttpRequest, participant_id: int,
-                             next_view: str='contact_details') -> HttpResponse:
+def authenticate_member_mock(request: HttpRequest, member_id: int,
+                             next_view: str='member_main') -> HttpResponse:
+    # TODO
+    raise NotImplementedError('Needs to be implemented again.')
     utils.clean_session(request)
-    participant = get_object_or_404(models.Participation.objects.all(), pk=participant_id)
-    utils.user_has_serviceform_permission(request.user, participant.form, raise_permissiondenied=True)
-    return auth_member_common(request, participant, next_view, email_verified=False)
+    member: models.Member = get_object_or_404(models.Member.objects, pk=member_id)
+    utils.user_has_serviceform_permission(request.user, member.form, raise_permissiondenied=True)
+    return authenticate_member(request, participant, next_view, email_verified=False)
 
 
 @require_authenticated_participation(check_flow=False)

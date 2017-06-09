@@ -55,7 +55,7 @@ def require_serviceform(function=None, check_form_permission=False, init_counter
 def require_authenticated_responsible(func):
     @wraps(func)
     def wrapper(request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        responsible = utils.get_responsible(request)
+        responsible = utils.get_authenticated_member(request)
         if responsible:
             request.service_form = responsible.form
         if request.user.pk or responsible:
@@ -125,7 +125,7 @@ def require_form_permissions(func):
         try:
             utils.user_has_serviceform_permission(request.user, service_form)
         except PermissionDenied:
-            responsible = utils.get_responsible(request)
+            responsible = utils.get_authenticated_member(request)
             if not responsible or not responsible.show_full_report:
                 return redirect_to_login(request.path, login_url=settings.LOGIN_URL)
 

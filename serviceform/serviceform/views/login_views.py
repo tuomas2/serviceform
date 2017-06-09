@@ -35,7 +35,7 @@ def password_login(request: HttpRequest, service_form: models.ServiceForm) -> Ht
         if password_form.is_valid():
             # mark anonymous user logged in for contact details input
             utils.authenticate_to_serviceform(request, service_form)
-            return HttpResponseRedirect(reverse('contact_details_creation', args=(service_form.slug,)))
+            return HttpResponseRedirect(reverse('contact_details', args=(service_form.slug,)))
 
     return render(request, 'serviceform/login/password_login.html',
                   {'password_form': password_form, 'service_form': service_form})
