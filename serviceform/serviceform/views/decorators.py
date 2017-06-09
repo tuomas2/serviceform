@@ -80,6 +80,9 @@ def require_authenticated_participation(function=None, check_flow=True, accept_a
             current_view = request.resolver_match.view_name
 
             member = utils.get_authenticated_member(request)
+            if not member:
+                raise PermissionDenied
+
             participation = get_object_or_404(member.participation_set,
                                               form_revision__form__slug=serviceform_slug)
 

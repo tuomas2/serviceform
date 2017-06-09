@@ -303,8 +303,8 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
     assert res.url == Pages.CONTACT
     res = client.get(Pages.CONTACT)
     assert res.status_code == Http.OK
-    participant_id = client.session['authenticated_participant']
-    p = models.Participation.objects.get(pk=participant_id)
+
+    #p = models.Participation.objects.get(pk=participant_id)
 
     user_data_without_email = dict(forenames='Forenames',
                                    surname='Surname',
@@ -313,16 +313,16 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
                                    city='City',
                                    email='',
                                    phone_number='041434434434',
-                                   send_email_allowed='on')
+                                   allow_participant_email='on')
     if not send_email_allowed:
-        del user_data_without_email['send_email_allowed']
+        del user_data_without_email['allow_participant_email']
 
     user_data_earlier_email = user_data_without_email.copy()
     user_data = user_data_without_email.copy()
 
-    user_data_earlier_email['email'] = earlier_p.email
+    user_data_earlier_email['email'] = earlier_p.member.email
 
-    user_data_without_email.pop('send_email_allowed', None)
+    user_data_without_email.pop('allow_participant_email', None)
     user_data['email'] = EMAIL_ADDRESS
 
     # Email missing
@@ -340,7 +340,7 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
     assert res.status_code == Http.OK
     assert 'email' in res.context['form'].errors
     timestamp = timezone.now()
-    res = client.get(f'/send_auth_link/{earlier_p.email}')
+    res = client.get(f'/send_auth_link/{earlier_p.member.email}')
     assert res.status_code == Http.REDIR
     assert res.url == Pages.CONTACT
     assert earlier_p.send_email_allowed
@@ -352,9 +352,12 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
 
     assert res.status_code == Http.REDIR
 
-    p.refresh_from_db()
-    assert p.email == EMAIL_ADDRESS
-    assert p.forenames == 'Forenames'
+    member_pk = client.session['authenticated_member']
+    member = models.Member.objects.get(pk=member_pk)
+    p = member.participation_set.first()
+
+    assert p.member.email == EMAIL_ADDRESS
+    assert p.member.forenames == 'Forenames'
 
 
     if email_verification:
@@ -544,11 +547,11 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
 
 @pytest.mark.parametrize('full_raport', [False, True])
 @pytest.mark.parametrize('mock_login', [False, True])
-def test_responsible_personal_report(client1: Client, report_settings,
+def test_responsible_personal_report(client1: Client, report_settings, responsible,
                                      admin_client:Client, mock_login, full_raport):
     forenames = 'Anne-Maija Sven'
     s = models.ServiceForm.objects.get(slug=SLUG)
-    resp = s.responsibilityperson_set.get(pk=89)
+    resp = responsible #s.responsibilityperson_set.get(pk=89)
     resp.show_full_report = full_raport
     resp.save()
 

@@ -225,6 +225,7 @@ class ContactForm(ModelForm):
         if not self.serviceform.visible_phone_number:
             del self.fields['phone_number']
 
+        self.fields['email'].required = True
         if utils.user_has_serviceform_permission(self.user, self.serviceform,
                                                  raise_permissiondenied=False):
             self.fields['email'].required = False
@@ -241,9 +242,10 @@ class ContactForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        if ('email' not in self.errors and not self.fields['email'].required and cleaned_data.get(
-                'send_email_allowed')
-            and not cleaned_data.get('email')):
+        if ('email' not in self.errors
+                and not self.fields['email'].required
+                and cleaned_data.get('allow_participant_email')
+                and not cleaned_data.get('email')):
             raise ValidationError(_('If sending email is allowed email address need to be given'))
         return cleaned_data
 
