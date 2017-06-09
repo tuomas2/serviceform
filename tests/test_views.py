@@ -9,6 +9,7 @@ import pytest
 # Hit admin pages (create new, update existing) but do not try to create any real content
 from django.db.models import QuerySet
 from django.test import Client
+from django.urls import reverse
 from django.utils import timezone
 
 from serviceform.serviceform import models
@@ -108,6 +109,13 @@ def test_flow_login_send_responsible_email(db, client: Client):
     assert emailmsg.to_address == email
 
 
+def r(name, *args):
+    return reverse(name, args=args)
+
+def rp(name, *args):
+    return r(name, SLUG, *args)
+
+
 class Pages:
     ADMIN_LOGIN = '/admin/login/'
     LOGIN = f'/{SLUG}/'
@@ -116,30 +124,32 @@ class Pages:
     LOGIN_SEND_RESPONSIBLE_LINK = f'/{SLUG}/send_responsible_link/'
 
 
-    CONTACT = '/participant/contact/'
-    EMAIL_VERIFICATION = '/participant/email_verification/'
-    PARTICIPATION = '/participant/participation/'
-    PARTICIPATIONX = '/participant/participation/%d/'
+    CONTACT = rp('contact_details')
+    EMAIL_VERIFICATION = rp('email_verification')
+    PARTICIPATION = rp('participation')
+    #PARTICIPATIONX = rp('participation', '%d')
+    #'/participant/participation/%d/'
 
-    PARTICIPATION0 = '/participant/participation/0/'
-    PARTICIPATION1 = '/participant/participation/1/'
-    PARTICIPATION2 = '/participant/participation/2/'
-    PARTICIPATION3 = '/participant/participation/3/'
-    PARTICIPATION4 = '/participant/participation/4/'
-    PARTICIPATION5 = '/participant/participation/4/'
-    PARTICIPATION6 = '/participant/participation/4/'
+    PARTICIPATION0 = rp('participation', 0)
+    PARTICIPATION1 = rp('participation', 1)
+    PARTICIPATION2 = rp('participation', 2)
+    PARTICIPATION3 = rp('participation', 3)
+    PARTICIPATION4 = rp('participation', 4)
+    PARTICIPATION5 = rp('participation', 5)
+    PARTICIPATION6 = rp('participation', 6)
 
-    QUESTIONS = '/participant/questions/'
-    PREVIEW = '/participant/preview/'
-    SUBMITTED = '/participant/submitted/'
+
+    QUESTIONS = rp('questions') #'/participant/questions/'
+    PREVIEW = rp('preview') #'/participant/preview/'
+    SUBMITTED = rp('submitted') #'/participant/submitted/'
 
     PARTICIPATION_PAGES = [CONTACT, EMAIL_VERIFICATION] + \
-                          [f'/participant/participation/{d}/' for d in range(7)] + \
+                          [rp('participation', d) for d in range(7)] + \
                           [QUESTIONS, PREVIEW, SUBMITTED]
 
-    REPORT_RESPONSIBLE = "/for_responsible/"
+    REPORT_RESPONSIBLE = r('responsible_report') # "/for_responsible/"
 
-    DELETE_PARTICIPATION = '/participant/delete/'
+    DELETE_PARTICIPATION = r('delete_participation') #'/participant/delete/'
     # TODO fix this
     RESPONSIBLE_MOCK_AUTH = '/anonymous/authenticate_responsible_mock/%d/'
     #RESPONSIBLE_MOCK_AUTH = '/authenticate_responsible_mock/%d/'
@@ -167,7 +177,6 @@ class Pages:
                 FULL_REPORT_SETTINGS,
                 ]
 
-@pytest.mark.skip(reason='broken for a while')
 @pytest.mark.skipif(os.getenv('SKIP_SLOW_TESTS', False), reason='Very slow test')
 @pytest.mark.parametrize('email_verification', [False, True])
 @pytest.mark.parametrize('flow_by_categories', [False, True])
@@ -210,21 +219,21 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
         Check if other participation pages can be already accessed 
         """
         for page_num in range(7):
-            res = client.get(Pages.PARTICIPATIONX % page_num)
+            res = client.get(rp('participation', page_num))
             if allow_skip_categories or page_num <= position or updating:
                 assert res.status_code == Http.OK
             else:
                 assert res.status_code == Http.REDIR
-                assert res.url == Pages.PARTICIPATIONX % position
+                assert res.url == rp('participation', position)
 
     def skip_other_pages(updating=False):
         for page_num in range(1, 6):
-            res = client.post(Pages.PARTICIPATIONX % page_num)
+            res = client.post(rp('participation', page_num))
             assert res.status_code == Http.REDIR
-            assert res.url == Pages.PARTICIPATIONX % (page_num + 1)
+            assert res.url == rp('participation', page_num + 1)
             can_access_other_pages(page_num + 1, updating)
 
-        return client.post(Pages.PARTICIPATIONX % 6)
+        return client.post(rp('participation', 6))
 
     def check_responsible_reports(emails: QuerySet, resps: List[models.Member], num_responsibles: int):
         assert len(resps) == num_responsibles
@@ -274,10 +283,10 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
     rev.save()
     s.save()
 
-    FULL_REPORT = f"/report/{s.slug}/"
-    ALL_PARTICIPANTS = f"/report/{s.slug}/all_participants/"
-    ALL_ACTIVITIES = f"/report/{s.slug}/all_activities/"
-    ALL_QUESTIONS = f"/report/{s.slug}/all_questions/"
+    FULL_REPORT = r('report', s.slug) #f"/report/{s.slug}/"
+    ALL_PARTICIPANTS = r('all_participants', s.slug) #f"/report/{s.slug}/all_participants/"
+    ALL_ACTIVITIES = r('all_activities', s.slug) #f"/report/{s.slug}/all_activities/"
+    ALL_QUESTIONS = r('all_questions', s.slug) #f"/report/{s.slug}/all_questions/"
     REPORT_PAGES = [FULL_REPORT, ALL_ACTIVITIES, ALL_PARTICIPANTS, ALL_QUESTIONS]
 
     first_cat1:models.Level1Category = s.sub_items[0]
