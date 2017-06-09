@@ -68,6 +68,7 @@ class Requires:
 
 
 participant_flow_urls = [
+    # TODO: rename view to 'contact_details_modification'
     url(r'^member/forms/([\w-]+)/contact/$', participation_views.contact_details_modification,
         name='contact_details', kwargs={'title': _('Contact details')}),
     url(r'^member/forms/([\w-]+)/participant/email_verification/$', participation_views.email_verification,
@@ -145,7 +146,8 @@ urlpatterns = [u for u in
               [
                   # Test erorr email
                   url(r'^test_error/$', error, name='test_error'),
-                  url(r'^member/forms/([\w-]+)/participant/contact/new/$', participation_views.contact_details_creation,
+                  url(r'^member/forms/([\w-]+)/participant/contact/new/$',
+                      participation_views.contact_details_creation,
                       name='contact_details_creation', kwargs={'title': _('Contact details')}),
                   # Later actions for participant
                   url(r'^anonymous/authenticate_participant/([\w-]+)/$',
@@ -182,5 +184,8 @@ urlpatterns = [u for u in
                   url(r'^([\w-]+)/$', login_views.password_login, name='password_login'),
                   url(r'^member/forms/([\w-]+)/participation/$', participation_views.participation,
                       name='participation', kwargs={'cat_num': 0}),
-                  url(r'^$', main_page, name='main_page'),
+                  url(r'^member/forms/([\w-]+)/update_participation/$',
+                      participation_views.update_participation,
+                      name='update_participation'),
+                   url(r'^$', main_page, name='main_page'),
               ]

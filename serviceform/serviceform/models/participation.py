@@ -191,7 +191,7 @@ class Participation(models.Model):
         emailtemplate = emailtemplates[event]
         url_postfix = (f"?next={reverse('participation', args=(self.form.slug,))}"
                        if event == self.EmailIds.EMAIL_VERIFICATION
-                       else f"?next={reverse('contact_details', args=(self.form.slug,))}")
+                       else f"?next={reverse('update_participation', args=(self.form.slug,))}")
         url = self.member.make_new_auth_url() + url_postfix
 
         context = {

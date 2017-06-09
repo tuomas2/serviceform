@@ -211,17 +211,18 @@ def send_auth_link(request: HttpRequest, participant: models.Participation,
     return HttpResponseRedirect(reverse('contact_details', args=(participation.form.slug,)))
 
 
-#def auth_member_common(request: HttpRequest, member: models.Member, next_url: str) -> HttpResponse:
-    # TODO: move to whatever next view we are going to
-#    if participant.status == models.Participation.STATUS_FINISHED:
-#        participant.status = models.Participation.STATUS_UPDATING
-#    elif participant.status == models.Participation.STATUS_INVITED:
-#        participant.status = models.Participation.STATUS_ONGOING
-#    if participant.form_revision != participant.form_revision.form.current_revision:
-#        participant.last_finished_view = ''
-#    participant.form_revision = participant.form_revision.form.current_revision
-#    participant.save(update_fields=['status', 'form_revision', 'last_finished_view'])
-#    return redirect(next_view)
+@require_authenticated_participation(check_flow=False)
+def update_participation(request: HttpRequest,
+                         participation: models.Participation) -> HttpResponse:
+    if participation.status == models.Participation.STATUS_FINISHED:
+        participation.status = models.Participation.STATUS_UPDATING
+    elif participation.status == models.Participation.STATUS_INVITED:
+        participation.status = models.Participation.STATUS_ONGOING
+    if participation.form_revision != participation.form_revision.form.current_revision:
+        participation.last_finished_view = ''
+    participation.form_revision = participation.form_revision.form.current_revision
+    participation.save(update_fields=['status', 'form_revision', 'last_finished_view'])
+    return redirect(reverse('contact_details', args=(participation.form.slug,)))
 
 
 def authenticate_participant_old(request: HttpRequest, uuid: str,
@@ -296,3 +297,5 @@ def unsubscribe(request: HttpRequest, secret_id: str) -> HttpResponse:
     return render(request, 'serviceform/login/unsubscribe_participant.html',
                   {'participant': participant,
                    'service_form': participant.form})
+
+
