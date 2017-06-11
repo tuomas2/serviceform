@@ -177,12 +177,6 @@ class QuestionInline(ResponsibleMixin, GrappelliSortableHiddenMixin, NestedTabul
     fields = ('question', 'responsibles', 'answer_type', 'required', 'order')
 
 
-class EmailTemplateInline(NestedStackedInline):
-    fields = ('name', 'subject', 'content')
-    model = models.EmailTemplate
-    extra = 0
-
-
 class RevisionInline(NestedStackedInline):
     fields = ('name', ('valid_from', 'valid_to'), 'send_emails_after',
               'send_bulk_email_to_participants')
@@ -196,7 +190,7 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
     class Media:
         css = {'all': ('serviceform/serviceform_admin.css',)}
 
-    inlines = [RevisionInline, EmailTemplateInline, Level1CategoryInline, QuestionInline]
+    inlines = [RevisionInline, Level1CategoryInline, QuestionInline]
 
     superuser_actions = ['bulk_email_former_participants', 'bulk_email_responsibles']
     if settings.DEBUG:
@@ -353,10 +347,16 @@ class MemberInline(NestedStackedInline):
     readonly_fields = ('personal_link',)
 
 
+class EmailTemplateInline(NestedStackedInline):
+    fields = ('name', 'subject', 'content')
+    model = models.EmailTemplate
+    extra = 0
+
+
 @admin.register(models.Organization)
 class OrganizationAdmin(ExtendedLogMixin, admin.ModelAdmin):
     list_display = ('name',)
-    inlines = [MemberInline]
+    inlines = [MemberInline, EmailTemplateInline]
 
 
 @admin.register(models.Participation)

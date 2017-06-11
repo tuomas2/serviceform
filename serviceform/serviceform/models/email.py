@@ -116,7 +116,11 @@ class EmailTemplate(models.Model):
     content = models.TextField(_('Content'), help_text=_(
         'Following context may (depending on topic) be available for both subject and content: '
         '{{responsible}}, {{participant}}, {{last_modified}}, {{form}}, {{url}}, {{contact}}'))
-    form = models.ForeignKey('serviceform.ServiceForm', on_delete=models.CASCADE)
+
+    organization = models.ForeignKey('serviceform.Organization', null=True, on_delete=models.CASCADE)
+    # TODO: remove this field after migration.
+    # TODO: check admin side visibility / permissions
+    # TODO: attributes that are named as 'form' should be renamed to 'serviceform'
 
     @classmethod
     def make(cls, name: str, form: 'ServiceForm', content: str, subject: str):
