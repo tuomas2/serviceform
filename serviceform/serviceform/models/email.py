@@ -32,7 +32,7 @@ from django.utils.translation import ugettext_lazy as _
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from .serviceform import ServiceForm
+    from .people import Organization
 
 
 class EmailMessage(models.Model):
@@ -123,5 +123,9 @@ class EmailTemplate(models.Model):
     # TODO: attributes that are named as 'form' should be renamed to 'serviceform'
 
     @classmethod
-    def make(cls, name: str, form: 'ServiceForm', content: str, subject: str):
-        return cls.objects.create(name=name, form=form, subject=subject, content=content)
+    def make(cls, name: str, organization: 'Organization', content: str, subject: str) \
+            -> 'EmailTemplate':
+        return cls.objects.create(name=name,
+                                  organization=organization,
+                                  subject=subject,
+                                  content=content)

@@ -18,6 +18,7 @@
 
 from enum import Enum
 from typing import Optional, TYPE_CHECKING, Union, Iterator
+import logging
 
 import time
 
@@ -32,16 +33,47 @@ from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
-from .email import EmailMessage
+from .email import EmailMessage, EmailTemplate
 from .mixins import postalcode_regex, phone_regex
-from .. import utils
+from .. import utils, emails
 
 
 if TYPE_CHECKING:
     from .participation import Participation
 
+logger = logging.getLogger(__name__)
+
+
 class Organization(models.Model):
     name = models.CharField(_('Organization name'), max_length=64)
+
+    email_to_member_auth_link = models.ForeignKey(
+        EmailTemplate, null=True, blank=True,
+        related_name='+',
+        verbose_name=_('Auth link email to member'), help_text=_(
+            'Email that is sent to member when auth link is requested'),
+        on_delete=models.SET_NULL)
+
+    def create_initial_data(self) -> None:
+        self.create_email_templates()
+        self.save()
+
+    # TODO: call this when creating organization
+    def create_email_templates(self) -> None:
+        if not self.pk:
+            logger.error('Cannot create email template if form is not saved')
+            return
+
+        commit = False
+        if not self.email_to_member_auth_link:
+            commit = True
+            self.email_to_member_auth_link = EmailTemplate.make(
+                _('Default auth link to member email'), self,
+                emails.email_to_member_auth_link,
+                _('Your authentication link to access your data in {{organization}}'))
+
+        if commit:
+            self.save()
 
 
 class Member(models.Model):
@@ -222,6 +254,7 @@ class Member(models.Model):
     def list_unsubscribe_link(self) -> str:
         return settings.SERVER_URL + reverse('unsubscribe_responsible', args=(self.secret_id,))
 
+    # TODO: rename to 'send_auth_link'
     def resend_auth_link(self) -> 'EmailMessage':
         context = {'member': str(self), # TODO: check context (responsible -> member)
                    'url': self.make_new_auth_url(),
@@ -231,7 +264,7 @@ class Member(models.Model):
                    }
         # TODO: more generic auth link email to organization member (not responsible nor participation)
         # TODO auth link email should be per-organization, not per-form. Members will be shared between forms.
-        return EmailMessage.make(self.form.email_to_responsible_auth_link, context, self.email)
+        return EmailMessage.make(self.organization.email_to_member_auth_link, context, self.email)
 
     def send_responsibility_email(self, participant: 'Participation') -> None:
         if self.allow_responsible_email:

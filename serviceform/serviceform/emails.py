@@ -127,3 +127,16 @@ Service form system administrators
 
 Contact person:
 {{contact}}""")
+
+
+# TODO: check this email content
+email_to_member_auth_link = _("""Dear {{member}},
+
+Here is your link to access your data in {{organization}}:
+{{url}}
+
+Best regards,
+Service form system administrators
+
+Contact person:
+{{contact}}""")

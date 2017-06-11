@@ -215,6 +215,7 @@ class ServiceForm(AbstractServiceFormItem):
         related_name='+',
         on_delete=models.SET_NULL)
 
+    # TODO: moved to Organization
     email_to_responsible_auth_link = models.ForeignKey(
         EmailTemplate, null=True, blank=True,
         related_name='+',
