@@ -44,7 +44,7 @@ def contact_details_creation(request: HttpRequest, serviceform_slug: str,
     """
     serviceform = get_object_or_404(models.ServiceForm.objects, slug=serviceform_slug)
 
-    if not utils.serviceform_password_authenticated(request, serviceform):
+    if not utils.is_serviceform_password_authenticated(request, serviceform):
         raise PermissionDenied
 
     if not serviceform.is_published:
@@ -207,12 +207,16 @@ def submitted(request: HttpRequest, participant: models.Participation) -> HttpRe
                   {'service_form': participant.form, 'participant': participant})
 
 
-@require_authenticated_participation(check_flow=False)
-def send_auth_link(request: HttpRequest, participant: models.Participation,
-                   email: str) -> HttpResponse:
+def send_auth_link(request: HttpRequest, email: str) -> HttpResponse:
     if not email:
         raise Http404
-    m = get_object_or_404(models.Member, email=email, form_revision__form=participant.form)
+
+    authenticated = (utils.get_authenticated_serviceform(request)
+                     or utils.get_authenticated_member(request))
+    if not authenticated:
+        raise PermissionDenied
+
+    m = get_object_or_404(models.Member, email=email, organization=authenticated.organization)
     m.resend_auth_link()
     messages.add_message(request, messages.INFO,
                          _('Authentication link was sent to email address {}.').format(email))

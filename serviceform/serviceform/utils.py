@@ -454,6 +454,12 @@ def authenticate_to_serviceform(request: HttpRequest, serviceform: 'ServiceForm'
     request.session['serviceform_pk'] = serviceform.pk
 
 
-def serviceform_password_authenticated(request: HttpRequest, serviceform: 'ServiceForm') -> bool:
+def get_authenticated_serviceform(request: HttpRequest):
+    from .models import ServiceForm
+    serviceform_pk = request.session.get('serviceform_pk')
+    return ServiceForm.objects.get(pk=serviceform_pk)
+
+
+def is_serviceform_password_authenticated(request: HttpRequest, serviceform: 'ServiceForm') -> bool:
     serviceform_pk = request.session.get('serviceform_pk')
     return serviceform_pk == serviceform.pk

@@ -229,7 +229,8 @@ class Member(models.Model):
                    #'contact': self.form.responsible.contact_display,
                    'list_unsubscribe': self.list_unsubscribe_link,
                    }
-        # TODO: more generic auth link email to member
+        # TODO: more generic auth link email to organization member (not responsible nor participation)
+        # TODO auth link email should be per-organization, not per-form. Members will be shared between forms.
         return EmailMessage.make(self.form.email_to_responsible_auth_link, context, self.email)
 
     def send_responsibility_email(self, participant: 'Participation') -> None:
