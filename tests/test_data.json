@@ -349,7 +349,7 @@
     "name": "osallistujalle",
     "subject": "Osallistujatietosi Jyv\u00e4skyl\u00e4n vapaaseurakunnan palvelulomakkeeseen",
     "content": "Kiitos, ett\u00e4 olet t\u00e4ytt\u00e4nyt Jyv\u00e4skyl\u00e4n Vapaaseurakunnan palvelulomakkeen. Sinuun otetaan yhteytt\u00e4, kun toimintaa aletaan suunnitella (15.8.2016 alkaen).  \r\n\r\nSamalla saat vastauksen mahdollisiin kysymyksiin, joita olet kirjoittanut lomakkeeseen.\r\n\r\nJos haluat muuttaa antamiasi tietoja, voit tehd\u00e4 sen osoitteessa {{url}}.\r\n\r\nSiunaavin terveisin\r\nJyv\u00e4skyl\u00e4n vapaaseurakunta\r\n\r\nPalvelulomakkeen yhteyshenkil\u00f6:\r\n\r\n{{contact}}",
-    "form": 11
+    "organization": 1
   }
 },
 {
@@ -359,7 +359,7 @@
     "name": "osallistujalle, resend",
     "subject": "Linkki Jyv\u00e4skyl\u00e4n vapaaseurakunnan palvelulomakkeeseen",
     "content": "Terve!\r\n\r\nVoit muokata osallistujatietojasi Jyv\u00e4skyl\u00e4n vapaaseurakunnan palvelulomakkeeseen osoitteessa\r\n {{url}}.\r\n\r\nSiunaavin terveisin,\r\nJyv\u00e4skyl\u00e4n vapaaseurakunta\r\n\r\nPalvelulomakkeen yhteyshenkil\u00f6:\r\n\r\n{{contact}}",
-    "form": 11
+    "organization": 1
   }
 },
 {
@@ -369,7 +369,7 @@
     "name": "Massas\u00e4hk\u00f6posti vastuullisille (oletus)",
     "subject": "Vastuuhenkil\u00f6: osallistujatiedot lomakkeelle {{form}} ovat nyt tarkasteltavissa",
     "content": "Hei {{responsible}}, \r\n\r\nOsallistumistiedot vastuualueesi teht\u00e4viin lomakkeelle {{form}} ovat nyt tarkasteltavissa osoitteessa \r\n{{url}}. \r\n\r\nT\u00e4st\u00e4 l\u00e4htien saat ilmoituksen aina kun uusi osallistuja ilmoittautuu niihin vastuualueesi teht\u00e4viin. \r\nVoit my\u00f6s muokata yhteystietojasi sek\u00e4 s\u00e4hk\u00f6posti-ilmoitusten asetuksia samasta osoitteesta.\r\n\r\nParhain terveisin,\r\nJyv\u00e4skyl\u00e4n vapaaseurakunta\r\n\r\nYhteyshenkil\u00f6: \r\n{{contact}}",
-    "form": 11
+    "organization": 1
   }
 },
 {
@@ -379,7 +379,7 @@
     "name": "S\u00e4hk\u00f6posti vastuullisille (oletus)",
     "subject": "Uusi osallistujatieto lomakkeelle {{form}}",
     "content": "Hei {{responsible}}, \r\n\r\nUusi osallistujatieto henkil\u00f6lt\u00e4 {{participant}} on tallennettu lomakkeeseen {{form}}. \r\nVoit tarkastella osallistujatietoja niihin teht\u00e4viin joista olet vastuussa osoitteessa:\r\n{{url}}\r\nVoit my\u00f6s muokata yhteystietojasi sek\u00e4 s\u00e4hk\u00f6posti-ilmoitusten asetuksia samasta osoitteesta.\r\n\r\nParhain terveisin,\r\nJyv\u00e4skyl\u00e4n vapaaseurakunta\r\n\r\nYhteyshenkil\u00f6: \r\n{{contact}}",
-    "form": 11
+    "organization": 1
   }
 },
 {
@@ -389,7 +389,7 @@
     "name": "S\u00e4hk\u00f6posti aikaisemmille osallistujille (oletus)",
     "subject": "Uusi versio lomakkeesta {{form}} on julkaistu",
     "content": "Hei {{participant}},\r\n\r\nUusi versio lomakkeesta {{form}} on julkaistu.\r\nP\u00e4ivit\u00e4 osallistumistietosi osoitteessa {{url}}.\r\n\r\nParhain terveisin,\r\nJyv\u00e4skyl\u00e4n vapaaseurakunta\r\n\r\nYhteyshenkil\u00f6:\r\n{{contact}}",
-    "form": 11
+    "organization": 1
   }
 },
 {
@@ -399,7 +399,7 @@
     "name": "Kutsus\u00e4hk\u00f6posti osallistujille (oletus)",
     "subject": "Kutsu t\u00e4ytt\u00e4\u00e4 osallistumistiedot lomakkeelle {{form}}",
     "content": "Hei {{participant}},\r\n\r\nSinut on kutsuttu t\u00e4ytt\u00e4m\u00e4\u00e4n lomake {{form}}.\r\nVoit kertoa halukkuudestasi osallistua teht\u00e4viin osoitteessa {{url}}.\r\n\r\nParhain terveisin,\r\nJyv\u00e4skyl\u00e4n vapaaseurakunta \r\n\r\nYhteyshenkil\u00f6:\r\n{{contact}}",
-    "form": 11
+    "organization": 1
   }
 },
 {
@@ -409,7 +409,7 @@
     "name": "Osallistujalle: p\u00e4ivitetty lomake",
     "subject": "P\u00e4ivitetty osallistujatietosi Jyv\u00e4skyl\u00e4n vapaaseurakunnan palvelulomakkeeseen",
     "content": "Hei {{participant}},\r\n\r\nP\u00e4ivitit tietojasi lomakkeeseen \"{{form}}\" ajankohtana {{last_modified}}.\r\nJos haluat muuttaa antamiasi tietoja, voit menn\u00e4 osoitteeseen {{url}}.\r\n\r\nParhain terveisin,\r\nJyv\u00e4skyl\u00e4n vapaaseurakunta\r\n\r\nYhteyshenkil\u00f6:\r\n{{contact}}",
-    "form": 11
+    "organization": 1
   }
 },
 {
@@ -419,7 +419,7 @@
     "name": "S\u00e4hk\u00f6posti kun vastuuhenkil\u00f6 pyyt\u00e4\u00e4 raporttilinkki\u00e4 (oletus)",
     "subject": "Raporttisi lomakkeelle {{form}}",
     "content": "Hei {{responsible}}, \r\n\r\nVoit tarkastella osallistujatietoja niihin teht\u00e4viin joista olet vastuussa osoitteessa:\r\n{{url}}\r\nVoit my\u00f6s muokata yhteystietojasi sek\u00e4 s\u00e4hk\u00f6posti-ilmoitusten asetuksia samasta osoitteesta\r\n\r\nParhain terveisin,\r\nPalvelulomakej\u00e4rjestelm\u00e4n yll\u00e4pito\r\n\r\nYhteyshenkil\u00f6: \r\n{{contact}}",
-    "form": 11
+    "organization": 1
   }
 },
 {
@@ -429,7 +429,17 @@
     "name": "S\u00e4hk\u00f6postiosoitteen varmennusviesti osallistujalle (oletus)",
     "subject": "Sinun pit\u00e4\u00e4 varmentaa s\u00e4hk\u00f6postiosoiteesi lomakkeessa {{form}}",
     "content": "Hei {{participant}},\r\n\r\nS\u00e4hk\u00f6postiosoitteesi pit\u00e4\u00e4 varmentaa. Voit tehd\u00e4 sen klikkaamalla alla olevaa linkki\u00e4. Sen j\u00e4lkeen voit jatkaa\r\nlomakkeen t\u00e4ytt\u00e4mist\u00e4.\r\n\r\n{{url}}.\r\n\r\nParhain terveisin,\r\nPalvelulomakej\u00e4rjestelm\u00e4n yll\u00e4pito\r\n\r\nYhteyshenkil\u00f6:\r\n{{contact}}",
-    "form": 11
+    "organization": 1
+  }
+},
+{
+  "model": "serviceform.emailtemplate",
+  "pk": 38,
+  "fields": {
+    "name": "Default auth link to member email",
+    "subject": "Your authentication link to access your data in {{organization}}",
+    "content": "Dear {{member}},\n\nHere is your link to access your data in {{organization}}:\n{{url}}\n\nBest regards,\nService form system administrators\n\nContact person:\n{{contact}}",
+    "organization": 1
   }
 },
 {
@@ -3003,6 +3013,188 @@
     "created_at": "2017-05-23T12:46:44.387Z",
     "last_modified": "2017-05-24T14:45:16.557Z",
     "last_finished": "2017-05-23T12:48:21.982Z",
+    "form_revision": 6
+  }
+},
+{
+  "model": "serviceform.participation",
+  "pk": 322,
+  "fields": {
+    "member": 290,
+    "status": "ongoing",
+    "last_finished_view": "",
+    "created_at": "2017-06-02T09:56:12.006Z",
+    "last_modified": "2017-06-02T09:56:12.006Z",
+    "last_finished": null,
+    "form_revision": null
+  }
+},
+{
+  "model": "serviceform.participation",
+  "pk": 323,
+  "fields": {
+    "member": 291,
+    "status": "ongoing",
+    "last_finished_view": "",
+    "created_at": "2017-06-02T10:09:09.772Z",
+    "last_modified": "2017-06-02T10:09:09.772Z",
+    "last_finished": null,
+    "form_revision": null
+  }
+},
+{
+  "model": "serviceform.participation",
+  "pk": 324,
+  "fields": {
+    "member": 292,
+    "status": "ongoing",
+    "last_finished_view": "",
+    "created_at": "2017-06-02T10:12:11.542Z",
+    "last_modified": "2017-06-02T10:12:11.542Z",
+    "last_finished": null,
+    "form_revision": null
+  }
+},
+{
+  "model": "serviceform.participation",
+  "pk": 325,
+  "fields": {
+    "member": 293,
+    "status": "ongoing",
+    "last_finished_view": "",
+    "created_at": "2017-06-02T10:16:50.005Z",
+    "last_modified": "2017-06-02T10:16:50.005Z",
+    "last_finished": null,
+    "form_revision": 6
+  }
+},
+{
+  "model": "serviceform.participation",
+  "pk": 326,
+  "fields": {
+    "member": 294,
+    "status": "ongoing",
+    "last_finished_view": "contact_details",
+    "created_at": "2017-06-02T10:29:18.128Z",
+    "last_modified": "2017-06-02T10:29:18.128Z",
+    "last_finished": null,
+    "form_revision": 6
+  }
+},
+{
+  "model": "serviceform.participation",
+  "pk": 327,
+  "fields": {
+    "member": 295,
+    "status": "ongoing",
+    "last_finished_view": "contact_details",
+    "created_at": "2017-06-02T13:13:27.761Z",
+    "last_modified": "2017-06-02T13:13:27.761Z",
+    "last_finished": null,
+    "form_revision": 6
+  }
+},
+{
+  "model": "serviceform.participation",
+  "pk": 328,
+  "fields": {
+    "member": 296,
+    "status": "ongoing",
+    "last_finished_view": "contact_details",
+    "created_at": "2017-06-02T13:21:22.623Z",
+    "last_modified": "2017-06-02T13:21:22.623Z",
+    "last_finished": null,
+    "form_revision": 6
+  }
+},
+{
+  "model": "serviceform.participation",
+  "pk": 329,
+  "fields": {
+    "member": 297,
+    "status": "ongoing",
+    "last_finished_view": "contact_details",
+    "created_at": "2017-06-06T16:16:45.914Z",
+    "last_modified": "2017-06-06T16:16:45.914Z",
+    "last_finished": null,
+    "form_revision": 6
+  }
+},
+{
+  "model": "serviceform.participation",
+  "pk": 330,
+  "fields": {
+    "member": 298,
+    "status": "ongoing",
+    "last_finished_view": "contact_details",
+    "created_at": "2017-06-06T16:32:58.971Z",
+    "last_modified": "2017-06-06T16:32:58.971Z",
+    "last_finished": null,
+    "form_revision": 6
+  }
+},
+{
+  "model": "serviceform.participation",
+  "pk": 331,
+  "fields": {
+    "member": 299,
+    "status": "finished",
+    "last_finished_view": "preview",
+    "created_at": "2017-06-09T07:30:09.116Z",
+    "last_modified": "2017-06-09T07:30:09.116Z",
+    "last_finished": "2017-06-09T11:38:43.498Z",
+    "form_revision": 6
+  }
+},
+{
+  "model": "serviceform.participation",
+  "pk": 332,
+  "fields": {
+    "member": 300,
+    "status": "ongoing",
+    "last_finished_view": "",
+    "created_at": "2017-06-09T08:15:08.325Z",
+    "last_modified": "2017-06-09T08:15:08.325Z",
+    "last_finished": null,
+    "form_revision": 6
+  }
+},
+{
+  "model": "serviceform.participation",
+  "pk": 333,
+  "fields": {
+    "member": 301,
+    "status": "ongoing",
+    "last_finished_view": "",
+    "created_at": "2017-06-09T11:00:19.773Z",
+    "last_modified": "2017-06-09T11:00:19.773Z",
+    "last_finished": null,
+    "form_revision": 6
+  }
+},
+{
+  "model": "serviceform.participation",
+  "pk": 334,
+  "fields": {
+    "member": 302,
+    "status": "ongoing",
+    "last_finished_view": "participation",
+    "created_at": "2017-06-09T12:29:42.104Z",
+    "last_modified": "2017-06-09T12:29:42.104Z",
+    "last_finished": null,
+    "form_revision": 6
+  }
+},
+{
+  "model": "serviceform.participation",
+  "pk": 335,
+  "fields": {
+    "member": 303,
+    "status": "ongoing",
+    "last_finished_view": "contact_details",
+    "created_at": "2017-06-09T14:15:07.455Z",
+    "last_modified": "2017-06-09T14:15:07.455Z",
+    "last_finished": null,
     "form_revision": 6
   }
 },
@@ -6527,6 +6719,36 @@
   }
 },
 {
+  "model": "serviceform.participationactivity",
+  "pk": 579,
+  "fields": {
+    "participant": 331,
+    "activity": 73,
+    "additional_info": null,
+    "created_at": "2017-06-09T11:20:24.551Z"
+  }
+},
+{
+  "model": "serviceform.participationactivity",
+  "pk": 580,
+  "fields": {
+    "participant": 331,
+    "activity": 116,
+    "additional_info": "",
+    "created_at": "2017-06-09T11:20:39.700Z"
+  }
+},
+{
+  "model": "serviceform.participationactivity",
+  "pk": 581,
+  "fields": {
+    "participant": 331,
+    "activity": 78,
+    "additional_info": "",
+    "created_at": "2017-06-09T11:20:39.726Z"
+  }
+},
+{
   "model": "serviceform.participationactivitychoice",
   "pk": 57,
   "fields": {
@@ -7717,6 +7939,16 @@
   }
 },
 {
+  "model": "serviceform.participationactivitychoice",
+  "pk": 196,
+  "fields": {
+    "activity": 579,
+    "activity_choice": 67,
+    "additional_info": "asdfasfd",
+    "created_at": "2017-06-09T11:20:24.599Z"
+  }
+},
+{
   "model": "serviceform.questionanswer",
   "pk": 210,
   "fields": {
@@ -8777,6 +9009,26 @@
   }
 },
 {
+  "model": "serviceform.questionanswer",
+  "pk": 474,
+  "fields": {
+    "participant": 331,
+    "question": 13,
+    "answer": "on",
+    "created_at": "2017-06-09T11:22:46.464Z"
+  }
+},
+{
+  "model": "serviceform.questionanswer",
+  "pk": 475,
+  "fields": {
+    "participant": 331,
+    "question": 14,
+    "answer": "asdfafs",
+    "created_at": "2017-06-09T11:22:46.487Z"
+  }
+},
+{
   "model": "serviceform.participantlog",
   "pk": 5,
   "fields": {
@@ -8857,7 +9109,8 @@
   "model": "serviceform.organization",
   "pk": 1,
   "fields": {
-    "name": "jklvapis"
+    "name": "jklvapis",
+    "email_to_member_auth_link": 38
   }
 },
 {
@@ -13938,6 +14191,411 @@
   }
 },
 {
+  "model": "serviceform.member",
+  "pk": 290,
+  "fields": {
+    "forenames": "asdf",
+    "surname": "asadf",
+    "street_address": "asfd",
+    "postal_code": "40520",
+    "city": "asfd",
+    "year_of_birth": null,
+    "email": "email1@email.com",
+    "email_verified": false,
+    "phone_number": "050123123",
+    "membership_type": "external",
+    "organization": 1,
+    "auth_keys_hash_storage": [],
+    "secret_key": "905ee465-dade-4fc4-bdff-c2f95f9874ec",
+    "allow_responsible_email": true,
+    "allow_participant_email": true,
+    "hide_contact_details": false,
+    "show_full_report": false
+  }
+},
+{
+  "model": "serviceform.member",
+  "pk": 291,
+  "fields": {
+    "forenames": "asdf",
+    "surname": "asadf",
+    "street_address": "asfd",
+    "postal_code": "40520",
+    "city": "asfd",
+    "year_of_birth": null,
+    "email": "email2@email.com",
+    "email_verified": false,
+    "phone_number": "050123123",
+    "membership_type": "external",
+    "organization": 1,
+    "auth_keys_hash_storage": [],
+    "secret_key": "25099bed-2a68-441d-b498-56dde8305060",
+    "allow_responsible_email": true,
+    "allow_participant_email": true,
+    "hide_contact_details": false,
+    "show_full_report": false
+  }
+},
+{
+  "model": "serviceform.member",
+  "pk": 292,
+  "fields": {
+    "forenames": "asdf",
+    "surname": "asdf",
+    "street_address": "asf",
+    "postal_code": "40520",
+    "city": "sadf",
+    "year_of_birth": null,
+    "email": "test1@test.fi",
+    "email_verified": false,
+    "phone_number": "050123123",
+    "membership_type": "external",
+    "organization": 1,
+    "auth_keys_hash_storage": [],
+    "secret_key": "465a7509-a258-43ca-9721-fe05b7087984",
+    "allow_responsible_email": true,
+    "allow_participant_email": true,
+    "hide_contact_details": false,
+    "show_full_report": false
+  }
+},
+{
+  "model": "serviceform.member",
+  "pk": 293,
+  "fields": {
+    "forenames": "Teemu",
+    "surname": "Testajaa",
+    "street_address": "Teemuntie 1",
+    "postal_code": "40520",
+    "city": "Jyv\u00e4skyl\u00e4",
+    "year_of_birth": null,
+    "email": "teemu@email.com",
+    "email_verified": false,
+    "phone_number": "0501234123",
+    "membership_type": "external",
+    "organization": 1,
+    "auth_keys_hash_storage": [],
+    "secret_key": "ebca59e8-1575-4d4f-8390-259ca2cf801b",
+    "allow_responsible_email": true,
+    "allow_participant_email": true,
+    "hide_contact_details": false,
+    "show_full_report": false
+  }
+},
+{
+  "model": "serviceform.member",
+  "pk": 294,
+  "fields": {
+    "forenames": "Teemu",
+    "surname": "Testajaa",
+    "street_address": "Teemuntie 1",
+    "postal_code": "40520",
+    "city": "Jyv\u00e4skyl\u00e4",
+    "year_of_birth": null,
+    "email": "teemu1@email.com",
+    "email_verified": false,
+    "phone_number": "0501234123",
+    "membership_type": "external",
+    "organization": 1,
+    "auth_keys_hash_storage": [
+      [
+        "pbkdf2_sha256$36000$5fjm8LCEKvXd$pFxHirUlgb4jEsKqxFduIidFdQy0T3pSjNk4FY+Fbk4=",
+        1504176181.66639
+      ],
+      [
+        "pbkdf2_sha256$36000$po8YgPd19JiZ$ibg0Aw4AnRwIULwlIqXG/UXjspd137t2/DSaG3pK2ZE=",
+        1504176221.647604
+      ]
+    ],
+    "secret_key": "44a968f3-9dc3-4d0a-8b73-627d5ba00b70",
+    "allow_responsible_email": true,
+    "allow_participant_email": true,
+    "hide_contact_details": false,
+    "show_full_report": false
+  }
+},
+{
+  "model": "serviceform.member",
+  "pk": 295,
+  "fields": {
+    "forenames": "Teemu",
+    "surname": "Testaaja",
+    "street_address": "Testaajan tie 1 a 100",
+    "postal_code": "40520",
+    "city": "Jyv\u00e4skyl\u00e4",
+    "year_of_birth": null,
+    "email": "test@test.fi",
+    "email_verified": false,
+    "phone_number": "0501234123",
+    "membership_type": "external",
+    "organization": 1,
+    "auth_keys_hash_storage": [
+      [
+        "pbkdf2_sha256$36000$CLsgamXmkldJ$JiJGiQD0stKLFIQbj9ebJ6U5/Nym7iS7me3mVZLnAG4=",
+        1504185218.378962
+      ],
+      [
+        "pbkdf2_sha256$36000$VFkPJto34Ahu$ZctmH9nYAD4Lzq+GAsWta1tn5o7xLZBxeu9dIg+3AaM=",
+        1504887315.44603
+      ]
+    ],
+    "secret_key": "f86f5fa6-8558-4925-be10-1dccfe803c18",
+    "allow_responsible_email": true,
+    "allow_participant_email": true,
+    "hide_contact_details": false,
+    "show_full_report": false
+  }
+},
+{
+  "model": "serviceform.member",
+  "pk": 296,
+  "fields": {
+    "forenames": "Teemu",
+    "surname": "Testaaja",
+    "street_address": "Testaajan tie 1 a 100",
+    "postal_code": "40520",
+    "city": "Jyv\u00e4skyl\u00e4",
+    "year_of_birth": null,
+    "email": "test3@test.fi",
+    "email_verified": false,
+    "phone_number": "0501234123",
+    "membership_type": "external",
+    "organization": 1,
+    "auth_keys_hash_storage": [
+      [
+        "pbkdf2_sha256$36000$X5VqtXiAgJej$1e7j13UP1zL6IwXMC444WrvKkRnd2dNBpEMnafEYtCg=",
+        1504185689.116606
+      ],
+      [
+        "pbkdf2_sha256$36000$8knQIOk2LE1S$JdMUnTHdiwYCFi06Jd55fmFzPc1l/+XGC7pwlZrWiDk=",
+        1504185730.746119
+      ]
+    ],
+    "secret_key": "0232ca36-b156-44b8-9ff2-bd7eb888efd9",
+    "allow_responsible_email": true,
+    "allow_participant_email": true,
+    "hide_contact_details": false,
+    "show_full_report": false
+  }
+},
+{
+  "model": "serviceform.member",
+  "pk": 297,
+  "fields": {
+    "forenames": "Teemu",
+    "surname": "Testaaja",
+    "street_address": "Testaajan tie 1 a 100",
+    "postal_code": "40520",
+    "city": "Jyv\u00e4skyl\u00e4",
+    "year_of_birth": null,
+    "email": "test2@test.fi",
+    "email_verified": false,
+    "phone_number": "0501234123",
+    "membership_type": "external",
+    "organization": 1,
+    "auth_keys_hash_storage": [
+      [
+        "pbkdf2_sha256$36000$S1w0JdXIX6OP$cuI79o+UHRJx+fIk4cecOS57f78/kq5xm3vfD8PJQ3k=",
+        1504542368.150512
+      ],
+      [
+        "pbkdf2_sha256$36000$sSu9Ito3LKmj$R+6Q1c0WGeAe+/ehnWZInv2csdnNnhgDyD/kFDRNmP0=",
+        1504542591.217292
+      ],
+      [
+        "pbkdf2_sha256$36000$1imhCZXKKqWm$s9QL7s6uHjImQD/q/fbYfPbAxo/M67LHGKyBwrqcjSo=",
+        1504542697.027606
+      ]
+    ],
+    "secret_key": "4e69ddd1-befe-4dc7-b9c1-ebcfa441aa31",
+    "allow_responsible_email": true,
+    "allow_participant_email": true,
+    "hide_contact_details": false,
+    "show_full_report": false
+  }
+},
+{
+  "model": "serviceform.member",
+  "pk": 298,
+  "fields": {
+    "forenames": "Teemu",
+    "surname": "Testaaja",
+    "street_address": "Testaajan tie 1 a 100",
+    "postal_code": "40520",
+    "city": "Jyv\u00e4skyl\u00e4",
+    "year_of_birth": null,
+    "email": "test5@test.fi",
+    "email_verified": true,
+    "phone_number": "0501234123",
+    "membership_type": "external",
+    "organization": 1,
+    "auth_keys_hash_storage": [
+      [
+        "pbkdf2_sha256$36000$Ft1FrtKy5ZuD$kg3h6+Qs261Uo8krEHor+bluigL+uozBwrBKroDrias=",
+        1504542785.429754
+      ]
+    ],
+    "secret_key": "ae19bd35-515e-4aa3-b67c-4b6716cdad70",
+    "allow_responsible_email": true,
+    "allow_participant_email": true,
+    "hide_contact_details": false,
+    "show_full_report": false
+  }
+},
+{
+  "model": "serviceform.member",
+  "pk": 299,
+  "fields": {
+    "forenames": "Teemu",
+    "surname": "Testaaja",
+    "street_address": "Testaajan tie 1 a 100",
+    "postal_code": "40520",
+    "city": "Jyv\u00e4skyl\u00e4",
+    "year_of_birth": null,
+    "email": "testc@test.fi",
+    "email_verified": true,
+    "phone_number": "0501234123",
+    "membership_type": "external",
+    "organization": 1,
+    "auth_keys_hash_storage": [
+      [
+        "pbkdf2_sha256$36000$A8iDxrdbRN7Y$Ex/OZmKNSIw0CjqJ/j2WVPu7/mMCxaccHR9g+C2H63s=",
+        1504769412.208004
+      ],
+      [
+        "pbkdf2_sha256$36000$rkvFXlYoDQHr$gWo4OEwFfD2Yv+eSf+NoF/PeZTJMGWITLm0zszkXcis=",
+        1504783527.772472
+      ],
+      [
+        "pbkdf2_sha256$36000$ghHtvOGhPkzn$0SYr7YFsg9rxeXvq77Qns/YsZs1iFeEZyXljVO4i5Ts=",
+        1504783581.692031
+      ],
+      [
+        "pbkdf2_sha256$36000$qi6BjwpoKfeq$FLmmB327VEwXd97wTWTY3dQHZAMSgzbiQI15eKoQCpY=",
+        1504783750.438441
+      ],
+      [
+        "pbkdf2_sha256$36000$DavJyhA04v30$lRuZX3hTfarPSsuLMhkuNveywuF5cvSsKrbaj9ay/WY=",
+        1504784218.14247
+      ],
+      [
+        "pbkdf2_sha256$36000$ihEkck4JJDOH$qkxYGgqaJTaSA7cmULqVNuxgzdVMG0lvZKmD/7A3REw=",
+        1504784258.680176
+      ],
+      [
+        "pbkdf2_sha256$36000$j7vefvRDobnx$yeRw6DB4KK19QJNyH3hbXjip8IgOkASs+0XY2E8io+8=",
+        1504784323.46583
+      ]
+    ],
+    "secret_key": "d7d4e613-4ace-420d-ada8-cacb22337f49",
+    "allow_responsible_email": true,
+    "allow_participant_email": true,
+    "hide_contact_details": false,
+    "show_full_report": false
+  }
+},
+{
+  "model": "serviceform.member",
+  "pk": 300,
+  "fields": {
+    "forenames": "Teemu",
+    "surname": "Testaaja",
+    "street_address": "Testaajan tie 1 a 100",
+    "postal_code": "40520",
+    "city": "Jyv\u00e4skyl\u00e4",
+    "year_of_birth": null,
+    "email": "testasfd@test.fi",
+    "email_verified": false,
+    "phone_number": "0501234123",
+    "membership_type": "external",
+    "organization": 1,
+    "auth_keys_hash_storage": [],
+    "secret_key": "69582661-14b4-42a1-b79b-472e39fc1b13",
+    "allow_responsible_email": true,
+    "allow_participant_email": true,
+    "hide_contact_details": false,
+    "show_full_report": false
+  }
+},
+{
+  "model": "serviceform.member",
+  "pk": 301,
+  "fields": {
+    "forenames": "Teemu",
+    "surname": "Testaaja",
+    "street_address": "Testaajan tie 1 a 100",
+    "postal_code": "40520",
+    "city": "Jyv\u00e4skyl\u00e4",
+    "year_of_birth": null,
+    "email": "test23@test.fi",
+    "email_verified": false,
+    "phone_number": "0501234123",
+    "membership_type": "external",
+    "organization": 1,
+    "auth_keys_hash_storage": [],
+    "secret_key": "26afc537-671b-44cb-b9d0-a7a179fe8ef3",
+    "allow_responsible_email": true,
+    "allow_participant_email": true,
+    "hide_contact_details": false,
+    "show_full_report": false
+  }
+},
+{
+  "model": "serviceform.member",
+  "pk": 302,
+  "fields": {
+    "forenames": "Teemu",
+    "surname": "Testaaja",
+    "street_address": "Testaajan tie 1 a 100",
+    "postal_code": "40520",
+    "city": "Jyv\u00e4skyl\u00e4",
+    "year_of_birth": null,
+    "email": "tesasf++t@test.fi",
+    "email_verified": false,
+    "phone_number": "0501234123",
+    "membership_type": "external",
+    "organization": 1,
+    "auth_keys_hash_storage": [
+      [
+        "pbkdf2_sha256$36000$Ekf1GRkGM4v9$1SInt7oPa9CgzdSP5xCblZ8UEfvOkzunNgxO2DUApE4=",
+        1504787382.287312
+      ],
+      [
+        "pbkdf2_sha256$36000$z3h0lsiH4jKI$flARE3QUYJkC/G/kZPRgDqJ2QzqwUy31W7DUE8ebOJ8=",
+        1504789325.772022
+      ]
+    ],
+    "secret_key": "2c81b479-0b40-4a63-a1cd-60621ac0df57",
+    "allow_responsible_email": true,
+    "allow_participant_email": true,
+    "hide_contact_details": false,
+    "show_full_report": false
+  }
+},
+{
+  "model": "serviceform.member",
+  "pk": 303,
+  "fields": {
+    "forenames": "Teemu",
+    "surname": "Testaaja",
+    "street_address": "Testaajan tie 1 a 100",
+    "postal_code": "40520",
+    "city": "afds",
+    "year_of_birth": null,
+    "email": "",
+    "email_verified": false,
+    "phone_number": "0501234123",
+    "membership_type": "external",
+    "organization": 1,
+    "auth_keys_hash_storage": [],
+    "secret_key": "a0b243f0-9c63-4b41-a264-1533872b89ec",
+    "allow_responsible_email": true,
+    "allow_participant_email": true,
+    "hide_contact_details": false,
+    "show_full_report": false
+  }
+},
+{
   "model": "serviceform.formrevision",
   "pk": 5,
   "fields": {
@@ -16713,7 +17371,7 @@
   "pk": 1,
   "fields": {
     "password": "pbkdf2_sha256$36000$42zfOGpEbAxm$JihORaHg5OXyCE3oUFZb6mlA2ha/OQdbSoXJ/hXhApQ=",
-    "last_login": "2017-06-01T17:05:23.779Z",
+    "last_login": "2017-06-02T12:57:19.028Z",
     "is_superuser": true,
     "username": "tuomas",
     "first_name": "Tuomas",
