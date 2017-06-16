@@ -5,14 +5,18 @@ version: "2"
 services:
   redis:
     image: redis:3.2.8-alpine
-    ports:
-      - "6379:6379"
-
   db:
     image: postgres:9.6.2
-    ports:
-       - "5432:5432"
     environment:
      - POSTGRES_USER=serviceform
      - POSTGRES_DB=test_serviceform
      - POSTGRES_PASSWORD=django
+  tests:
+    build: .
+    image: serviceform
+    command: travis-tests ${CURRENT_DIR}
+    volumes:
+      - ${CURRENT_DIR}:${CURRENT_DIR}
+    links:
+      - db
+      - redis
