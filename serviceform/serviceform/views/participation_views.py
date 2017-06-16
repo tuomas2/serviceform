@@ -279,14 +279,12 @@ def authenticate_member(request: HttpRequest, member_id: int, password: str) -> 
 
 
 @login_required(login_url=settings.LOGIN_URL)
-def authenticate_member_mock(request: HttpRequest, member_id: int,
-                             next_view: str='member_main') -> HttpResponse:
-    # TODO
-    raise NotImplementedError('Needs to be implemented again.')
+def authenticate_member_mock(request: HttpRequest, member_id: int) -> HttpResponse:
+    next_url = request.GET.get('next', reverse('member_main'))
     utils.clean_session(request)
     member: models.Member = get_object_or_404(models.Member.objects, pk=member_id)
-    utils.user_has_serviceform_permission(request.user, member.form, raise_permissiondenied=True)
-    return authenticate_member(request, participant, next_view, email_verified=False)
+    utils.mark_as_authenticated_member(request, member)
+    return redirect(next_url)
 
 
 @require_authenticated_participation(check_flow=False)
