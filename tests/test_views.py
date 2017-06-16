@@ -343,10 +343,10 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
     res = client.get(f'/send_auth_link/{earlier_p.member.email}')
     assert res.status_code == Http.REDIR
     assert res.url == Pages.CONTACT
-    assert earlier_p.send_email_allowed
+    assert earlier_p.member.allow_participant_email
 
     email = models.EmailMessage.objects.get(created_at__gt=timestamp)
-    assert email.to_address == earlier_p.email
+    assert email.to_address == earlier_p.member.email
 
     res = client.post(Pages.CONTACT, user_data)
 

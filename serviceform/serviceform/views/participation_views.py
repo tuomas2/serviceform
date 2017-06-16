@@ -28,7 +28,8 @@ from django.http import HttpResponseRedirect, Http404, HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import ugettext_lazy as _
 
-from .decorators import require_authenticated_participation, require_published_form
+from .decorators import require_authenticated_participation, require_published_form, \
+    serviceform_from_session
 from .. import forms, models, utils
 
 logger = logging.getLogger(__name__)
@@ -207,7 +208,9 @@ def submitted(request: HttpRequest, participant: models.Participation) -> HttpRe
                   {'service_form': participant.form, 'participant': participant})
 
 
-def send_auth_link(request: HttpRequest, email: str) -> HttpResponse:
+@serviceform_from_session
+def send_auth_link(request: HttpRequest,
+                   serviceform: models.ServiceForm, email: str) -> HttpResponse:
     if not email:
         raise Http404
 
@@ -220,7 +223,7 @@ def send_auth_link(request: HttpRequest, email: str) -> HttpResponse:
     m.resend_auth_link()
     messages.add_message(request, messages.INFO,
                          _('Authentication link was sent to email address {}.').format(email))
-    return HttpResponseRedirect(reverse('contact_details', args=(participation.form.slug,)))
+    return HttpResponseRedirect(reverse('contact_details', args=(serviceform.slug,)))
 
 
 @require_authenticated_participation(check_flow=False)

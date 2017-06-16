@@ -52,6 +52,24 @@ def require_serviceform(function=None, check_form_permission=False, init_counter
     return actual_decorator
 
 
+def serviceform_from_session(function=None):
+    """
+    When filling form is started, particular serviceform needs to be
+    registered into session with utils.authenticate_to_serviceform.
+    This decorator gives serviceform as second positional argument to
+    the function.
+    """
+    def actual_decorator(func):
+        @wraps(func)
+        def wrapper(request: HttpRequest, *args, **kwargs):
+            serviceform = utils.get_authenticated_serviceform(request)
+            return func(request, serviceform, *args, **kwargs)
+        return wrapper
+    if function:
+        return actual_decorator(function)
+    return actual_decorator
+
+
 def require_authenticated_responsible(func):
     @wraps(func)
     def wrapper(request: HttpRequest, *args, **kwargs) -> HttpResponse:

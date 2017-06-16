@@ -457,6 +457,7 @@ def authenticate_to_serviceform(request: HttpRequest, serviceform: 'ServiceForm'
 def get_authenticated_serviceform(request: HttpRequest):
     from .models import ServiceForm
     serviceform_pk = request.session.get('serviceform_pk')
+    # TODO: if None -> crash? Should it be 404 then or something?
     return ServiceForm.objects.get(pk=serviceform_pk)
 
 
