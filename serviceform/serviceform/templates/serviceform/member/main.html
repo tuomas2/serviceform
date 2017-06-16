@@ -1,0 +1,20 @@
+<h1>Member page</h1>
+
+<h2>Participations:</h2>
+<ul>
+{% for p in member.participation_set.all %}
+<li>
+  {{ p }}
+</li>
+{% endfor %}
+</ul>
+
+<h2>Responsibilities: </h2>
+<ul>
+{% for f in member.forms_responsible %}
+<li>
+   {{f}}
+</li>
+{% endfor %}
+</ul>
+

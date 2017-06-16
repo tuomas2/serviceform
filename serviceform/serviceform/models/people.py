@@ -17,7 +17,7 @@
 # along with Serviceform.  If not, see <http://www.gnu.org/licenses/>.
 
 from enum import Enum
-from typing import Optional, TYPE_CHECKING, Union, Iterator
+from typing import Optional, TYPE_CHECKING, Union, Iterator, List
 import logging
 
 import time
@@ -40,6 +40,7 @@ from .. import utils, emails
 
 if TYPE_CHECKING:
     from .participation import Participation
+    from .serviceform import ServiceForm
 
 logger = logging.getLogger(__name__)
 
@@ -288,3 +289,10 @@ class Member(models.Model):
                        }
             return EmailMessage.make(self.form.bulk_email_to_responsibles, context, self.email)
 
+    @property
+    def forms_responsible(self) -> 'List[ServiceForm]':
+        """
+        Return list of serviceform where this member is assigned as responsible to a activity etc.
+        """
+        # TODO: implement this.
+        return []

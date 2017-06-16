@@ -29,7 +29,7 @@ from django.utils.translation import gettext_lazy as _
 from .. import models, forms
 from ..utils import user_has_serviceform_permission, fetch_participants, expire_auth_link, decode, \
     RevisionOptions
-from .decorators import require_serviceform, require_authenticated_responsible
+from .decorators import require_serviceform, require_authenticated_member
 
 
 #def authenticate_responsible_old(request: HttpRequest, uuid: str) -> HttpResponse:
@@ -109,7 +109,7 @@ def all_questions(request: HttpRequest, service_form: models.ServiceForm) -> Htt
                   {'service_form': service_form})
 
 
-@require_authenticated_responsible
+@require_authenticated_member
 def view_participant(request: HttpRequest, responsible: models.Member,
                      participant_id: int) -> HttpResponse:
     participant = get_object_or_404(models.Participation.objects, pk=participant_id)
@@ -137,7 +137,7 @@ def view_participant(request: HttpRequest, responsible: models.Member,
                    'anonymous': anonymous})
 
 
-@require_authenticated_responsible
+@require_authenticated_member
 def view_responsible(request: HttpRequest, auth_responsible: models.Member,
                      responsible_pk: int, form_slug: str) -> HttpResponse:
     responsible = models.Member.objects.get(pk=responsible_pk)
@@ -157,7 +157,7 @@ def view_responsible(request: HttpRequest, auth_responsible: models.Member,
                    'show_report_btn': True})
 
 
-@require_authenticated_responsible
+@require_authenticated_member
 def preview_form(request: HttpRequest, responsible: models.Member,
                  slug: str) -> HttpResponse:
     service_form = get_object_or_404(models.ServiceForm.objects, slug=slug)
@@ -168,7 +168,7 @@ def preview_form(request: HttpRequest, responsible: models.Member,
                   {'form': form, 'service_form': service_form, 'readonly': True})
 
 
-@require_authenticated_responsible
+@require_authenticated_member
 def preview_printable(request: HttpRequest, responsible: models.Member,
                       slug: str) -> HttpResponse:
     service_form = get_object_or_404(models.ServiceForm.objects, slug=slug)
@@ -178,7 +178,7 @@ def preview_printable(request: HttpRequest, responsible: models.Member,
                   {'form': service_form, 'preview': True, 'printable': True})
 
 
-@require_authenticated_responsible
+@require_authenticated_member
 def edit_responsible(request: HttpRequest,
                      responsible: models.Member) -> HttpResponse:
     if responsible is None:
@@ -194,7 +194,7 @@ def edit_responsible(request: HttpRequest,
                   {'form': form, 'service_form': service_form, 'responsible': responsible})
 
 
-@require_authenticated_responsible
+@require_authenticated_member
 def responsible_report(request: HttpRequest,
                        responsible: models.Member) -> HttpResponse:
     if responsible is None:
@@ -235,7 +235,7 @@ def invite(request: HttpRequest, serviceform_slug: str, **kwargs) -> HttpRespons
                       {'form': form, 'service_form': service_form})
 
 
-@require_authenticated_responsible
+@require_authenticated_member
 def to_full_report(request: HttpRequest, responsible: models.Member) -> HttpResponse:
     if not responsible.show_full_report:
         raise PermissionDenied
@@ -250,6 +250,7 @@ def unsubscribe(request: HttpRequest, secret_id: str) -> HttpResponse:
                   {'responsible': responsible,
                    'service_form': responsible.form})
 
-# TODO
-def member_main(request: HttpRequest, *args, **kwargs):
-    raise Http404
+
+@require_authenticated_member
+def member_main(request: HttpRequest, member: models.Member):
+    return render(request, 'serviceform/member/main.html', {'member': member})

@@ -70,14 +70,12 @@ def serviceform_from_session(function=None):
     return actual_decorator
 
 
-def require_authenticated_responsible(func):
+def require_authenticated_member(func):
     @wraps(func)
     def wrapper(request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        responsible = utils.get_authenticated_member(request)
-        if responsible:
-            request.service_form = responsible.form
-        if request.user.pk or responsible:
-            return func(request, responsible, *args)
+        member = utils.get_authenticated_member(request)
+        if request.user.pk or member:
+            return func(request, member, *args)
         else:
             raise PermissionDenied
 
