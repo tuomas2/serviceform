@@ -271,15 +271,16 @@ class Member(models.Model):
         if self.allow_responsible_email:
             context = {'responsible': str(self),
                        'participant': str(participant),
-                       'form': str(self.form),
+                       'form': str(participant.form),
                        'url': self.make_new_auth_url(),
-                       'contact': self.form.responsible.contact_display,
+                       'contact': participant.form.responsible.contact_display,
                        'list_unsubscribe': self.list_unsubscribe_link,
                        }
 
-            EmailMessage.make(self.form.email_to_responsibles, context, self.email)
+            EmailMessage.make(participant.form.email_to_responsibles, context, self.email)
 
     def send_bulk_mail(self) -> 'Optional[EmailMessage]':
+        # FIXME
         if self.allow_responsible_email:
             context = {'responsible': str(self),
                        'form': str(self.form),

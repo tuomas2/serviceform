@@ -253,7 +253,7 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
                 continue
 
             email = emails.get(to_address=r.email)
-            url = urlparse(email.context_dict['url']).path
+            url = get_path(email.context_dict['url'])
             client1.session.clear()
 
             res = client1.get(url)
@@ -592,7 +592,7 @@ def test_responsible_personal_report(client1: Client, report_settings, responsib
         assert res.url == Pages.RESPONSIBLE_RESEND_LINK
         email = models.EmailMessage.objects.get(created_at__gt=timestamp)
         assert email.to_address == resp.email
-        auth_url = urlparse(email.context_dict['url']).path
+        auth_url = get_path(email.context_dict['url'])
         res = client.get(auth_url)
 
     assert res.status_code == Http.REDIR
