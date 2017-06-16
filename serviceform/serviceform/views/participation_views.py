@@ -17,7 +17,6 @@
 # along with Serviceform.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from typing import Optional
 
 from django.conf import settings
 from django.contrib import messages
@@ -29,7 +28,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import ugettext_lazy as _
 
 from .decorators import require_authenticated_participation, require_published_form, \
-    serviceform_from_session
+    serviceform_from_session, require_authenticated_member
 from .. import forms, models, utils
 
 logger = logging.getLogger(__name__)
@@ -314,3 +313,11 @@ def unsubscribe(request: HttpRequest, secret_id: str) -> HttpResponse:
                    'service_form': participant.form})
 
 
+# see update_participation...
+#@require_authenticated_member
+#def member_update_form(request: HttpRequest, member: models.Member,
+#                       serviceform_slug: str) -> HttpResponse:
+#    participation = member.participation_set.get(form_revision__form__slug=serviceform_slug)
+#    # TODO: should create better entry point for updating form.
+#    return render(request, 'serviceform/participation/preview_view.html',
+#                  {'service_form': participation.form, 'participant': participation})

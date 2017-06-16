@@ -110,6 +110,7 @@ report_urls = [
         kwargs={'title': _('Log out'), 'icon': 'sign-out', 'right': True, 'arglist': ()}),
 ]
 
+# TODO: rename this as member logged in views
 anonymous_report_urls = [
     url(r'^for_responsible/$', reports_views.responsible_report, name='responsible_report',
         kwargs={'title': _('Your report'), 'arglist': ()}),
@@ -177,11 +178,12 @@ urlpatterns = [u for u in
                   url(r'^logout/$', reports_views.logout_view, name='logout'),
                   url(r'^send_auth_link/(.*)$', participation_views.send_auth_link,
                       name='send_auth_link'),
-                  url(r'^participant/delete/$', participation_views.delete_participation,
+                  url(r'^member/forms/([\w-]+)/participant/delete/$', participation_views.delete_participation,
                       name='delete_participation'),
                   url(r'^([\w-]+)/$', login_views.password_login, name='password_login'),
                   url(r'^member/forms/([\w-]+)/participation/$', participation_views.participation,
                       name='participation', kwargs={'cat_num': 0}),
+                  # TODO: remove 'update_participation' from url
                   url(r'^member/forms/([\w-]+)/update_participation/$',
                       participation_views.update_participation,
                       name='update_participation'),

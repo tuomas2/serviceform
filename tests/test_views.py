@@ -16,6 +16,10 @@ from serviceform.serviceform import models
 
 SLUG = 'jklvapis'
 
+def get_path(full_url):
+    parser_url = urlparse(full_url)
+    return f'{parser_url.path}?{parser_url.query}'
+
 def test_hit_admin_pages(report_settings, db, admin_client: Client):
     res = admin_client.get('/admin/')
     assert res.status_code == Http.OK
@@ -124,6 +128,7 @@ class Pages:
     LOGIN_SEND_RESPONSIBLE_LINK = f'/{SLUG}/send_responsible_link/'
 
 
+    UPDATE_PARTICIPATION = rp('update_participation')
     CONTACT = rp('contact_details')
     EMAIL_VERIFICATION = rp('email_verification')
     PARTICIPATION = rp('participation')
@@ -149,7 +154,7 @@ class Pages:
 
     REPORT_RESPONSIBLE = r('responsible_report') # "/for_responsible/"
 
-    DELETE_PARTICIPATION = r('delete_participation') #'/participant/delete/'
+    DELETE_PARTICIPATION = rp('delete_participation') #'/participant/delete/'
     # TODO fix this
     RESPONSIBLE_MOCK_AUTH = '/anonymous/authenticate_responsible_mock/%d/'
     #RESPONSIBLE_MOCK_AUTH = '/authenticate_responsible_mock/%d/'
@@ -381,7 +386,8 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
         assert email.created_at > timestamp
         assert email.to_address == EMAIL_ADDRESS
 
-        url = urlparse(email.context_dict['url']).path
+        url = get_path(email.context_dict['url'])
+
         res = client.get(url)
         assert res.status_code == Http.REDIR
 
@@ -451,11 +457,17 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
 
     # Check updating flow.
     email = emails.get(to_address=EMAIL_ADDRESS)
-    update_url = urlparse(email.context_dict['url']).path
+
+    update_url = get_path(email.context_dict['url'])
 
     res = client.get(update_url)
     assert res.status_code == Http.REDIR
+    assert res.url == Pages.UPDATE_PARTICIPATION
+    res = client.get(Pages.UPDATE_PARTICIPATION)
+
+    assert res.status_code == Http.REDIR
     assert res.url == Pages.CONTACT
+
     res = client.get(Pages.CONTACT)
     assert res.status_code == Http.OK
     if flow_by_categories and allow_skip_categories:
@@ -465,8 +477,8 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
     res = client.post(Pages.CONTACT, user_data_mod)
     assert res.status_code == Http.REDIR
     assert res.url == Pages.PARTICIPATION
-    p.refresh_from_db()
-    assert p.city == 'Modified city'
+    p.member.refresh_from_db()
+    assert p.member.city == 'Modified city'
     res = client.get(Pages.PARTICIPATION)
     assert res.status_code == Http.OK
     participation_data.update(
@@ -534,7 +546,16 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
     # Let's get in once more and delete participation
     res = client.get(update_url)
     assert res.status_code == Http.REDIR
-    res = client.get(res.url)
+
+    assert res.url == Pages.UPDATE_PARTICIPATION
+    res = client.get(Pages.UPDATE_PARTICIPATION)
+
+    assert res.status_code == Http.REDIR
+    assert res.url == Pages.CONTACT
+
+    res = client.get(Pages.CONTACT)
+
+
     assert res.status_code == Http.OK
     res = client.get(Pages.DELETE_PARTICIPATION)
     assert res.status_code == Http.OK
