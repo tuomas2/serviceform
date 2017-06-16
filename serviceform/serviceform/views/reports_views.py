@@ -196,14 +196,15 @@ def edit_responsible(request: HttpRequest,
 
 @require_authenticated_member
 def responsible_report(request: HttpRequest,
-                       responsible: models.Member) -> HttpResponse:
+                       responsible: models.Member,
+                       serviceform_slug: str) -> HttpResponse:
     if responsible is None:
         raise PermissionDenied
-    service_form = responsible.form
+    service_form = get_object_or_404(models.ServiceForm.objects, slug=serviceform_slug)
     service_form.init_counters(all_responsibles=True)
     fetch_participants(service_form, revision_name=RevisionOptions.ALL)
     return render(request, 'serviceform/reports/responsible_anonymous.html',
-                  {'service_form': responsible.form, 'responsible': responsible})
+                  {'service_form': service_form, 'responsible': responsible})
 
 
 def logout_view(request: HttpRequest, **kwargs) -> HttpResponse:

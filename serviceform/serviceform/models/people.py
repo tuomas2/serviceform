@@ -269,10 +269,11 @@ class Member(models.Model):
 
     def send_responsibility_email(self, participant: 'Participation') -> None:
         if self.allow_responsible_email:
+            next = reverse('responsible_report', args=(participant.form.slug,))
             context = {'responsible': str(self),
                        'participant': str(participant),
                        'form': str(participant.form),
-                       'url': self.make_new_auth_url(),
+                       'url': self.make_new_auth_url() + f'?next={next}',
                        'contact': participant.form.responsible.contact_display,
                        'list_unsubscribe': self.list_unsubscribe_link,
                        }

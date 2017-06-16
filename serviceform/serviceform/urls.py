@@ -93,7 +93,7 @@ report_urls = [
     url(r'^report/([\w-]+)/all_questions/$', reports_views.all_questions, name='all_questions',
         kwargs={'title': _('Answers')}),
     DummyUrl(name='responsible_report',
-             kwargs={'title': _('My report'), 'arglist': (), 'icon': 'bullseye',
+             kwargs={'title': _('My report'), 'icon': 'bullseye',
                      'require': (Requires.RESPONSIBLE_LOGGED_IN,)}),
 
     # Invite users
@@ -112,8 +112,8 @@ report_urls = [
 
 # TODO: rename this as member logged in views
 anonymous_report_urls = [
-    url(r'^for_responsible/$', reports_views.responsible_report, name='responsible_report',
-        kwargs={'title': _('Your report'), 'arglist': ()}),
+    url(r'^member/forms/([\w-]+)/responsibilities/$', reports_views.responsible_report,
+        name='responsible_report', kwargs={'title': _('Your report')}),
     url(r'^for_responsible/edit_details/$', reports_views.edit_responsible,
         name='edit_responsible',
         kwargs={'title': _('Edit your contact details'), 'icon': 'pencil-square-o',

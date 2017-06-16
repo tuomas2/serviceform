@@ -152,7 +152,7 @@ class Pages:
                           [rp('participation', d) for d in range(7)] + \
                           [QUESTIONS, PREVIEW, SUBMITTED]
 
-    REPORT_RESPONSIBLE = r('responsible_report') # "/for_responsible/"
+    REPORT_RESPONSIBLE = rp('responsible_report') # "/for_responsible/"
 
     DELETE_PARTICIPATION = rp('delete_participation') #'/participant/delete/'
     # TODO fix this
@@ -187,7 +187,8 @@ class Pages:
 @pytest.mark.parametrize('flow_by_categories', [False, True])
 @pytest.mark.parametrize('allow_skip_categories', [False, True])
 # Check if email is sent to responsibility persons
-@pytest.mark.parametrize('emailing_time_now', [False, True])
+#@pytest.mark.parametrize('emailing_time_now', [False, True])
+@pytest.mark.parametrize('emailing_time_now', [True])
 # Check if email needs to be given in contact info
 @pytest.mark.parametrize('use_admin_user', [False, True])
 @pytest.mark.parametrize('send_email_allowed', [True, False])
