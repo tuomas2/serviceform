@@ -5,6 +5,8 @@ from django.core.cache import caches
 from django.core.management import call_command
 from django.db import connection
 import pytest
+from django.test import Client
+
 from serviceform.serviceform import models
 from serviceform.serviceform.models import Member
 
@@ -57,9 +59,9 @@ def responsible(serviceform: models.ServiceForm):
     yield Member.objects.get(pk=89)
 
 @pytest.fixture
-def client1(client):
-    return client
+def client1():
+    return Client()
 
 @pytest.fixture
-def client2(client):
-    return client
+def client2():
+    return Client()
