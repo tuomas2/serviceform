@@ -187,8 +187,7 @@ class Pages:
 @pytest.mark.parametrize('flow_by_categories', [False, True])
 @pytest.mark.parametrize('allow_skip_categories', [False, True])
 # Check if email is sent to responsibility persons
-#@pytest.mark.parametrize('emailing_time_now', [False, True])
-@pytest.mark.parametrize('emailing_time_now', [True])
+@pytest.mark.parametrize('emailing_time_now', [False, True])
 # Check if email needs to be given in contact info
 @pytest.mark.parametrize('use_admin_user', [False, True])
 @pytest.mark.parametrize('send_email_allowed', [True, False])
