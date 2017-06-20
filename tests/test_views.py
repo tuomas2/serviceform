@@ -455,7 +455,6 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
     assert p.status == models.Participation.STATUS_FINISHED
     assert_forbidden()
 
-
     # Check updating flow.
     email = emails.get(to_address=EMAIL_ADDRESS)
 

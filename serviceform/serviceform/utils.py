@@ -69,19 +69,14 @@ class DelayedKeyboardInterrupt(object):
             raise KeyboardInterrupt()
 
 
-def _get_ident(request: HttpRequest) -> str:
-    service_form = getattr(request, 'service_form', '')
-    if not service_form:
-        logger.error('No serviceform in _get_ident!?')
-
+def _get_ident(request: HttpRequest, serviceform: 'ServiceForm') -> str:
     if request.user.pk:
         ident = 'user_%s' % request.user.pk
     else:
-        resp = get_authenticated_member(request)
-        ident = 'responsible_%s' % resp.pk if resp else 'anonymous'
-        service_form = resp.form if resp else None
+        member = get_authenticated_member(request)
+        ident = 'responsible_%s' % member.pk if member else 'anonymous'
 
-    return f"{ident}_serviceform_{getattr(service_form, 'pk', '')}"
+    return f"{ident}_serviceform_{getattr(serviceform, 'pk', '')}"
 
 
 class RevisionOptions:
@@ -92,17 +87,20 @@ class RevisionOptions:
 settings_defaults = {'revision': RevisionOptions.CURRENT}
 
 
-def get_report_settings(request: HttpRequest, parameter: str=None) -> Union[dict, str]:
+def get_report_settings(request: HttpRequest, serviceform: 'ServiceForm',
+                        parameter: str=None) -> Union[dict, str]:
     cache = caches['persistent']
-    report_settings = cache.get('settings_for_%s' % _get_ident(request), settings_defaults.copy())
+    report_settings = cache.get('settings_for_%s' % _get_ident(request, serviceform),
+                                settings_defaults.copy())
     if parameter:
         return report_settings.get(parameter)
     return report_settings
 
 
-def set_report_settings(request: HttpRequest, report_settings: dict) -> None:
+def set_report_settings(request: HttpRequest, serviceform: 'ServiceForm',
+                        report_settings: dict) -> None:
     cache = caches['persistent']
-    cache.set('settings_for_%s' % _get_ident(request), report_settings)
+    cache.set('settings_for_%s' % _get_ident(request, serviceform), report_settings)
 
 
 def user_has_serviceform_permission(user: settings.AUTH_USER_MODEL, service_form: 'ServiceForm',

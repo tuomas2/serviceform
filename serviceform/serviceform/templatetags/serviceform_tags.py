@@ -71,26 +71,29 @@ def has_responsible(item: 'AbstractServiceFormItem', responsible: 'Member') -> b
 @register.assignment_tag(takes_context=True)
 def participation_items(context: Context, item: 'Union[Activity, ActivityChoice]')\
         -> 'Sequence[ParticipationActivity, ParticipationActivityChoice]':
-    revision_name = utils.get_report_settings(context['request'], 'revision')
+    revision_name = utils.get_report_settings(context['request'], context['service_form'],
+                                              'revision')
     return item.participation_items(revision_name)
 
 
 @register.assignment_tag(takes_context=True)
 def questionanswers(context: Context, item: 'Question') -> 'Sequence[QuestionAnswer]':
-    revision_name = utils.get_report_settings(context['request'], 'revision')
+    revision_name = utils.get_report_settings(context['request'], context['service_form'],
+                                              'revision')
     return item.questionanswers(revision_name)
 
 
 @register.assignment_tag(takes_context=True)
 def all_revisions(context: Context) -> bool:
-    revision_name = utils.get_report_settings(context['request'], 'revision')
+    revision_name = utils.get_report_settings(context['request'], context['service_form'],
+                                              'revision')
     return revision_name == utils.RevisionOptions.ALL
 
 
 @register.assignment_tag(takes_context=True)
 def participants(context: Context) -> 'Sequence[Participation]':
-    revision_name = utils.get_report_settings(context['request'], 'revision')
     service_form = context.get('service_form')
+    revision_name = utils.get_report_settings(context['request'], service_form, 'revision')
 
     qs = Participation.objects.filter(
         form_revision__form=service_form,

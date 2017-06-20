@@ -40,7 +40,7 @@ def require_serviceform(function=None, check_form_permission=False, init_counter
             if init_counters:
                 service_form.init_counters(all_responsibles)
             if fetch_participants:
-                revision_name = utils.get_report_settings(request, 'revision')
+                revision_name = utils.get_report_settings(request, service_form, 'revision')
                 utils.fetch_participants(service_form, revision_name=revision_name)
             func_ = require_form_permissions(func) if check_form_permission else func
             return func_(request, service_form, *args)

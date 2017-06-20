@@ -63,7 +63,7 @@ class ReportSettingsForm(Form):
                  request: HttpRequest, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.request = request
-        self.instance = service_form
+        self.instance: models.ServiceForm = service_form
 
         helper = self.helper = MyFormHelper(self)
         rev_choices = [(rev.name, rev.name) for rev in service_form.formrevision_set.all()]
@@ -77,14 +77,14 @@ class ReportSettingsForm(Form):
         helper.layout.append(Submit('submit', _('Save settings')))
 
     def set_initial_data(self) -> None:
-        report_settings = utils.get_report_settings(self.request)
+        report_settings = utils.get_report_settings(self.request, self.instance)
         for name, f in self.fields.items():
             val = report_settings.get(name)
             f.initial = val
 
     def save(self) -> None:
         report_settings = {name: self.cleaned_data[name] for name in self.fields.keys()}
-        utils.set_report_settings(self.request, report_settings)
+        utils.set_report_settings(self.request, self.instance, report_settings)
 
 
 class PasswordForm(Form):
