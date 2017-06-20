@@ -648,13 +648,13 @@ def test_report_settings_and_logout(admin_client: Client):
 
 
 @pytest.mark.parametrize('send_existing', [False, True])
-@pytest.mark.parametrize('emails', ['test@test.fi, test2@test.fi', 'test@test.fi\ntest2@test.fi',
-                                    'test@test.fi test2@test.fi', 'test@test.fi test2@test.fi'])
+@pytest.mark.parametrize('emails', ['test@testna.fi, test2@testna.fi', 'test@testna.fi\ntest2@testna.fi',
+                                    'test@testna.fi test2@testna.fi', 'test@testna.fi test2@testna.fi'])
 def test_invite_success(serviceform, admin_client: Client, emails, send_existing):
     res = admin_client.get(Pages.INVITE)
     assert res.status_code == Http.OK
     part_email = 'timo.ahlroth@email.com'
-    participant = models.Participation.objects.get(email=part_email)
+    participant = models.Participation.objects.get(member__email=part_email)
     revision = models.FormRevision.objects.create(name='old', form=serviceform)
 
     participant.form_revision = revision
@@ -672,11 +672,11 @@ def test_invite_success(serviceform, admin_client: Client, emails, send_existing
 
 def test_unsubscribe_participant(client: Client, participant: models.Participation):
     from serviceform.serviceform.utils import encode
-    assert participant.send_email_allowed
+    assert participant.member.allow_participant_email
     res = client.get(Pages.UNSUBSCRIBE_PARTICIPANT % encode(participant.pk))
     assert res.status_code == Http.OK
-    participant.refresh_from_db()
-    assert not participant.send_email_allowed
+    participant.member.refresh_from_db()
+    assert not participant.member.allow_participant_email
 
 
 def test_unsubscribe_responsible(client: Client, responsible: models.Member):

@@ -429,7 +429,8 @@ class ServiceForm(AbstractServiceFormItem):
         """
         logger.info('Invite user %s %s', self, email)
 
-        participant = Participation.objects.filter(email=email, form_revision__form=self).first()
+        participant = Participation.objects.filter(
+            member__email=email, form_revision__form=self).first()
         if participant:
             if old_participants and participant.form_revision != self.current_revision:
                 rv = participant.send_participant_email(Participation.EmailIds.INVITE)
@@ -438,7 +439,9 @@ class ServiceForm(AbstractServiceFormItem):
             else:
                 return self.InviteUserResponse.USER_EXISTS
         else:
-            participant = Participation.objects.create(email=email,
+            member, created = Member.objects.get_or_create(organization=self.organization,
+                                                           email=email)
+            participant = Participation.objects.create(member=member,
                                                        form_revision=self.current_revision,
                                                        status=Participation.STATUS_INVITED)
             participant.send_participant_email(Participation.EmailIds.INVITE)
