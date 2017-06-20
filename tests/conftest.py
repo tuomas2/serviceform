@@ -52,7 +52,7 @@ def serviceform(db):
 
 @pytest.fixture
 def participant(serviceform: models.ServiceForm):
-    yield serviceform.current_revision.participant_set.get(pk=89)
+    yield serviceform.current_revision.participation_set.get(pk=89)
 
 @pytest.fixture
 def responsible(serviceform: models.ServiceForm):

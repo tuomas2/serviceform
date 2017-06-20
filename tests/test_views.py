@@ -139,22 +139,20 @@ class Pages:
     REPORT_RESPONSIBLE = rp('responsible_report') # "/for_responsible/"
 
     DELETE_PARTICIPATION = rp('delete_participation') #'/participant/delete/'
-    # TODO fix this
-    RESPONSIBLE_MOCK_AUTH = '/anonymous/authenticate_responsible_mock/%d/'
-    #RESPONSIBLE_MOCK_AUTH = '/authenticate_responsible_mock/%d/'
-    RESPONSIBLE_REPORT = '/for_responsible/'
-    RESPONSIBLE_EDIT = '/for_responsible/edit_details/'
+    MEMBER_MAIN = r('member_main')
+    RESPONSIBLE_REPORT = rp('responsible_report') #'/member/forms/{SLUG}/responsibilities/'
+    RESPONSIBLE_EDIT = r('edit_responsible') #'/for_responsible/edit_details/'
 
-    RESPONSIBLE_RESEND_LINK = f'/{SLUG}/send_responsible_link/'
-    RESPONSIBLE_TO_FULL_RAPORT = '/for_responsible/to_full_report/'
-    FULL_REPORT_RESPONSIBLES = f'/report/{SLUG}/'
-    FULL_REPORT_PARTICIPANTS = f"/report/{SLUG}/all_participants/"
-    FULL_REPORT_ACTIVITIES = f"/report/{SLUG}/all_activities/"
-    FULL_REPORT_QUESTIONS = f"/report/{SLUG}/all_questions/"
-    FULL_REPORT_SETTINGS = f"/report/{SLUG}/settings/"
-    LOGOUT = f'/logout/'
+    RESPONSIBLE_RESEND_LINK = rp('send_responsible_email') #f'/{SLUG}/send_auth_link/'
+    RESPONSIBLE_TO_FULL_RAPORT = rp('to_full_report') #'/for_responsible/to_full_report/'
+    FULL_REPORT_RESPONSIBLES = rp('report') #f'/report/{SLUG}/'
+    FULL_REPORT_PARTICIPANTS = rp('all_participants') #f"/report/{SLUG}/all_participants/"
+    FULL_REPORT_ACTIVITIES = rp('all_activities') #f"/report/{SLUG}/all_activities/"
+    FULL_REPORT_QUESTIONS = rp('all_questions') #f"/report/{SLUG}/all_questions/"
+    FULL_REPORT_SETTINGS = rp('settings') #f"/report/{SLUG}/settings/"
+    LOGOUT = r('logout') #f'/logout/'
 
-    INVITE = f"/invite/{SLUG}/"
+    INVITE = rp('invite') # f"/invite/{SLUG}/"
     UNSUBSCRIBE_PARTICIPANT = '/email/unsubscribe_participant/%s/'
     UNSUBSCRIBE_RESPONSIBLE = '/email/unsubscribe_responsible/%s/'
 
@@ -563,7 +561,7 @@ def test_responsible_personal_report(client1: Client, report_settings, responsib
 
     if mock_login:
         client = admin_client
-        res = client.get(Pages.RESPONSIBLE_MOCK_AUTH % resp.pk)
+        res = client.get(r('authenticate_mock', resp.pk))
     else:
         client = client1
         res = client.get(Pages.RESPONSIBLE_RESEND_LINK)
@@ -579,7 +577,8 @@ def test_responsible_personal_report(client1: Client, report_settings, responsib
         res = client.get(auth_url)
 
     assert res.status_code == Http.REDIR
-    assert res.url == Pages.RESPONSIBLE_REPORT
+    assert res.url == Pages.MEMBER_MAIN
+
     res = client.get(Pages.RESPONSIBLE_REPORT)
     assert res.status_code == Http.OK
     res = client.get(Pages.RESPONSIBLE_EDIT)
@@ -619,7 +618,7 @@ def test_responsible_personal_report(client1: Client, report_settings, responsib
 
     res = client.get(Pages.LOGOUT)
     assert res.status_code == Http.REDIR
-    assert res.url == Pages.LOGIN
+    assert res.url == Pages.MAIN_PAGE
 
     res = client.get(Pages.FULL_REPORT_PARTICIPANTS)
     assert res.status_code == Http.REDIR

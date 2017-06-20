@@ -118,8 +118,9 @@ anonymous_report_urls = [
         name='edit_responsible',
         kwargs={'title': _('Edit your contact details'), 'icon': 'pencil-square-o',
                 'arglist': ()}),
-    url(r'^for_responsible/to_full_report/$', reports_views.to_full_report, name='to_full_report',
-        kwargs={'title': _('To full report'), 'icon': 'bullseye', 'arglist': (),
+    url(r'^for_responsible/([\w-]+)/to_full_report/$', reports_views.to_full_report,
+        name='to_full_report',
+        kwargs={'title': _('To full report'), 'icon': 'bullseye',
                 'require': (Requires.ACCESS_FULL_REPORT,)}),
     url(r'^member/$', reports_views.member_main, name='member_main',
         kwargs={'title': _('Member main'), 'arglist': ()}), # TODO view
@@ -130,6 +131,7 @@ anonymous_report_urls = [
 
 login_urls = [
     DummyUrl(name='password_login', kwargs={'title': _('Password login'), 'icon': 'sign-in'}),
+    # TODO: rename view
     url(r'^([\w-]+)/send_auth_link/', login_views.send_member_email,
         name='send_responsible_email', kwargs={'title': _('Former participants and responsibles'),
                                                'icon': 'user'}),

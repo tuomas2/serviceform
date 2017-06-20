@@ -28,7 +28,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .. import models, forms
 from ..utils import user_has_serviceform_permission, fetch_participants, expire_auth_link, decode, \
-    RevisionOptions
+    RevisionOptions, get_authenticated_member
 from .decorators import require_serviceform, require_authenticated_member
 
 
@@ -178,12 +178,12 @@ def preview_printable(request: HttpRequest, responsible: models.Member,
                   {'form': service_form, 'preview': True, 'printable': True})
 
 
+# TODO: rename view and variables
 @require_authenticated_member
 def edit_responsible(request: HttpRequest,
                      responsible: models.Member) -> HttpResponse:
     if responsible is None:
         raise PermissionDenied
-    service_form = responsible.form
     form = forms.ResponsibleForm(instance=responsible)
     if request.method == 'POST':
         form = forms.ResponsibleForm(request.POST, instance=responsible)
@@ -191,7 +191,7 @@ def edit_responsible(request: HttpRequest,
             form.save()
             messages.info(request, _('Saved contact details'))
     return render(request, 'serviceform/reports/edit_responsible.html',
-                  {'form': form, 'service_form': service_form, 'responsible': responsible})
+                  {'form': form, 'responsible': responsible})
 
 
 @require_authenticated_member
@@ -208,12 +208,8 @@ def responsible_report(request: HttpRequest,
 
 
 def logout_view(request: HttpRequest, **kwargs) -> HttpResponse:
-    responsible_pk = request.session.pop('authenticated_responsibility', None)
     logout(request)
     messages.info(request, _('You have been logged out'))
-    if responsible_pk:
-        responsible = models.Member.objects.get(pk=responsible_pk)
-        return HttpResponseRedirect(reverse('password_login', args=(responsible.form.slug,)))
     return HttpResponseRedirect(reverse('main_page'))
 
 
@@ -236,20 +232,24 @@ def invite(request: HttpRequest, serviceform_slug: str, **kwargs) -> HttpRespons
                       {'form': form, 'service_form': service_form})
 
 
+#TODO: make authentication per-form
 @require_authenticated_member
-def to_full_report(request: HttpRequest, responsible: models.Member) -> HttpResponse:
-    if not responsible.show_full_report:
+def to_full_report(request: HttpRequest, member: models.Member,
+                   serviceform_slug: str) -> HttpResponse:
+    if not member.show_full_report:
         raise PermissionDenied
-    return redirect('report', responsible.form.slug)
+
+    #serviceform = models.ServiceForm.objects.get(slug=serviceform_slug)
+
+    return redirect('report', serviceform_slug)
 
 
 def unsubscribe(request: HttpRequest, secret_id: str) -> HttpResponse:
-    responsible = get_object_or_404(models.Member.objects, pk=decode(secret_id))
-    responsible.send_email_notifications = False
-    responsible.save(update_fields=['send_email_notifications'])
+    responsible: models.Member = get_object_or_404(models.Member.objects, pk=decode(secret_id))
+    responsible.allow_responsible_email = False
+    responsible.save(update_fields=['allow_responsible_email'])
     return render(request, 'serviceform/login/unsubscribe_responsible.html',
-                  {'responsible': responsible,
-                   'service_form': responsible.form})
+                  {'responsible': responsible})
 
 
 @require_authenticated_member

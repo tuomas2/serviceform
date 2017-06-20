@@ -305,9 +305,9 @@ def delete_participation(request: HttpRequest, participant: models.Participation
 
 
 def unsubscribe(request: HttpRequest, secret_id: str) -> HttpResponse:
-    participant = get_object_or_404(models.Participation.objects, pk=decode(secret_id))
-    participant.send_email_allowed = False
-    participant.save(update_fields=['send_email_allowed'])
+    participant = get_object_or_404(models.Participation.objects, pk=utils.decode(secret_id))
+    participant.member.allow_participant_email = False
+    participant.member.save(update_fields=['allow_participant_email'])
     return render(request, 'serviceform/login/unsubscribe_participant.html',
                   {'participant': participant,
                    'service_form': participant.form})
