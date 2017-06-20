@@ -108,6 +108,7 @@ class PasswordForm(Form):
         return self.cleaned_data
 
 
+#TODO: deprecated, remove
 class ParticipantSendEmailForm(Form):
     email = fields.EmailField(max_length=128, label=_('Email'))
 
@@ -143,7 +144,7 @@ class ParticipantSendEmailForm(Form):
         return success
 
 
-class ResponsibleSendEmailForm(Form):
+class MemberSendEmailForm(Form):
     email = fields.EmailField(max_length=128, label=_('Email'))
 
     def __init__(self, service_form: models.ServiceForm, request: HttpRequest,
@@ -158,23 +159,23 @@ class ResponsibleSendEmailForm(Form):
     def clean_email(self) -> str:
         email = self.cleaned_data['email']
         if email and 'email' in self.changed_data:
-            responsible = models.Member.objects.filter(email=email,
-                                                       form=self.instance).first()
-            if not responsible:
+            member = models.Member.objects.filter(
+                email=email, organization=self.instance.organization).first()
+            if not member:
                 raise ValidationError(
-                    _('There were no responsible with email address {}').format(email))
+                    _('There were no user with email address {}').format(email))
         return email
 
     def save(self) -> Optional[models.EmailMessage]:
-        responsible = models.Member.objects.filter(email=self.cleaned_data['email'],
-                                                   form=self.instance).first()
-        success = responsible.resend_auth_link()
+        member = models.Member.objects.filter(
+            email=self.cleaned_data['email'], organization=self.instance.organization).first()
+        success = member.resend_auth_link()
         if success:
             messages.info(self.request,
-                          _('Access link sent to email address {}').format(responsible.email))
+                          _('Access link sent to email address {}').format(member.email))
         else:
             messages.error(self.request, _('Email could not be sent to email address {}').format(
-                responsible.email))
+                member.email))
         return success
 
 

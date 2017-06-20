@@ -223,6 +223,7 @@ def init_serviceform_counters(service_form: 'ServiceForm', all_responsibles: boo
 
 
 def shuffle_person_data(service_form: 'ServiceForm') -> None:
+    raise NotImplementedError('This needs to be fixed')
     from .models import Participation, Member, Question
     letters = len(string.ascii_letters)
     forenames = set()

@@ -301,7 +301,7 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
             form.base_fields['current_revision'].queryset = models.FormRevision.objects.filter(
                 form=obj)
 
-            emailtemplates = models.EmailTemplate.objects.filter(form=obj)
+            emailtemplates = models.EmailTemplate.objects.filter(organization=obj.organization)
 
             for name, field in form.base_fields.items():
                 if 'email_to' in name:

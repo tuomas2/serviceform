@@ -130,10 +130,9 @@ anonymous_report_urls = [
 
 login_urls = [
     DummyUrl(name='password_login', kwargs={'title': _('Password login'), 'icon': 'sign-in'}),
-    url(r'^([\w-]+)/send_participant_link/', login_views.send_participant_email,
-        name='send_participant_email', kwargs={'title': _('Former users'), 'icon': 'key'}),
-    url(r'^([\w-]+)/send_responsible_link/', login_views.send_responsible_email,
-        name='send_responsible_email', kwargs={'title': _('Responsibles'), 'icon': 'user'}),
+    url(r'^([\w-]+)/send_auth_link/', login_views.send_member_email,
+        name='send_responsible_email', kwargs={'title': _('Former participants and responsibles'),
+                                               'icon': 'user'}),
     DummyUrl(name='report',
              kwargs={'title': _('Admin login'), 'icon': 'user-secret', 'right': True}),
 ]

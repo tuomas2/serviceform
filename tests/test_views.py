@@ -11,6 +11,7 @@ from django.db.models import QuerySet
 from django.test import Client
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.translation import activate
 
 from serviceform.serviceform import models
 
@@ -79,36 +80,20 @@ def test_flow_login_no_password(serviceform, client: Client):
     assert res.url == Pages.CONTACT
 
 
-def test_flow_login_send_participant_email(db, client: Client):
-    page = Pages.LOGIN_SEND_PARTICIPANT_LINK
+def test_flow_login_send_member_email(db, client: Client):
+    page = Pages.LOGIN_SEND_MEMBER_LINK
     res = client.get(page)
     assert res.status_code == Http.OK
     res = client.post(page, {'email': 'some@email.com'})
     assert res.status_code == Http.OK
-    assert 'Lomakkeelle ei löytynyt aikaisempaa osallistumistietoa' in res.context['email_form'].errors['email'][0]
-
-    email = models.Participation.objects.first().email
-    timestamp = timezone.now()
-    res = client.post(page, {'email': email})
-    assert res.status_code == Http.REDIR
-    assert res.url == Pages.LOGIN_SEND_PARTICIPANT_LINK
-    emailmsg = models.EmailMessage.objects.filter(created_at__gt=timestamp).get()
-    assert emailmsg.to_address == email
-
-
-def test_flow_login_send_responsible_email(db, client: Client):
-    page = Pages.LOGIN_SEND_RESPONSIBLE_LINK
-    res = client.get(page)
-    assert res.status_code == Http.OK
-    res = client.post(page, {'email': 'some@email.com'})
-    assert res.status_code == Http.OK
-    assert 'Lomakkeelle ei löytynyt vastuuhenkilöä' in res.context['email_form'].errors['email'][0]
+    activate('en')
+    assert 'There were no user with email address' in res.context['email_form'].errors['email'][0]
 
     email = models.Member.objects.first().email
     timestamp = timezone.now()
     res = client.post(page, {'email': email})
     assert res.status_code == Http.REDIR
-    assert res.url == Pages.LOGIN_SEND_RESPONSIBLE_LINK
+    assert res.url == Pages.LOGIN_SEND_MEMBER_LINK
     emailmsg = models.EmailMessage.objects.filter(created_at__gt=timestamp).get()
     assert emailmsg.to_address == email
 
@@ -124,8 +109,7 @@ class Pages:
     ADMIN_LOGIN = '/admin/login/'
     LOGIN = f'/{SLUG}/'
     MAIN_PAGE = '/'
-    LOGIN_SEND_PARTICIPANT_LINK = f'/{SLUG}/send_participant_link/'
-    LOGIN_SEND_RESPONSIBLE_LINK = f'/{SLUG}/send_responsible_link/'
+    LOGIN_SEND_MEMBER_LINK = f'/{SLUG}/send_auth_link/'
 
 
     UPDATE_PARTICIPATION = rp('update_participation')

@@ -35,7 +35,7 @@ def report_settings(request, mocker):
     revision_name = request.param
 
     class MockedSettings:
-        def __call__(self, request, parameter=None):
+        def __call__(self, request, service_form, parameter=None):
             settings = {'revision': revision_name}
             if parameter:
                 return settings.get(parameter)
