@@ -47,9 +47,9 @@ case "$1" in
   'travis-tests')
     wait_redis
     cd $2
+    export TESTS_RUNNING=1
     ./manage.py collectstatic --noinput
     ./manage.py compress
-    export TESTS_RUNNING=1
     py.test -v --cov serviceform/ --cov tasks/ tests/
   ;;
   'bash')

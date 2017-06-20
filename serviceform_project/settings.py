@@ -133,7 +133,7 @@ TEMPLATES = [
     },
 ]
 
-if STAGING or PRODUCTION or TESTS_RUNNING or DOCKER_BUILD:
+if any((STAGING, PRODUCTION, TESTS_RUNNING, DOCKER_BUILD)):
     cache_loader_options = {'loaders': [
             ('django.template.loaders.cached.Loader', [
                 'django.template.loaders.filesystem.Loader',
