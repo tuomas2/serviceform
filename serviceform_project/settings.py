@@ -11,6 +11,7 @@ PRODUCTION = bool(os.environ.get('PRODUCTION', False))
 STAGING = bool(os.environ.get('STAGING', False))
 TESTS_RUNNING = os.environ.get('TESTS_RUNNING', False)
 DEBUG = bool(os.environ.get('DEBUG', False))
+DOCKER_BUILD = bool(os.environ.get('DOCKER_BUILD', False))
 
 EMAIL_BACKEND = "sgbackend.SendGridBackend"
 # SMTP based backend
@@ -132,7 +133,7 @@ TEMPLATES = [
     },
 ]
 
-if STAGING or PRODUCTION or TESTS_RUNNING:
+if STAGING or PRODUCTION or TESTS_RUNNING or DOCKER_BUILD:
     cache_loader_options = {'loaders': [
             ('django.template.loaders.cached.Loader', [
                 'django.template.loaders.filesystem.Loader',
@@ -336,7 +337,7 @@ CACHES = {
     }
 }
 
-if os.getenv('DOCKER_BUILD'):  # Disable redis while running docker build command
+if DOCKER_BUILD:  # Disable redis while running docker build command
     CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
