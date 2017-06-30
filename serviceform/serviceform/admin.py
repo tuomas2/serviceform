@@ -358,6 +358,8 @@ class OrganizationAdmin(ExtendedLogMixin, NestedModelAdminMixin, GuardedModelAdm
                         admin.ModelAdmin):
     list_display = ('name',)
     inlines = [MemberInline, EmailTemplateInline]
+    basic = ('name', )
+    new_fieldsets = ((_('Basic information'), {'fields': basic}),)
 
     def get_form(self, request: HttpRequest, obj: models.Organization=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -371,6 +373,18 @@ class OrganizationAdmin(ExtendedLogMixin, NestedModelAdminMixin, GuardedModelAdm
                         field.required = True
 
         return form
+
+    def save_model(self, request: HttpRequest, obj: models.Organization, form, change: bool):
+        rv = super().save_model(request, obj, form, change)
+        if not change:
+            obj.create_initial_data()
+        return rv
+
+    def get_fieldsets(self, request: HttpRequest, obj: models.Organization=None):
+        return self.new_fieldsets if obj is None else super().get_fieldsets(request, obj)
+
+    def get_inline_instances(self, request: HttpRequest, obj: models.Organization=None):
+        return super().get_inline_instances(request, obj) if obj else []
 
 
 @admin.register(models.Participation)
