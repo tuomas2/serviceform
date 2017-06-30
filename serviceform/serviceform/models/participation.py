@@ -177,9 +177,6 @@ class Participation(models.Model):
         if not self.member.allow_participant_email and event not in self.SEND_ALWAYS_EMAILS:
             return
 
-        # TODO: is this necessary here?
-        self.form.create_email_templates()
-
         emailtemplates = {self.EmailIds.ON_FINISH: self.form.email_to_participant,
                           self.EmailIds.ON_UPDATE: self.form.email_to_participant_on_update,
                           self.EmailIds.NEW_FORM_REVISION: self.form.email_to_former_participants,

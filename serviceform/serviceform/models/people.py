@@ -59,7 +59,6 @@ class Organization(models.Model):
         self.create_email_templates()
         self.save()
 
-    # TODO: call this when creating organization
     def create_email_templates(self) -> None:
         if not self.pk:
             logger.error('Cannot create email template if form is not saved')
@@ -143,7 +142,6 @@ class Member(models.Model):
         'It is highly recommended that you keep this enabled unless you move away '
         'and do not want to participate at all any more. You can also change this setting later '
         'if you wish.'))
-
 
     # TODO: rename: allow_showing_contact_details_in_forms etc.
     hide_contact_details = models.BooleanField(_('Hide contact details in form'), default=False)
