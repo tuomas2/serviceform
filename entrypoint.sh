@@ -40,11 +40,13 @@ case "$1" in
     celery -A serviceform_project beat -l info -S django --pidfile /tmp/beat.pid --schedule /store/beat.db
   ;;
   'tests')
+    pip install -r requirements-tests.txt
     wait_redis
     export TESTS_RUNNING=1
     py.test -v tests/
   ;;
   'travis-tests')
+    pip install -r requirements-tests.txt
     wait_redis
     cd $2
     ./manage.py collectstatic --noinput
