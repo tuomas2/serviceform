@@ -1,13 +1,5 @@
 FROM python:3.6.1-alpine
 MAINTAINER Tuomas Airaksinen <tuomas.airaksinen@gmail.com>
-ARG VCS_REF
-ARG VERSION
-ARG BUILD_DATE
-LABEL org.label-schema.vcs-ref=$VCS_REF \
-      org.label-schema.vcs-url="e.g. https://github.com/tuomas2/serviceform" \
-      org.label-schema.version=$VERSION \
-      org.label-schema.build-date=$BUILD_DATE \
-      org.label.schema-version="1.0"
 ENV PYTHONUNBUFFERED 1
 RUN apk update && apk upgrade && apk add --no-cache gettext postgresql-dev gcc g++ make \
     linux-headers musl-dev postgresql-client bash libffi-dev
@@ -17,3 +9,11 @@ ADD ./requirements-base.txt /
 RUN pip install -r requirements-base.txt
 RUN adduser -D web
 RUN apk del postgresql-dev make linux-headers
+ARG VCS_REF
+ARG VERSION
+ARG BUILD_DATE
+LABEL org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.vcs-url="e.g. https://github.com/tuomas2/serviceform" \
+      org.label-schema.version=$VERSION \
+      org.label-schema.build-date=$BUILD_DATE \
+      org.label.schema-version="1.0"
