@@ -1,4 +1,5 @@
 default: image
+all: base image
 
 base:
 	@docker build -f Dockerfile-base \
@@ -7,7 +8,7 @@ base:
 	    --build-arg VERSION=`python setup.py --version` \
 	    -t tuomasairaksinen/serviceform-base:latest \
      .
-image: base
+image:
 	@docker build \
 	    --build-arg VCS_REF=`git rev-parse --short HEAD` \
 	    --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
