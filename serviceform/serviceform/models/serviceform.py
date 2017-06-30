@@ -44,7 +44,6 @@ from .. import emails, utils
 from ..utils import ColorStr, django_cache, invalidate_cache
 
 from .email import EmailTemplate
-from .mixins import NameDescriptionMixin
 from .participation import QuestionAnswer, Participation
 from .people import Member, Organization
 
@@ -65,6 +64,12 @@ class AbstractServiceFormItem(models.Model):
     class Meta:
         abstract = True
         ordering = ('order',)
+
+    def __str__(self):
+        return self.name
+
+    name = models.CharField(max_length=256, verbose_name=_('Name'))
+    description = models.TextField(blank=True, verbose_name=_('Description'))
 
     order = models.PositiveIntegerField(default=0, blank=False, null=False, db_index=True,
                                         verbose_name=_('Order'))
@@ -551,7 +556,7 @@ def invalidate_serviceform_caches(sender: ServiceForm, **kwargs):
     invalidate_cache(sender, 'all_responsibles')
 
 
-class Level1Category(NameDescriptionMixin, AbstractServiceFormItem):
+class Level1Category(AbstractServiceFormItem):
     parent_name = 'form'
     subitem_name = 'level2category'
     background_color = ColorField(_('Background color'), blank=True, null=True)
@@ -567,7 +572,7 @@ class Level1Category(NameDescriptionMixin, AbstractServiceFormItem):
         return utils.not_black(self.background_color) or utils.not_black(self.form.level1_color)
 
 
-class Level2Category(NameDescriptionMixin, AbstractServiceFormItem):
+class Level2Category(AbstractServiceFormItem):
     parent_name = 'category'
     subitem_name = 'activity'
     background_color = ColorField(_('Background color'), blank=True, null=True)
@@ -587,7 +592,7 @@ class Level2Category(NameDescriptionMixin, AbstractServiceFormItem):
                 utils.not_black(self.category.form.level2_color))
 
 
-class Activity(NameDescriptionMixin, AbstractServiceFormItem):
+class Activity(AbstractServiceFormItem):
     subitem_name = 'activitychoice'
     parent_name = 'category'
 
@@ -633,7 +638,7 @@ class Activity(NameDescriptionMixin, AbstractServiceFormItem):
             self.category.background_color_display)
 
 
-class ActivityChoice(NameDescriptionMixin, AbstractServiceFormItem):
+class ActivityChoice(AbstractServiceFormItem):
     parent_name = 'activity'
     class Meta(AbstractServiceFormItem.Meta):
         verbose_name = _('Activity choice')

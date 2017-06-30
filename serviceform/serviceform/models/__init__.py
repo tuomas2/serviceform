@@ -23,4 +23,3 @@ from .people import Organization, Member
 from .serviceform import (ServiceForm, FormRevision, Activity, ActivityChoice, Level1Category,
                           Level2Category, Question)
 
-from .mixins import NameDescriptionMixin
