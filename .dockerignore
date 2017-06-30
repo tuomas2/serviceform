@@ -14,3 +14,4 @@ serviceform.egg-info
 build
 dist
 wiki
+.git
