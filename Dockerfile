@@ -12,6 +12,7 @@ RUN echo $VCS_REF > .git_sha
 EXPOSE 8080
 USER web
 ENTRYPOINT ["bash", "-x", "entrypoint.sh"]
+ENV VCS_REF $VCS_REF
 ARG VERSION
 ARG BUILD_DATE
 LABEL org.label-schema.vcs-ref=$VCS_REF \
