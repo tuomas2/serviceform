@@ -1,4 +1,4 @@
--r requirements-base.in
+-r requirements-base.txt
 django-nested-admin
 django-crispy-forms
 Django
