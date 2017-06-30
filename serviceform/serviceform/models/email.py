@@ -118,9 +118,7 @@ class EmailTemplate(models.Model):
         '{{responsible}}, {{participant}}, {{last_modified}}, {{form}}, {{url}}, {{contact}}'))
 
     organization = models.ForeignKey('serviceform.Organization', null=True, on_delete=models.CASCADE)
-    # TODO: remove this field after migration.
-    # TODO: check admin side visibility / permissions
-    # TODO: attributes that are named as 'form' should be renamed to 'serviceform'
+   # TODO: attributes that are named as 'form' should be renamed to 'serviceform'
 
     @classmethod
     def make(cls, name: str, organization: 'Organization', content: str, subject: str) \

@@ -354,9 +354,23 @@ class EmailTemplateInline(NestedStackedInline):
 
 
 @admin.register(models.Organization)
-class OrganizationAdmin(ExtendedLogMixin, admin.ModelAdmin):
+class OrganizationAdmin(ExtendedLogMixin, NestedModelAdminMixin, GuardedModelAdminMixin,
+                        admin.ModelAdmin):
     list_display = ('name',)
     inlines = [MemberInline, EmailTemplateInline]
+
+    def get_form(self, request: HttpRequest, obj: models.Organization=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if obj:
+            emailtemplates = models.EmailTemplate.objects.filter(organization=obj)
+
+            for name, field in form.base_fields.items():
+                if 'email_to' in name:
+                    field.queryset = emailtemplates
+                    if obj and field.queryset:
+                        field.required = True
+
+        return form
 
 
 @admin.register(models.Participation)
