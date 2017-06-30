@@ -8,6 +8,7 @@ services:
 
 before_install:
  - sudo ln -s $(pwd) /code
+ - sudo chmod a+rw .
 
 install:
  - pip install --upgrade docker-compose
