@@ -14,6 +14,7 @@ services:
   tests:
     build: .
     image: serviceform
+    user: root
     command: travis-tests ${CURRENT_DIR}
     volumes:
       - ${CURRENT_DIR}:${CURRENT_DIR}

@@ -13,6 +13,7 @@ services:
       - POSTGRES_PASSWORD=django
   tests:
     build: .
+    user: root
     image: serviceform
     command: tests
     links:
