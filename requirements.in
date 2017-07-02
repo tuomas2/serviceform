@@ -1,4 +1,4 @@
--r requirements-base.in
+-r requirements-base.txt
 django-nested-admin
 django-crispy-forms
 Django
@@ -18,10 +18,5 @@ django-guardian
 django-select2-forms
 django-celery-beat
 ipython
-pytest
-pytest-django
-pytest-cov
-pytest-mock
-coverage>4.0,<4.4
 whitenoise
 brotlipy

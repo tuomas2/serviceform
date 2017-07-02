@@ -9,7 +9,7 @@ django-appconf==1.0.2     # via django-compressor
 django-compressor==2.1.1  # via django-libsass
 django-libsass==0.7
 first==2.0.1              # via pip-tools
-libsass==0.12.3           # via django-libsass
+libsass==0.13.2           # via django-libsass
 pip-tools==1.9.0
 psycopg2==2.7.1
 rcssmin==1.0.6            # via django-compressor

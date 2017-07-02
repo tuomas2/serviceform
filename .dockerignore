@@ -1,3 +1,5 @@
+Dockerfile
+Dockerfile-base
 sql
 .idea
 static
@@ -14,3 +16,4 @@ serviceform.egg-info
 build
 dist
 wiki
+.git

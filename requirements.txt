@@ -9,12 +9,11 @@ billiard==3.5.0.2         # via celery
 brotlipy==0.7.0
 celery==4.0.2
 cffi==1.10.0              # via brotlipy
-click==6.7                # via pip-tools
+click==6.7
 colour==0.1.4
 contextlib2==0.5.5        # via raven
-coverage==4.3.4
 decorator==4.0.11         # via ipython, traitlets
-django-appconf==1.0.2     # via django-compressor
+django-appconf==1.0.2
 django-cachalot==1.5.0
 django-celery-beat==1.0.1
 django-colorful==1.2
@@ -22,44 +21,39 @@ django-compressor==2.1.1
 django-crispy-forms==1.6.1
 django-debug-toolbar==1.8
 django-grappelli==2.10.1
-django-guardian==1.4.8
+django-guardian==1.4.9
 django-libsass==0.7
 django-nested-admin==3.0.17
 django-redis-cache==1.7.1
 django-select2-forms==2.0.2
 django-sortedm2m==1.4.0   # via django-select2-forms
-django==1.11.2            # via django-cachalot, django-colorful, django-debug-toolbar
-first==2.0.1              # via pip-tools
+django==1.11.3            # via django-cachalot, django-colorful, django-debug-toolbar
+first==2.0.1
 hiredis==0.2.0
 ipython-genutils==0.2.0   # via traitlets
 ipython==6.1.0
 jedi==0.10.2              # via ipython
 kombu==4.0.2              # via celery
-libsass==0.13.2           # via django-libsass
+libsass==0.13.2
 pexpect==4.2.1            # via ipython
 pickleshare==0.7.4        # via ipython
 pip-tools==1.9.0
 prompt-toolkit==1.0.14    # via ipython
 psycopg2==2.7.1
 ptyprocess==0.5.2         # via pexpect
-py==1.4.34                # via pytest
 pycparser==2.17           # via cffi
 pygments==2.2.0           # via ipython
-pytest-cov==2.5.1
-pytest-django==3.1.2
-pytest-mock==1.6.0
-pytest==3.1.2
 python-http-client==2.3.0  # via sendgrid
 python-monkey-business==1.0.0  # via django-nested-admin
 pytz==2017.2              # via celery, django
 raven==6.1.0
-rcssmin==1.0.6            # via django-compressor
+rcssmin==1.0.6
 redis==2.10.5
-rjsmin==1.0.12            # via django-compressor
+rjsmin==1.0.12
 sendgrid-django==4.0.4
 sendgrid==3.6.5           # via sendgrid-django
 simplegeneric==0.8.1      # via ipython
-six==1.10.0               # via django-guardian, libsass, pip-tools, prompt-toolkit, python-monkey-business, traitlets
+six==1.10.0
 sqlparse==0.2.3           # via django-debug-toolbar
 traitlets==4.3.2          # via ipython
 uwsgi==2.0.15
