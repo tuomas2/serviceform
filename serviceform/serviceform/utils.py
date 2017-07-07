@@ -143,7 +143,7 @@ def fetch_participations(service_form: 'ServiceForm', revision_name: str) -> Non
     return
 
 
-class ClearParticipantCacheMiddleware:
+class ClearParticipationCacheMiddleware:
     def process_request(self, request: HttpRequest):
         _participations.clear()
         _responsible_counts.clear()

@@ -87,7 +87,7 @@ report_urls = [
     url(r'^report/([\w-]+)/$', reports_views.all_responsibles, name='report',
         kwargs={'title': _('Responsibles')}),
     url(r'^report/([\w-]+)/all_participations/$', reports_views.all_participations,
-        name='all_participations', kwargs={'title': _('Participants')}),
+        name='all_participations', kwargs={'title': _('Participations')}),
     url(r'^report/([\w-]+)/all_activities/$', reports_views.all_activities, name='all_activities',
         kwargs={'title': _('Participations')}),
     url(r'^report/([\w-]+)/all_questions/$', reports_views.all_questions, name='all_questions',

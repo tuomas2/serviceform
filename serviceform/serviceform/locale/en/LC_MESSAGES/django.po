@@ -979,7 +979,7 @@ msgid "Participation"
 msgstr ""
 
 #: models.py:974 urls.py:90
-msgid "Participants"
+msgid "Participations"
 msgstr ""
 
 #: models.py:1001

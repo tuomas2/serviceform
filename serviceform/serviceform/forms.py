@@ -109,7 +109,7 @@ class PasswordForm(Form):
 
 
 #TODO: deprecated, remove
-class ParticipantSendEmailForm(Form):
+class ParticipationSendEmailForm(Form):
     email = fields.EmailField(max_length=128, label=_('Email'))
 
     def __init__(self, service_form, request, *args, **kwargs):
@@ -291,7 +291,7 @@ class ResponsibleForm(ModelForm):
 
 class LogForm(ModelForm):
     class Meta:
-        model = models.ParticipantLog
+        model = models.ParticipationLog
         fields = ('message',)
 
     def __init__(self, participation: models.Participation, user: 'AbstractUser',

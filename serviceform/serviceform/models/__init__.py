@@ -17,7 +17,7 @@
 # along with Serviceform.  If not, see <http://www.gnu.org/licenses/>.
 
 from .email import EmailMessage, EmailTemplate
-from .participation import (ParticipationActivity, ParticipationActivityChoice, ParticipantLog,
+from .participation import (ParticipationActivity, ParticipationActivityChoice, ParticipationLog,
                             QuestionAnswer, Participation)
 from .people import Organization, Member
 from .serviceform import (ServiceForm, FormRevision, Activity, ActivityChoice, Level1Category,

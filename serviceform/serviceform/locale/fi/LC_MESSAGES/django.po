@@ -1139,7 +1139,7 @@ msgid "Participation"
 msgstr "Osallistuja"
 
 #: models.py:974 urls.py:90
-msgid "Participants"
+msgid "Participations"
 msgstr "Osallistujat"
 
 #: models.py:1001

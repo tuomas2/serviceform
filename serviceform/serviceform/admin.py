@@ -388,7 +388,7 @@ class OrganizationAdmin(ExtendedLogMixin, NestedModelAdminMixin, GuardedModelAdm
 
 
 @admin.register(models.Participation)
-class ParticipantAdmin(ExtendedLogMixin, admin.ModelAdmin):
+class ParticipationAdmin(ExtendedLogMixin, admin.ModelAdmin):
     list_display = (
         'id', '__str__', 'form_display', 'form_revision', 'status', 'activities_display',
         'created_at', 'last_modified')

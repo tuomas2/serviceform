@@ -266,7 +266,7 @@ class Participation(models.Model):
         return HttpResponseRedirect(reverse(self.flow[last + 1], args=(self.form.slug,)))
 
     @cached_property
-    def log(self) -> 'Sequence[ParticipantLog]':
+    def log(self) -> 'Sequence[ParticipationLog]':
         return self.participationlog_set.all()
 
 
@@ -337,7 +337,7 @@ class QuestionAnswer(models.Model):
         return '%s: %s' % (self.question.question, self.answer)
 
 
-class ParticipantLog(models.Model):
+class ParticipationLog(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     participation = models.ForeignKey('serviceform.Participation', on_delete=models.CASCADE)
     writer_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
