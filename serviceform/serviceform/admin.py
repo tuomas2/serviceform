@@ -179,7 +179,7 @@ class QuestionInline(ResponsibleMixin, GrappelliSortableHiddenMixin, NestedTabul
 
 class RevisionInline(NestedStackedInline):
     fields = ('name', ('valid_from', 'valid_to'), 'send_emails_after',
-              'send_bulk_email_to_participants')
+              'send_bulk_email_to_participations')
     model = models.FormRevision
     extra = 0
 
@@ -192,7 +192,7 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
 
     inlines = [RevisionInline, Level1CategoryInline, QuestionInline]
 
-    superuser_actions = ['bulk_email_former_participants', 'bulk_email_responsibles']
+    superuser_actions = ['bulk_email_former_participations', 'bulk_email_responsibles']
     if settings.DEBUG:
         superuser_actions.append('shuffle_data')
 
@@ -211,15 +211,15 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
 
     email_settings = (
         'require_email_verification',
-        'verification_email_to_participant',
+        'verification_email_to_participation',
         'email_to_responsibles',
         'email_to_invited_users',
 
-        'email_to_participant',
-        'resend_email_to_participant',
+        'email_to_participation',
+        'resend_email_to_participation',
 
-        'email_to_participant_on_update',
-        'email_to_former_participants',
+        'email_to_participation_on_update',
+        'email_to_former_participations',
 
         'bulk_email_to_responsibles',
         'email_to_responsible_auth_link',
@@ -246,8 +246,8 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
                  (_('Ownership'), {'fields': ownership}),
                  (_('Email settings'), {'fields': email_settings}),
                  (_('Customization'), {'fields': customization}),
-                 (_('Ask details from participants'), {'fields': visible_contact_details}),
-                 (_('Require details from participants'), {'fields': required_contact_details}),
+                 (_('Ask details from participations'), {'fields': visible_contact_details}),
+                 (_('Require details from participations'), {'fields': required_contact_details}),
                  )
 
     new_fieldsets = ((_('Basic information'), {'fields': basic}),)
@@ -266,12 +266,12 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
                 actions.pop(a, None)
         return actions
 
-    def bulk_email_former_participants(self, request: HttpRequest,
+    def bulk_email_former_participations(self, request: HttpRequest,
                                        queryset: Iterable[models.ServiceForm]) -> None:
         for serviceform in queryset:
-            serviceform.bulk_email_former_participants()
+            serviceform.bulk_email_former_participations()
 
-    bulk_email_former_participants.short_description = _('Bulk email former participants now!')
+    bulk_email_former_participations.short_description = _('Bulk email former participations now!')
 
     def bulk_email_responsibles(self, request: HttpRequest,
                                 queryset: Iterable[models.ServiceForm]) -> None:
@@ -285,7 +285,7 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
         for serviceform in queryset:
             utils.shuffle_person_data(serviceform)
 
-    shuffle_data.short_description = _('Shuffle participant data')
+    shuffle_data.short_description = _('Shuffle participation data')
 
     def get_queryset(self, request: HttpRequest):
         qs = super().get_queryset(request)
@@ -342,7 +342,7 @@ class MemberInline(NestedStackedInline):
     extra = 0
     fields = (('forenames', 'surname'), ('email', 'phone_number'), 'street_address',
               ('postal_code', 'city'), 'allow_responsible_email',
-              'allow_participant_email', 'hide_contact_details',
+              'allow_participation_email', 'hide_contact_details',
               'show_full_report', 'personal_link')
     readonly_fields = ('personal_link',)
 

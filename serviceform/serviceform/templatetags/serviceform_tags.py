@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from ..models import Participation
 from ..utils import safe_join, ColorStr
 from .. import utils
-from ..urls import participant_flow_urls, menu_urls, Requires
+from ..urls import participation_flow_urls, menu_urls, Requires
 from ..utils import lighter_color as lighter_color_util, darker_color
 
 register = template.Library()
@@ -91,7 +91,7 @@ def all_revisions(context: Context) -> bool:
 
 
 @register.assignment_tag(takes_context=True)
-def participants(context: Context) -> 'Sequence[Participation]':
+def participations(context: Context) -> 'Sequence[Participation]':
     service_form = context.get('service_form')
     revision_name = utils.get_report_settings(context['request'], service_form, 'revision')
 
@@ -104,27 +104,27 @@ def participants(context: Context) -> 'Sequence[Participation]':
         pass
     else:
         qs = qs.filter(form_revision__name=revision_name)
-    return [utils.get_participant(i) for i, in qs.values_list('pk')]
+    return [utils.get_participation(i) for i, in qs.values_list('pk')]
 
 
 @register.assignment_tag(takes_context=True)
-def participant_flow_menu_items(context: Context) -> List[FlowItem]:
+def participation_flow_menu_items(context: Context) -> List[FlowItem]:
     current_view = context['request'].resolver_match.view_name
-    # TODO: rename participant -> participation everywhere
+    # TODO: rename participation -> participation everywhere
     # TODO: fix menu for contact_details_creation (+ possibly all others)
 
     request = context['request']
-    participant = getattr(request, 'participant', None)
+    participation = getattr(request, 'participation', None)
     service_form = context['service_form']
     cat_num = context.get('cat_num', 0)
     lst = []
 
-    for idx, f_item in enumerate(participant_flow_urls):
-        if participant and f_item.name not in participant.flow:
+    for idx, f_item in enumerate(participation_flow_urls):
+        if participation and f_item.name not in participation.flow:
             continue
         if current_view == f_item.name:
             attrs = {'current': True, 'disabled': True}
-        elif not participant or not participant.can_access_view(f_item.name):
+        elif not participation or not participation.can_access_view(f_item.name):
             attrs = {'greyed': True, 'disabled': True}
         else:
             attrs = {}
@@ -138,7 +138,7 @@ def participant_flow_menu_items(context: Context) -> List[FlowItem]:
 
 
 @register.assignment_tag(takes_context=True)
-def participant_flow_categories(context: Context) -> List[FlowItem]:
+def participation_flow_categories(context: Context) -> List[FlowItem]:
     current_view = 'participation'
     service_form = context['service_form']
     cat_num = context.get('cat_num', 0)

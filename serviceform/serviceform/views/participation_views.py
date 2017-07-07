@@ -100,7 +100,7 @@ def contact_details_modification(request: HttpRequest,
 
     return render(request, 'serviceform/participation/contact_view.html',
                   {'form': form,
-                   'participant': participation,
+                   'participation': participation,
                    'service_form': participation.form,
                    'bootstrap_checkbox_disabled': True})
 
@@ -115,11 +115,11 @@ def contact_details(request: HttpRequest, service_form_slug: str, **kwargs) -> H
 
 @require_authenticated_participation
 @require_published_form
-def email_verification(request: HttpRequest, participant: models.Participation) -> HttpResponse:
-    service_form = participant.form
-    member = participant.member
+def email_verification(request: HttpRequest, participation: models.Participation) -> HttpResponse:
+    service_form = participation.form
+    member = participation.member
     if request.session.get('verification_sent', '') != member.email:
-        participant.send_participant_email(participant.EmailIds.EMAIL_VERIFICATION)
+        participation.send_participation_email(participation.EmailIds.EMAIL_VERIFICATION)
         request.session['verification_sent'] = member.email
     else:
         messages.warning(request,
@@ -127,23 +127,23 @@ def email_verification(request: HttpRequest, participant: models.Participation) 
                            'to {}, not sending again.').format(member.email))
     return render(request, 'serviceform/participation/email_verification.html',
                   {'service_form': service_form,
-                   'participant': participant,
+                   'participation': participation,
                    'bootstrap_checkbox_disabled': True})
 
 
 @require_authenticated_participation
 @require_published_form
-def participation(request: HttpRequest, participant: models.Participation,
+def participation(request: HttpRequest, participation: models.Participation,
                   cat_num: int) -> HttpResponse:
     cat_num = int(cat_num)
-    service_form = participant.form
+    service_form = participation.form
     service_form.init_counters()
 
     category = service_form.sub_items[cat_num] if service_form.flow_by_categories else None
     num_categories = len(service_form.sub_items) if category else 0
 
-    if participant.can_access_view(
-            participant.next_view_name) or service_form.allow_skipping_categories:
+    if participation.can_access_view(
+            participation.next_view_name) or service_form.allow_skipping_categories:
         max_cat = num_categories
     else:
         max_cat = int(request.session.get('max_category', 0))
@@ -151,15 +151,15 @@ def participation(request: HttpRequest, participant: models.Participation,
     if cat_num > max_cat:
         return HttpResponseRedirect(reverse('participation', args=(service_form.slug, max_cat,)))
 
-    form = forms.ParticipationForm(request, participant, category)
+    form = forms.ParticipationForm(request, participation, category)
     if request.method == 'POST':
-        form = forms.ParticipationForm(request, participant, category, request.POST)
+        form = forms.ParticipationForm(request, participation, category, request.POST)
         if form.is_valid():
             form.save()
             cat_num += 1
             request.session['max_category'] = max(cat_num, max_cat)
             if cat_num >= num_categories:
-                return participant.redirect_next(request)
+                return participation.redirect_next(request)
             else:
                 return HttpResponseRedirect(reverse('participation',
                                                     args=(service_form.slug, cat_num,)))
@@ -173,38 +173,38 @@ def participation(request: HttpRequest, participant: models.Participation,
 
 @require_authenticated_participation
 @require_published_form
-def questions(request: HttpRequest, participant: models.Participation) -> HttpResponse:
-    if not participant.form.questions:
-        return participant.redirect_next(request)
+def questions(request: HttpRequest, participation: models.Participation) -> HttpResponse:
+    if not participation.form.questions:
+        return participation.redirect_next(request)
 
-    form = forms.QuestionForm(request, participant)
+    form = forms.QuestionForm(request, participation)
 
     if request.method == 'POST':
-        form = forms.QuestionForm(request, participant, request.POST)
+        form = forms.QuestionForm(request, participation, request.POST)
         if form.is_valid():
             form.save()
-            return participant.redirect_next(request)
+            return participation.redirect_next(request)
 
     return render(request, 'serviceform/participation/question_view.html',
-                  {'form': form, 'service_form': participant.form})
+                  {'form': form, 'service_form': participation.form})
 
 
 @require_authenticated_participation
 @require_published_form
-def preview(request: HttpRequest, participant: models.Participation) -> HttpResponse:
+def preview(request: HttpRequest, participation: models.Participation) -> HttpResponse:
     if request.method == 'POST' and 'submit' in request.POST:
-        return participant.redirect_next(request, message=False)
+        return participation.redirect_next(request, message=False)
     else:
         return render(request, 'serviceform/participation/preview_view.html',
-                      {'service_form': participant.form, 'participant': participant})
+                      {'service_form': participation.form, 'participation': participation})
 
 
 @require_authenticated_participation
-def submitted(request: HttpRequest, participant: models.Participation) -> HttpResponse:
-    participant.finish()
+def submitted(request: HttpRequest, participation: models.Participation) -> HttpResponse:
+    participation.finish()
     utils.clean_session(request)
     return render(request, 'serviceform/participation/submitted_view.html',
-                  {'service_form': participant.form, 'participant': participant})
+                  {'service_form': participation.form, 'participation': participation})
 
 
 @serviceform_from_session
@@ -239,16 +239,16 @@ def update_participation(request: HttpRequest,
     return redirect(reverse('contact_details', args=(participation.form.slug,)))
 
 
-def authenticate_participant_old(request: HttpRequest, uuid: str,
+def authenticate_participation_old(request: HttpRequest, uuid: str,
                                  next_view: str='contact_details') -> HttpResponse:
     """
-    Old insecure authentication of participant. Just expire link and send new authentication url.
+    Old insecure authentication of participation. Just expire link and send new authentication url.
     """
     if not uuid:
         raise Http404
     utils.clean_session(request)
-    participant = get_object_or_404(models.Participation.objects.all(), secret_key=uuid)
-    return utils.expire_auth_link(request, participant)
+    participation = get_object_or_404(models.Participation.objects.all(), secret_key=uuid)
+    return utils.expire_auth_link(request, participation)
 
 
 def authenticate_member(request: HttpRequest, member_id: int, password: str) -> HttpResponse:
@@ -262,7 +262,7 @@ def authenticate_member(request: HttpRequest, member_id: int, password: str) -> 
         messages.error(request, _(
             "Given URL might be expired. Please give your "
             "email address and we'll send you a new link"))
-        # TODO: create generic send_member_auth_link view (similar to send_participant_link view)
+        # TODO: create generic send_member_auth_link view (similar to send_participation_link view)
         return redirect('send_member_auth_link')
 
     elif result == member.PasswordStatus.PASSWORD_EXPIRED:
@@ -287,14 +287,14 @@ def authenticate_member_mock(request: HttpRequest, member_id: int) -> HttpRespon
 
 
 @require_authenticated_participation(check_flow=False)
-def delete_participation(request: HttpRequest, participant: models.Participation) -> HttpResponse:
+def delete_participation(request: HttpRequest, participation: models.Participation) -> HttpResponse:
     form = forms.DeleteParticipationForm()
-    service_form = participant.form
+    service_form = participation.form
     if request.method == 'POST':
         form = forms.DeleteParticipationForm(request.POST)
         if form.is_valid():
-            logger.info('Deleting participant %s, per request.', participant)
-            participant.delete()
+            logger.info('Deleting participation %s, per request.', participation)
+            participation.delete()
             utils.clean_session(request)
             messages.info(request, _('Your participation was deleted'))
             return redirect('password_login', service_form.slug)
@@ -305,12 +305,12 @@ def delete_participation(request: HttpRequest, participant: models.Participation
 
 
 def unsubscribe(request: HttpRequest, secret_id: str) -> HttpResponse:
-    participant = get_object_or_404(models.Participation.objects, pk=utils.decode(secret_id))
-    participant.member.allow_participant_email = False
-    participant.member.save(update_fields=['allow_participant_email'])
-    return render(request, 'serviceform/login/unsubscribe_participant.html',
-                  {'participant': participant,
-                   'service_form': participant.form})
+    participation = get_object_or_404(models.Participation.objects, pk=utils.decode(secret_id))
+    participation.member.allow_participation_email = False
+    participation.member.save(update_fields=['allow_participation_email'])
+    return render(request, 'serviceform/login/unsubscribe_participation.html',
+                  {'participation': participation,
+                   'service_form': participation.form})
 
 
 # see update_participation...
@@ -320,4 +320,4 @@ def unsubscribe(request: HttpRequest, secret_id: str) -> HttpResponse:
 #    participation = member.participation_set.get(form_revision__form__slug=serviceform_slug)
 #    # TODO: should create better entry point for updating form.
 #    return render(request, 'serviceform/participation/preview_view.html',
-#                  {'service_form': participation.form, 'participant': participation})
+#                  {'service_form': participation.form, 'participation': participation})

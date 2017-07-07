@@ -149,9 +149,9 @@ class FormRevision(models.Model):
                                       default=datetime.datetime(3000, 1, 1, tzinfo=local_tz))
     valid_to = models.DateTimeField(verbose_name=_('Valid to'),
                                     default=datetime.datetime(3000, 1, 1, tzinfo=local_tz))
-    send_bulk_email_to_participants = models.BooleanField(
-        _('Send bulk email to participants'),
-        help_text=_('Send email to participants that filled the form when this revision was '
+    send_bulk_email_to_participations = models.BooleanField(
+        _('Send bulk email to participations'),
+        help_text=_('Send email to participations that filled the form when this revision was '
                     'active. Email is sent when new current revision is published.'),
         default=True)
     send_emails_after = models.DateTimeField(
@@ -197,12 +197,12 @@ class ServiceForm(AbstractServiceFormItem):
     # Email settings
     require_email_verification = models.BooleanField(_('Require email verification'), default=True)
 
-    verification_email_to_participant = models.ForeignKey(
+    verification_email_to_participation = models.ForeignKey(
         EmailTemplate, null=True, blank=True,
         related_name='+',
-        verbose_name=_('Verification email to participant'),
+        verbose_name=_('Verification email to participation'),
         help_text=_(
-            'Email verification message that is sent to participant when filling form, '
+            'Email verification message that is sent to participation when filling form, '
             'if email verification is enabled'),
         on_delete=models.SET_NULL)
 
@@ -232,31 +232,31 @@ class ServiceForm(AbstractServiceFormItem):
     # Participation emails:
 
     # on_finish
-    email_to_participant = models.ForeignKey(
+    email_to_participation = models.ForeignKey(
         EmailTemplate, null=True, blank=True,
         related_name='+',
-        verbose_name=_('Email to participant, on finish'),
-        help_text=_('Email that is sent to participant after he has fulfilled his participation'),
+        verbose_name=_('Email to participation, on finish'),
+        help_text=_('Email that is sent to participation after he has fulfilled his participation'),
         on_delete=models.SET_NULL)
     # on update
-    email_to_participant_on_update = models.ForeignKey(EmailTemplate, null=True, blank=True,
+    email_to_participation_on_update = models.ForeignKey(EmailTemplate, null=True, blank=True,
                                                        related_name='+', verbose_name=_(
-            'Email to participant, on update'), help_text=_(
-            'Email that is sent to participant after he has updated his participation'),
+            'Email to participation, on update'), help_text=_(
+            'Email that is sent to participation after he has updated his participation'),
                                                        on_delete=models.SET_NULL)
     # resend
-    resend_email_to_participant = models.ForeignKey(
+    resend_email_to_participation = models.ForeignKey(
         EmailTemplate, null=True, blank=True,
         related_name='+',
-        verbose_name=_('Resend email to participant'),
-        help_text=_('Email that is sent to participant if he requests resending email'),
+        verbose_name=_('Resend email to participation'),
+        help_text=_('Email that is sent to participation if he requests resending email'),
         on_delete=models.SET_NULL)
     # new_form_revision
-    email_to_former_participants = models.ForeignKey(
+    email_to_former_participations = models.ForeignKey(
         EmailTemplate, null=True, blank=True,
         related_name='+',
-        verbose_name=_('Bulk email to former participants'),
-        help_text=_('Email that is sent to former participants when form is published'),
+        verbose_name=_('Bulk email to former participations'),
+        help_text=_('Email that is sent to former participations when form is published'),
         on_delete=models.SET_NULL)
     # invite
     email_to_invited_users = models.ForeignKey(
@@ -278,7 +278,7 @@ class ServiceForm(AbstractServiceFormItem):
 
     password = models.CharField(
         _('Password'), max_length=32, blank=True,
-        help_text=_('Password that is asked from participants'),
+        help_text=_('Password that is asked from participations'),
         default='')
 
     hide_contact_details = models.BooleanField(
@@ -381,34 +381,34 @@ class ServiceForm(AbstractServiceFormItem):
                 _('Default email to responsibles'),
                 self, emails.message_to_responsibles,
                 _('New participation arrived for form {{form}}'))
-        if not self.email_to_participant:
+        if not self.email_to_participation:
             commit = True
-            self.email_to_participant = EmailTemplate.make(
-                _('Default email to participant, on finish'), self,
-                emails.participant_on_finish,
+            self.email_to_participation = EmailTemplate.make(
+                _('Default email to participation, on finish'), self,
+                emails.participation_on_finish,
                 _('Your update to form {{form}}'))
-        if not self.email_to_participant_on_update:
+        if not self.email_to_participation_on_update:
             commit = True
-            self.email_to_participant_on_update = EmailTemplate.make(
-                _('Default email to participant, on update'), self,
-                emails.participant_on_update,
+            self.email_to_participation_on_update = EmailTemplate.make(
+                _('Default email to participation, on update'), self,
+                emails.participation_on_update,
                 _('Your updated participation to form {{form}}'))
-        if not self.email_to_former_participants:
+        if not self.email_to_former_participations:
             commit = True
-            self.email_to_former_participants = EmailTemplate.make(
-                _('Default email to former participants'), self,
-                emails.participant_new_form_revision,
+            self.email_to_former_participations = EmailTemplate.make(
+                _('Default email to former participations'), self,
+                emails.participation_new_form_revision,
                 _('New form revision to form {{form}} has been published'))
-        if not self.resend_email_to_participant:
+        if not self.resend_email_to_participation:
             commit = True
-            self.resend_email_to_participant = EmailTemplate.make(
-                _('Default resend email to participant'), self,
-                emails.resend_email_to_participants,
+            self.resend_email_to_participation = EmailTemplate.make(
+                _('Default resend email to participation'), self,
+                emails.resend_email_to_participations,
                 _('Your participation to form {{form}}'))
         if not self.email_to_invited_users:
             commit = True
             self.email_to_invited_users = EmailTemplate.make(
-                _('Default invite email to participants'), self,
+                _('Default invite email to participations'), self,
                 emails.invite,
                 _('Invitation to fill participation in {{form}}'))
         if not self.email_to_responsible_auth_link:
@@ -417,16 +417,16 @@ class ServiceForm(AbstractServiceFormItem):
                 _('Default request responsible auth link email'), self,
                 emails.request_responsible_auth_link,
                 _('Your report in {{form}}'))
-        if not self.verification_email_to_participant:
+        if not self.verification_email_to_participation:
             commit = True
-            self.verification_email_to_participant = EmailTemplate.make(
-                _('Default verification email to participant'), self,
-                emails.verification_email_to_participant,
+            self.verification_email_to_participation = EmailTemplate.make(
+                _('Default verification email to participation'), self,
+                emails.verification_email_to_participation,
                 _('Please verify your email in {{form}}'))
         if commit:
             self.save()
 
-    def invite_user(self, email: str, old_participants: bool=False) -> InviteUserResponse:
+    def invite_user(self, email: str, old_participations: bool=False) -> InviteUserResponse:
         """
             Create new participations to current form version and send invites
 
@@ -434,11 +434,11 @@ class ServiceForm(AbstractServiceFormItem):
         """
         logger.info('Invite user %s %s', self, email)
 
-        participant = Participation.objects.filter(
+        participation = Participation.objects.filter(
             member__email=email, form_revision__form=self).first()
-        if participant:
-            if old_participants and participant.form_revision != self.current_revision:
-                rv = participant.send_participant_email(Participation.EmailIds.INVITE)
+        if participation:
+            if old_participations and participation.form_revision != self.current_revision:
+                rv = participation.send_participation_email(Participation.EmailIds.INVITE)
                 return (self.InviteUserResponse.EMAIL_SENT
                         if rv else self.InviteUserResponse.USER_DENIED_EMAIL)
             else:
@@ -446,10 +446,10 @@ class ServiceForm(AbstractServiceFormItem):
         else:
             member, created = Member.objects.get_or_create(organization=self.organization,
                                                            email=email)
-            participant = Participation.objects.create(member=member,
+            participation = Participation.objects.create(member=member,
                                                        form_revision=self.current_revision,
                                                        status=Participation.STATUS_INVITED)
-            participant.send_participant_email(Participation.EmailIds.INVITE)
+            participation.send_participation_email(Participation.EmailIds.INVITE)
             return self.InviteUserResponse.EMAIL_SENT
 
     @cached_property
@@ -526,13 +526,13 @@ class ServiceForm(AbstractServiceFormItem):
         for r in self.all_responsibles:
             r.send_bulk_mail()
 
-    def bulk_email_former_participants(self) -> None:
-        logger.info('Bulk email former participants %s', self)
-        for p in Participation.objects.filter(member__allow_participant_email=True,
-                                              form_revision__send_bulk_email_to_participants=True,
+    def bulk_email_former_participations(self) -> None:
+        logger.info('Bulk email former participations %s', self)
+        for p in Participation.objects.filter(member__allow_participation_email=True,
+                                              form_revision__send_bulk_email_to_participations=True,
                                               form_revision__form=self,
                                               form_revision__valid_to__lt=timezone.now()).distinct():
-            p.send_participant_email(Participation.EmailIds.NEW_FORM_REVISION)
+            p.send_participation_email(Participation.EmailIds.NEW_FORM_REVISION)
 
     def reschedule_bulk_email(self) -> None:
         now = timezone.now()
@@ -547,7 +547,7 @@ class ServiceForm(AbstractServiceFormItem):
             tr = Task.make(self.bulk_email_responsibles,
                            scheduled_time=self.current_revision.send_emails_after)
         if self.current_revision.valid_from > now:
-            tp = Task.make(self.bulk_email_former_participants,
+            tp = Task.make(self.bulk_email_former_participations,
                            scheduled_time=self.current_revision.valid_from)
 
 
@@ -617,14 +617,14 @@ class Activity(AbstractServiceFormItem):
         current_revision = self.category.category.form.current_revision
 
         qs = self.participationactivity_set.filter(
-            participant__status__in=Participation.READY_STATUSES)
+            participation__status__in=Participation.READY_STATUSES)
 
         if revision_name == utils.RevisionOptions.ALL:
-            qs = qs.order_by('participant__form_revision')
+            qs = qs.order_by('participation__form_revision')
         elif revision_name == utils.RevisionOptions.CURRENT:
-            qs = qs.filter(participant__form_revision=current_revision)
+            qs = qs.filter(participation__form_revision=current_revision)
         else:
-            qs = qs.filter(participant__form_revision__name=revision_name)
+            qs = qs.filter(participation__form_revision__name=revision_name)
         return qs
 
     @property
@@ -660,14 +660,14 @@ class ActivityChoice(AbstractServiceFormItem):
         current_revision = self.activity.category.category.form.current_revision
 
         qs = self.participationactivitychoice_set.filter(
-            activity__participant__status__in=Participation.READY_STATUSES)
+            activity__participation__status__in=Participation.READY_STATUSES)
 
         if revision_name == utils.RevisionOptions.ALL:
-            qs = qs.order_by('activity__participant__form_revision')
+            qs = qs.order_by('activity__participation__form_revision')
         elif revision_name == utils.RevisionOptions.CURRENT:
-            qs = qs.filter(activity__participant__form_revision=current_revision)
+            qs = qs.filter(activity__participation__form_revision=current_revision)
         else:
-            qs = qs.filter(activity__participant__form_revision__name=revision_name)
+            qs = qs.filter(activity__participation__form_revision__name=revision_name)
         return qs
 
     @cached_property
@@ -707,16 +707,16 @@ class Question(AbstractServiceFormItem):
 
     def questionanswers(self, revision_name: str) -> 'Sequence[QuestionAnswer]':
         qs = QuestionAnswer.objects.filter(question=self,
-                                           participant__status__in=Participation.READY_STATUSES)
+                                           participation__status__in=Participation.READY_STATUSES)
 
         current_revision = self.form.current_revision
 
         if revision_name == utils.RevisionOptions.ALL:
-            qs = qs.order_by('-participant__form_revision')
+            qs = qs.order_by('-participation__form_revision')
         elif revision_name == utils.RevisionOptions.CURRENT:
-            qs = qs.filter(participant__form_revision=current_revision)
+            qs = qs.filter(participation__form_revision=current_revision)
         else:
-            qs = qs.filter(participant__form_revision__name=revision_name)
+            qs = qs.filter(participation__form_revision__name=revision_name)
         return qs
 
     @property

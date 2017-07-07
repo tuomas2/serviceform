@@ -114,38 +114,38 @@ def user_has_serviceform_permission(user: settings.AUTH_USER_MODEL, service_form
             return False
 
 
-_participants = {}
+_participations = {}
 
 
-def get_participant(_id: int) -> 'Participation':
-    p = _participants.get(_id)
+def get_participation(_id: int) -> 'Participation':
+    p = _participations.get(_id)
     if p is None:
         logger.error('Participation %d was not in cache!', _id)
     return p
 
 
-def fetch_participants(service_form: 'ServiceForm', revision_name: str) -> None:
-    global _participants
+def fetch_participations(service_form: 'ServiceForm', revision_name: str) -> None:
+    global _participations
     from .models import Participation
     is_all_revisions = revision_name == RevisionOptions.ALL
     is_current_revision = revision_name == RevisionOptions.CURRENT
 
-    qs = Participation.objects.prefetch_related('participantlog_set__written_by')
+    qs = Participation.objects.prefetch_related('participationlog_set__written_by')
     if is_all_revisions:
         qs = qs.select_related('form_revision')
-        participants = qs.filter(form_revision__form=service_form).distinct()
+        participations = qs.filter(form_revision__form=service_form).distinct()
     elif is_current_revision:
-        participants = qs.filter(form_revision=service_form.current_revision)
+        participations = qs.filter(form_revision=service_form.current_revision)
     else:
-        participants = qs.filter(form_revision__name=revision_name)
+        participations = qs.filter(form_revision__name=revision_name)
 
-    _participants = {itm.pk: itm for itm in participants}
+    _participations = {itm.pk: itm for itm in participations}
     return
 
 
 class ClearParticipantCacheMiddleware:
     def process_request(self, request: HttpRequest):
-        _participants.clear()
+        _participations.clear()
         _responsible_counts.clear()
 
 
@@ -228,9 +228,9 @@ def shuffle_person_data(service_form: 'ServiceForm') -> None:
     letters = len(string.ascii_letters)
     forenames = set()
     surnames = set()
-    participants = Participation.objects.filter(form_revision__form=service_form)
+    participations = Participation.objects.filter(form_revision__form=service_form)
     responsibles = Member.objects.filter(form=service_form)
-    for p in chain(participants, responsibles):
+    for p in chain(participations, responsibles):
         for n in p.forenames.split(' '):
             if n:
                 forenames.add(n.title())
@@ -278,10 +278,10 @@ def shuffle_person_data(service_form: 'ServiceForm') -> None:
             p.city = 'Hemilä'
         p.save()
 
-    for p in chain(participants, responsibles):
+    for p in chain(participations, responsibles):
         shuffle_contact_details(p)
 
-    for p in participants:
+    for p in participations:
         for a in p.activities:
             shuffle(a, 'additional_info')
             for c in a.choices:
@@ -426,16 +426,16 @@ def clean_session(request: HttpRequest):
 
 
 ## TODO: create authentication module and move these there.
-#def mark_as_authenticated_participant(request: HttpRequest,
+#def mark_as_authenticated_participation(request: HttpRequest,
 #                                      participation: 'Participation') -> None:
-#    request.session['authenticated_participant'] = participation.pk
+#    request.session['authenticated_participation'] = participation.pk
 
 
-#def get_authenticated_participant(request: HttpRequest) -> 'Optional[Participation]':
-#    # TODO: remove participant-only authentication, or rename to active participation etc.
+#def get_authenticated_participation(request: HttpRequest) -> 'Optional[Participation]':
+#    # TODO: remove participation-only authentication, or rename to active participation etc.
 #    from .models import Participation
-#    participant_pk = request.session.get('authenticated_participant')
-#    return participant_pk and Participation.objects.get(pk=participant_pk)
+#    participation_pk = request.session.get('authenticated_participation')
+#    return participation_pk and Participation.objects.get(pk=participation_pk)
 
 
 def get_authenticated_member(request: HttpRequest) -> 'Optional[Member]':

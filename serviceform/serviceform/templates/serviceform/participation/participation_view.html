@@ -34,7 +34,7 @@
 
   {% if service_form.flow_by_categories and not readonly %}
     <ul class="category-nav">
-      {% participant_flow_categories as m_items %}
+      {% participation_flow_categories as m_items %}
       {% for m in m_items %}
         <li role="presentation" class="
               {% if m.attrs.greyed %}disabled{% endif %}

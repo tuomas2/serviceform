@@ -44,7 +44,7 @@ class Participation(models.Model):
         verbose_name_plural = _('Participations')
         # TODO: unique together: member + form?
 
-    # Current view is set by view decorator require_authenticated_participant
+    # Current view is set by view decorator require_authenticated_participation
     _current_view = 'contact_details'
 
     class EmailIds(Enum):
@@ -105,7 +105,7 @@ class Participation(models.Model):
     @cached_property
     def item_count(self) -> int:
         choices = ParticipationActivityChoice.objects.filter(
-            activity__participant=self).values_list('activity_id', flat=True)
+            activity__participation=self).values_list('activity_id', flat=True)
         choice_count = len(choices)
         activity_count = self.participationactivity_set.exclude(pk__in=choices).count()
         return activity_count + choice_count
@@ -156,34 +156,34 @@ class Participation(models.Model):
         for r in responsibles:
             r.send_responsibility_email(self)
 
-    def finish(self, email_participant: bool=True) -> None:
+    def finish(self, email_participation: bool=True) -> None:
         updating = self.status == self.STATUS_UPDATING
         self.status = self.STATUS_FINISHED
         if timezone.now() > self.form_revision.send_emails_after:
             self.send_email_to_responsibles()
-        if email_participant:
-            self.send_participant_email(
+        if email_participation:
+            self.send_participation_email(
                 self.EmailIds.ON_UPDATE if updating else self.EmailIds.ON_FINISH)
         self.last_finished = timezone.now()
         self.save(update_fields=['status', 'last_finished'])
 
-    def send_participant_email(self, event: EmailIds,
+    def send_participation_email(self, event: EmailIds,
                                extra_context: dict=None) -> 'Optional[EmailMessage]':
         """
-        Send email to participant
+        Send email to participation
         :return: False if email was not sent. Message if it was sent.
         """
         from .email import EmailMessage
-        if not self.member.allow_participant_email and event not in self.SEND_ALWAYS_EMAILS:
+        if not self.member.allow_participation_email and event not in self.SEND_ALWAYS_EMAILS:
             return
 
-        emailtemplates = {self.EmailIds.ON_FINISH: self.form.email_to_participant,
-                          self.EmailIds.ON_UPDATE: self.form.email_to_participant_on_update,
-                          self.EmailIds.NEW_FORM_REVISION: self.form.email_to_former_participants,
-                          self.EmailIds.RESEND: self.form.resend_email_to_participant,
+        emailtemplates = {self.EmailIds.ON_FINISH: self.form.email_to_participation,
+                          self.EmailIds.ON_UPDATE: self.form.email_to_participation_on_update,
+                          self.EmailIds.NEW_FORM_REVISION: self.form.email_to_former_participations,
+                          self.EmailIds.RESEND: self.form.resend_email_to_participation,
                           self.EmailIds.INVITE: self.form.email_to_invited_users,
                           self.EmailIds.EMAIL_VERIFICATION:
-                              self.form.verification_email_to_participant,
+                              self.form.verification_email_to_participation,
                           }
 
         emailtemplate = emailtemplates[event]
@@ -193,7 +193,7 @@ class Participation(models.Model):
         url = self.member.make_new_auth_url() + url_postfix
 
         context = {
-            'participant': str(self),
+            'participation': str(self),
             'contact': self.form.responsible.contact_display,
             'form': str(self.form),
             'url': str(url),
@@ -205,13 +205,13 @@ class Participation(models.Model):
         return EmailMessage.make(emailtemplate, context, self.member.email)
 
     def resend_auth_link(self) -> 'Optional[EmailMessage]':
-        return self.send_participant_email(self.EmailIds.RESEND)
+        return self.send_participation_email(self.EmailIds.RESEND)
 
     @property
     def flow(self) -> List[str]:
-        from ..urls import participant_flow_urls
+        from ..urls import participation_flow_urls
 
-        rv = [i.name for i in participant_flow_urls]
+        rv = [i.name for i in participation_flow_urls]
         if not self.form.questions:
             rv.remove('questions')
         if not self.form.require_email_verification or self.member.email_verified:
@@ -267,26 +267,26 @@ class Participation(models.Model):
 
     @cached_property
     def log(self) -> 'Sequence[ParticipantLog]':
-        return self.participantlog_set.all()
+        return self.participationlog_set.all()
 
 
 class ParticipationActivity(models.Model):
     class Meta:
-        unique_together = (('participant', 'activity'),)
+        unique_together = (('participation', 'activity'),)
         ordering = (
         'activity__category__category__order', 'activity__category__order', 'activity__order',)
 
-    participant = models.ForeignKey(Participation, on_delete=models.CASCADE)
+    participation = models.ForeignKey(Participation, on_delete=models.CASCADE)
     activity = models.ForeignKey('serviceform.Activity', on_delete=models.CASCADE)
     additional_info = models.CharField(max_length=1024, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     @cached_property
-    def cached_participant(self) -> 'Participation':
-        return utils.get_participant(self.participant_id)
+    def cached_participation(self) -> 'Participation':
+        return utils.get_participation(self.participation_id)
 
     def __str__(self):
-        return '%s for %s' % (self.activity, self.participant)
+        return '%s for %s' % (self.activity, self.participation)
 
     @property
     def choices(self) -> 'Sequence[ParticipationActivityChoice]':
@@ -309,11 +309,11 @@ class ParticipationActivityChoice(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     @cached_property
-    def cached_participant(self) -> 'Participation':
-        return utils.get_participant(self.activity.participant_id)
+    def cached_participation(self) -> 'Participation':
+        return utils.get_participation(self.activity.participation_id)
 
     def __str__(self):
-        return '%s for %s' % (self.activity_choice, self.activity.participant)
+        return '%s for %s' % (self.activity_choice, self.activity.participation)
 
     @property
     def additional_info_display(self) -> str:
@@ -321,7 +321,7 @@ class ParticipationActivityChoice(models.Model):
 
 
 class QuestionAnswer(models.Model):
-    participant = models.ForeignKey('serviceform.Participation', on_delete=models.CASCADE)
+    participation = models.ForeignKey('serviceform.Participation', on_delete=models.CASCADE)
     question = models.ForeignKey('serviceform.Question', on_delete=models.CASCADE)
     answer = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True, null=True)
@@ -330,8 +330,8 @@ class QuestionAnswer(models.Model):
         ordering = ('question__order',)
 
     @cached_property
-    def cached_participant(self) -> 'Participation':
-        return utils.get_participant(self.participant_id)
+    def cached_participation(self) -> 'Participation':
+        return utils.get_participation(self.participation_id)
 
     def __str__(self):
         return '%s: %s' % (self.question.question, self.answer)
@@ -339,7 +339,7 @@ class QuestionAnswer(models.Model):
 
 class ParticipantLog(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    participant = models.ForeignKey('serviceform.Participation', on_delete=models.CASCADE)
+    participation = models.ForeignKey('serviceform.Participation', on_delete=models.CASCADE)
     writer_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     writer_id = models.PositiveIntegerField()
     # Can be either responsible or django user

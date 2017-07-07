@@ -7,7 +7,7 @@
   <div class="preview-contactdetails">
     <h3>{% blocktrans %}Contact details{% endblocktrans %}:</h3>
 
-    {% for detail, data in participant.member.contact_details %}
+    {% for detail, data in participation.member.contact_details %}
       <div class="row activity-preview-row">
         <div class="col-xs-4">
           {{ detail }}
@@ -37,7 +37,7 @@
       </div>
     </div>
 
-    {% for a in participant.activities %}
+    {% for a in participation.activities %}
       <div class="row activity-preview-row">
         <div class="col-xs-4">
           {{ a.activity.name }}
@@ -76,7 +76,7 @@
           {% trans "Answer" %}
         </div>
       </div>
-      {% for q in participant.questions %}
+      {% for q in participation.questions %}
         <div class="row activity-preview-row">
           <div class="col-xs-4">
             {{ q.question.question }}

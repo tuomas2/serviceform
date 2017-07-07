@@ -2,6 +2,6 @@
 {% load i18n serviceform_tags %}
 {% block content %}
   {% include "serviceform/reports/snippets/_help.html" %}
-  {% participants as ps %}
-  {% include "serviceform/reports/contents/_all_participants.html"%}
+  {% participations as ps %}
+  {% include "serviceform/reports/contents/_all_participations.html"%}
 {% endblock %}

@@ -133,7 +133,7 @@ class Member(models.Model):
             'registered. Email contains also has a link that allows accessing raport of '
             'administered activities.'))
 
-    allow_participant_email = models.BooleanField(
+    allow_participation_email = models.BooleanField(
         default=True,
         verbose_name=_('Send email notifications'),
         help_text=_(
@@ -151,7 +151,7 @@ class Member(models.Model):
     # TODO change view name
     def personal_link(self) -> str:
         return format_html('<a href="{}">{}</a>',
-                           reverse('authenticate_participant_mock', args=(self.pk,)),
+                           reverse('authenticate_participation_mock', args=(self.pk,)),
                            self.pk)
 
     personal_link.short_description = _('Link to personal report')
@@ -163,7 +163,7 @@ class Member(models.Model):
     # TODO: change view name
     @property
     def list_unsubscribe_link(self) -> str:
-        return settings.SERVER_URL + reverse('unsubscribe_participant', args=(self.secret_id,))
+        return settings.SERVER_URL + reverse('unsubscribe_participation', args=(self.secret_id,))
 
 
     @cached_property
@@ -266,18 +266,18 @@ class Member(models.Model):
         # TODO auth link email should be per-organization, not per-form. Members will be shared between forms.
         return EmailMessage.make(self.organization.email_to_member_auth_link, context, self.email)
 
-    def send_responsibility_email(self, participant: 'Participation') -> None:
+    def send_responsibility_email(self, participation: 'Participation') -> None:
         if self.allow_responsible_email:
-            next = reverse('responsible_report', args=(participant.form.slug,))
+            next = reverse('responsible_report', args=(participation.form.slug,))
             context = {'responsible': str(self),
-                       'participant': str(participant),
-                       'form': str(participant.form),
+                       'participation': str(participation),
+                       'form': str(participation.form),
                        'url': self.make_new_auth_url() + f'?next={next}',
-                       'contact': participant.form.responsible.contact_display,
+                       'contact': participation.form.responsible.contact_display,
                        'list_unsubscribe': self.list_unsubscribe_link,
                        }
 
-            EmailMessage.make(participant.form.email_to_responsibles, context, self.email)
+            EmailMessage.make(participation.form.email_to_responsibles, context, self.email)
 
     def send_bulk_mail(self) -> 'Optional[EmailMessage]':
         # FIXME

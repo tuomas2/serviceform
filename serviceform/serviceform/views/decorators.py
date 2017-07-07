@@ -29,7 +29,7 @@ from .. import models, utils
 
 # TODO: perhaps still bad name
 def require_serviceform(function=None, check_form_permission=False, init_counters=False,
-                        all_responsibles=True, fetch_participants=False):
+                        all_responsibles=True, fetch_participations=False):
     def actual_decorator(func):
         @wraps(func)
         def wrapper(request: HttpRequest, slug: str,
@@ -39,9 +39,9 @@ def require_serviceform(function=None, check_form_permission=False, init_counter
             # TODO: serviceform document loading form cache (-> no more init_counters etc.)
             if init_counters:
                 service_form.init_counters(all_responsibles)
-            if fetch_participants:
+            if fetch_participations:
                 revision_name = utils.get_report_settings(request, service_form, 'revision')
-                utils.fetch_participants(service_form, revision_name=revision_name)
+                utils.fetch_participations(service_form, revision_name=revision_name)
             func_ = require_form_permissions(func) if check_form_permission else func
             return func_(request, service_form, *args)
 
@@ -102,8 +102,8 @@ def require_authenticated_participation(function=None, check_flow=True, accept_a
             participation = get_object_or_404(member.participation_set,
                                               form_revision__form__slug=serviceform_slug)
 
-            # TODO: rename request.participant
-            request.participant = participation
+            # TODO: rename request.participation
+            request.participation = participation
             # TODO: should we check if this is in EDITING_STATUS or not?
             if check_flow:
                 # Check flow status
@@ -128,11 +128,11 @@ def require_authenticated_participation(function=None, check_flow=True, accept_a
 
 def require_published_form(func):
     @wraps(func)
-    def wrapper(request: HttpRequest, participant: models.Participation,
+    def wrapper(request: HttpRequest, participation: models.Participation,
                 *args, **kwargs) -> HttpResponse:
-        if not participant.form.is_published:
+        if not participation.form.is_published:
             raise PermissionDenied
-        return func(request, participant, *args, **kwargs)
+        return func(request, participation, *args, **kwargs)
 
     return wrapper
 

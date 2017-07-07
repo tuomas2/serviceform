@@ -12,7 +12,7 @@
   {% if not readonly %}
   <div class="participation-flow-nav">
     <ul>
-      {% participant_flow_menu_items as m_items %}
+      {% participation_flow_menu_items as m_items %}
       {% for m in m_items %}
         <li role="presentation" class="
         {% if m.attrs.greyed %}disabled{%endif%}

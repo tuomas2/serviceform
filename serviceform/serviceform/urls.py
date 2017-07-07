@@ -67,27 +67,27 @@ class Requires:
     EMAIL_VERIFICATION = object()
 
 
-participant_flow_urls = [
+participation_flow_urls = [
     # TODO: rename view to 'contact_details_modification'
     url(r'^member/forms/([\w-]+)/contact/$', participation_views.contact_details,
         name='contact_details', kwargs={'title': _('Contact details')}),
-    url(r'^member/forms/([\w-]+)/participant/email_verification/$', participation_views.email_verification,
+    url(r'^member/forms/([\w-]+)/participation/email_verification/$', participation_views.email_verification,
         name='email_verification', kwargs={'title': _('Email verification')}),
     url(r'^member/forms/([\w-]+)/participation/(\d+)/$', participation_views.participation,
         name='participation', kwargs={'title': _('Participation details')}),
-    url(r'^member/forms/([\w-]+)/participant/questions/$', participation_views.questions, name='questions',
+    url(r'^member/forms/([\w-]+)/participation/questions/$', participation_views.questions, name='questions',
         kwargs={'title': _('Questions')}),
-    url(r'^member/forms/([\w-]+)/participant/preview/$', participation_views.preview, name='preview',
+    url(r'^member/forms/([\w-]+)/participation/preview/$', participation_views.preview, name='preview',
         kwargs={'title': _('Preview')}),
-    url(r'^member/forms/([\w-]+)/participant/submitted/$', participation_views.submitted, name='submitted',
+    url(r'^member/forms/([\w-]+)/participation/submitted/$', participation_views.submitted, name='submitted',
         kwargs={'title': _('Ready!')}),
 ]
 
 report_urls = [
     url(r'^report/([\w-]+)/$', reports_views.all_responsibles, name='report',
         kwargs={'title': _('Responsibles')}),
-    url(r'^report/([\w-]+)/all_participants/$', reports_views.all_participants,
-        name='all_participants', kwargs={'title': _('Participants')}),
+    url(r'^report/([\w-]+)/all_participations/$', reports_views.all_participations,
+        name='all_participations', kwargs={'title': _('Participants')}),
     url(r'^report/([\w-]+)/all_activities/$', reports_views.all_activities, name='all_activities',
         kwargs={'title': _('Participations')}),
     url(r'^report/([\w-]+)/all_questions/$', reports_views.all_questions, name='all_questions',
@@ -133,26 +133,26 @@ login_urls = [
     DummyUrl(name='password_login', kwargs={'title': _('Password login'), 'icon': 'sign-in'}),
     # TODO: rename view
     url(r'^([\w-]+)/send_auth_link/', login_views.send_member_email,
-        name='send_responsible_email', kwargs={'title': _('Former participants and responsibles'),
+        name='send_responsible_email', kwargs={'title': _('Former participations and responsibles'),
                                                'icon': 'user'}),
     DummyUrl(name='report',
              kwargs={'title': _('Admin login'), 'icon': 'user-secret', 'right': True}),
 ]
 
 menu_urls = {'report': report_urls, 'anonymous_report': anonymous_report_urls,
-             'participant_flow': participant_flow_urls, 'login': login_urls}
+             'participation_flow': participation_flow_urls, 'login': login_urls}
 
 urlpatterns = [u for u in
-               chain(participant_flow_urls, report_urls, anonymous_report_urls, login_urls) if
+               chain(participation_flow_urls, report_urls, anonymous_report_urls, login_urls) if
                not isinstance(u, DummyUrl)] + \
               [
                   # Test erorr email
                   url(r'^test_error/$', error, name='test_error'),
 
-                  # Later actions for participant
-                  url(r'^anonymous/authenticate_participant/([\w-]+)/$',
-                      participation_views.authenticate_participant_old,
-                      name='authenticate_participant_old'),
+                  # Later actions for participation
+                  url(r'^anonymous/authenticate_participation/([\w-]+)/$',
+                      participation_views.authenticate_participation_old,
+                      name='authenticate_participation_old'),
                   url(r'^anonymous/authenticate/(\d+)/([\w-]+)/$',
                       participation_views.authenticate_member,
                       name='authenticate_member'),
@@ -160,13 +160,13 @@ urlpatterns = [u for u in
                       participation_views.authenticate_member_mock,
                       name='authenticate_mock'),
 
-                  url(r'^email/unsubscribe_participant/(\w+)/$', participation_views.unsubscribe,
-                      name='unsubscribe_participant'),
+                  url(r'^email/unsubscribe_participation/(\w+)/$', participation_views.unsubscribe,
+                      name='unsubscribe_participation'),
                   url(r'^email/unsubscribe_responsible/(\w+)/$', reports_views.unsubscribe,
                       name='unsubscribe_responsible'),
 
                   # Report views
-                  url(r'^report/participant/(\d+)/$', reports_views.view_participant,
+                  url(r'^report/participation/(\d+)/$', reports_views.view_participation,
                       name='view_user'),
                   url(r'^report/responsible/(\d+)/([\w-]+)/$', reports_views.view_responsible,
                       name='view_responsible'),
@@ -179,7 +179,7 @@ urlpatterns = [u for u in
                   url(r'^logout/$', reports_views.logout_view, name='logout'),
                   url(r'^send_auth_link/(.*)$', participation_views.send_auth_link,
                       name='send_auth_link'),
-                  url(r'^member/forms/([\w-]+)/participant/delete/$', participation_views.delete_participation,
+                  url(r'^member/forms/([\w-]+)/participation/delete/$', participation_views.delete_participation,
                       name='delete_participation'),
                   url(r'^([\w-]+)/$', login_views.password_login, name='password_login'),
                   url(r'^member/forms/([\w-]+)/participation/$', participation_views.participation,

@@ -69,11 +69,11 @@ msgid "Customization"
 msgstr "Lomakkeen asetukset"
 
 #: admin.py:264
-msgid "Ask details from participants"
+msgid "Ask details from participations"
 msgstr "Kysy nämä tiedot osallistujilta"
 
 #: admin.py:265
-msgid "Require details from participants"
+msgid "Require details from participations"
 msgstr "Vaadi nämä tiedot osallistujilta"
 
 #: admin.py:289
@@ -81,7 +81,7 @@ msgid "Copy form as a new"
 msgstr "Kopioi lomake uudeksi"
 
 #: admin.py:295
-msgid "Bulk email former participants now!"
+msgid "Bulk email former participations now!"
 msgstr "Lähetä massasähköpostia aikaisemmille osallistujille nyt!"
 
 #: admin.py:301
@@ -89,7 +89,7 @@ msgid "Bulk email responsibility persons now!"
 msgstr "Lähetä massasähköpostia vastuuhenkilöille nyt!"
 
 #: admin.py:307
-msgid "Shuffle participant data"
+msgid "Shuffle participation data"
 msgstr "Sekoita henkilötiedot"
 
 #: admin.py:342
@@ -116,7 +116,7 @@ msgid ""
 "Dear {{responsible}},\n"
 "\n"
 "Participation results for {{form}} are now available for you to view.\n"
-"You can see all participants for the activities you are responsible of in "
+"You can see all participations for the activities you are responsible of in "
 "the following URL:\n"
 "{{url}}\n"
 "From now on, you will also receive a notification message, if a new "
@@ -149,7 +149,7 @@ msgstr ""
 
 #: emails.py:37
 msgid ""
-"Dear {{participant}},\n"
+"Dear {{participation}},\n"
 "\n"
 "You are invited to participate in \"{{ form }}\".\n"
 "You can fill in your participation details at {{ url }}.\n"
@@ -160,7 +160,7 @@ msgid ""
 "Contact person:\n"
 "{{contact}}"
 msgstr ""
-"Hei {{participant}},\n"
+"Hei {{participation}},\n"
 "\n"
 "Sinut on kutsuttu täyttämään lomake \"{{form}}\".\n"
 "Voit kertoa halukkuudestasi osallistua {{url}}.\n"
@@ -175,8 +175,8 @@ msgstr ""
 msgid ""
 "Dear {{responsible}},\n"
 "\n"
-"New participation from {{participant}} has just been submitted to {{form}}.\n"
-"You can see all participants for the activities you are responsible of in "
+"New participation from {{participation}} has just been submitted to {{form}}.\n"
+"You can see all participations for the activities you are responsible of in "
 "the following URL:\n"
 "{{url}}\n"
 "You can also adjust your contact details and email notification preferences "
@@ -190,7 +190,7 @@ msgid ""
 msgstr ""
 "Hei {{responsible}}, \n"
 "\n"
-"Uusi osallistujatieto henkilöltä {{participant}} on tallennettu lomakkeeseen "
+"Uusi osallistujatieto henkilöltä {{participation}} on tallennettu lomakkeeseen "
 "{{form}}. \n"
 "Voit tarkastella osallistujatietoja niihin tehtäviin joista olet vastuussa "
 "osoitteessa:\n"
@@ -206,7 +206,7 @@ msgstr ""
 
 #: emails.py:61
 msgid ""
-"Dear {{participant}},\n"
+"Dear {{participation}},\n"
 "\n"
 "New form revision to \"{{ form }}\" has been published.\n"
 "Please update your participation information at {{ url }}.\n"
@@ -217,7 +217,7 @@ msgid ""
 "Contact person:\n"
 "{{contact}}"
 msgstr ""
-"Hei {{participant}},\n"
+"Hei {{participation}},\n"
 "\n"
 "Uusi versio lomakkeesta \"{{form}}\" on julkaistu.\n"
 "Päivitä osallistumistietosi osoitteessa {{url}}.\n"
@@ -230,7 +230,7 @@ msgstr ""
 
 #: emails.py:72 emails.py:83
 msgid ""
-"Dear {{participant}},\n"
+"Dear {{participation}},\n"
 "\n"
 "You submitted form \"{{ form }}\" on {{ last_modified }}.\n"
 "If you wish to change any of the details you gave, you can go to {{ url }}.\n"
@@ -241,7 +241,7 @@ msgid ""
 "Contact person:\n"
 "{{contact}}"
 msgstr ""
-"Hei {{participant}},\n"
+"Hei {{participation}},\n"
 "\n"
 "Lähetit tiedot lomakkeeseen \"{{form}}\" ajankohtana {{last_modified}}.\n"
 "Jos haluat muuttaa antamiasi tietoja, voit mennä osoitteeseen {{url}}.\n"
@@ -254,7 +254,7 @@ msgstr ""
 
 #: emails.py:94
 msgid ""
-"Dear {{participant}},\n"
+"Dear {{participation}},\n"
 "\n"
 "You submitted update to your data on form \"{{ form }}\" on "
 "{{ last_modified }}.\n"
@@ -266,7 +266,7 @@ msgid ""
 "Contact person:\n"
 "{{contact}}"
 msgstr ""
-"Hei {{participant}},\n"
+"Hei {{participation}},\n"
 "\n"
 "Päivitit tietojasi lomakkeeseen \"{{form}}\" ajankohtana {{last_modified}}.\n"
 "Jos haluat muuttaa antamiasi tietoja, voit mennä osoitteeseen {{url}}.\n"
@@ -281,7 +281,7 @@ msgstr ""
 msgid ""
 "Dear {{responsible}},\n"
 "\n"
-"You can see all participants for the activities you are responsible of in "
+"You can see all participations for the activities you are responsible of in "
 "the following URL:\n"
 "{{url}}\n"
 "\n"
@@ -307,7 +307,7 @@ msgstr ""
 
 #: emails.py:118
 msgid ""
-"Dear {{participant}},\n"
+"Dear {{participation}},\n"
 "\n"
 "Your email address needs to be verified. Please do so by clicking link "
 "below. Then you can\n"
@@ -321,7 +321,7 @@ msgid ""
 "Contact person:\n"
 "{{contact}}"
 msgstr ""
-"Hei {{participant}},\n"
+"Hei {{participation}},\n"
 "\n"
 "Sähköpostiosoitteesi pitää varmentaa. Voit tehdä sen klikkaamalla alla "
 "olevaa linkkiä. Sen jälkeen voit jatkaa\n"
@@ -467,7 +467,7 @@ msgstr "Vastaus on pakollinen"
 
 #: forms.py:521
 msgid ""
-"Send invitations also to participants that have participated in older form "
+"Send invitations also to participations that have participated in older form "
 "versions but not yet this form"
 msgstr ""
 "Lähetä kutsu myös niille henkilöille jotka ovat täyttäneet lomakkeen "
@@ -623,12 +623,12 @@ msgid "Valid to"
 msgstr "Voimassaolo päättyy"
 
 #: models.py:315
-msgid "Send bulk email to participants"
+msgid "Send bulk email to participations"
 msgstr "Lähetä sähköpostia osallistujille"
 
 #: models.py:316
 msgid ""
-"Send email to participants that filled the form when this revision was "
+"Send email to participations that filled the form when this revision was "
 "active. Email is sent when new current revision is published."
 msgstr ""
 "Lähetä sähköpostia niille sallistujille jotka täyttivät lomakkeen silloin "
@@ -671,12 +671,12 @@ msgstr "Mallin nimi"
 #: models.py:408
 msgid ""
 "Following context may (depending on topic) be available for both subject and "
-"content: {{responsible}}, {{participant}}, {{last_modified}}, {{form}}, "
+"content: {{responsible}}, {{participation}}, {{last_modified}}, {{form}}, "
 "{{url}}, {{contact}}"
 msgstr ""
 "Seuraavat sisältömuuttujat ovat mahdollisesti (riippuen sähköpostin "
 "asiayhteydestä) käytettävissä sekä otsikkoon että sisältöön: "
-"{{responsible}}, {{participant}}, {{last_modified}}, {{form}}, {{url}}, "
+"{{responsible}}, {{participation}}, {{last_modified}}, {{form}}, {{url}}, "
 "{{contact}}"
 
 #: models.py:422
@@ -718,12 +718,12 @@ msgid "Require email verification"
 msgstr "Vaadi sähköpostiosoitteen varmentamista"
 
 #: models.py:449
-msgid "Verification email to participant"
+msgid "Verification email to participation"
 msgstr "Sähköpostin varmennusviesti osallistujalle"
 
 #: models.py:451
 msgid ""
-"Email verification message that is sent to participant when filling form, if "
+"Email verification message that is sent to participation when filling form, if "
 "email verification is enabled"
 msgstr ""
 "Sähköpostin varmennusviesti joka lähetetään osallistujalle kun tämä täyttää "
@@ -760,43 +760,43 @@ msgstr ""
 "raporttilinkkiä"
 
 #: models.py:483
-msgid "Email to participant, on finish"
+msgid "Email to participation, on finish"
 msgstr "Sähköposti osallistujalle, valmis lomake"
 
 #: models.py:484
 msgid ""
-"Email that is sent to participant after he has fulfilled his participation"
+"Email that is sent to participation after he has fulfilled his participation"
 msgstr ""
 "Sähköposti joka lähetetään osallistujalle sen jälkeen kun hän on jättänyt "
 "lomakkeen järjestelmään"
 
 #: models.py:489
-msgid "Email to participant, on update"
+msgid "Email to participation, on update"
 msgstr "Sähköposti osallistujalle, päivitetty lomake"
 
 #: models.py:490
 msgid ""
-"Email that is sent to participant after he has updated his participation"
+"Email that is sent to participation after he has updated his participation"
 msgstr ""
 "Sähköposti joka lähetetään osallistujalle sen jälkeen kun hän on päivittänyt "
 "tietojansa"
 
 #: models.py:496
-msgid "Resend email to participant"
+msgid "Resend email to participation"
 msgstr "Sähköposti vastaanottajalle, uudelleenlähetys"
 
 #: models.py:497
-msgid "Email that is sent to participant if he requests resending email"
+msgid "Email that is sent to participation if he requests resending email"
 msgstr ""
 "Sähköposti, joka lähetetään osallistujalle jos hän pyytää sähköpostilinkin "
 "uudelleenlähetystä"
 
 #: models.py:503
-msgid "Bulk email to former participants"
+msgid "Bulk email to former participations"
 msgstr "Massasähköpostia aikaisemmille osallistujille"
 
 #: models.py:504
-msgid "Email that is sent to former participants when form is published"
+msgid "Email that is sent to former participations when form is published"
 msgstr ""
 "Sähköposti joka lähetetään aikaisemmille osallistujille silloin kun lomake "
 "julkistetaan"
@@ -823,7 +823,7 @@ msgstr ""
 "versio ilmestyy listaan."
 
 #: models.py:526
-msgid "Password that is asked from participants"
+msgid "Password that is asked from participations"
 msgstr "Salasana kysellään lomakkeen täyttäjiltä"
 
 #: models.py:530
@@ -940,7 +940,7 @@ msgid "New participation arrived for form {{form}}"
 msgstr "Uusi osallistujatieto lähetetty lomakkeelle {{form}}"
 
 #: models.py:626
-msgid "Default email to participant, on finish"
+msgid "Default email to participation, on finish"
 msgstr "Osallistujalle: valmis lomake (oletus)"
 
 #: models.py:628
@@ -948,7 +948,7 @@ msgid "Your update to form {{form}}"
 msgstr "Päivityksesi lomakkeelle {{form}}"
 
 #: models.py:632
-msgid "Default email to participant, on update"
+msgid "Default email to participation, on update"
 msgstr "Osallistujalle: päivitetty lomake (oletus)"
 
 #: models.py:634
@@ -956,7 +956,7 @@ msgid "Your updated participation to form {{form}}"
 msgstr "Päivittämäsi osallistujatietosi lomakkeelle {{form}}"
 
 #: models.py:638
-msgid "Default email to former participants"
+msgid "Default email to former participations"
 msgstr "Sähköposti aikaisemmille osallistujille (oletus)"
 
 #: models.py:640
@@ -964,7 +964,7 @@ msgid "New form revision to form {{form}} has been published"
 msgstr "Uusi versio lomakkeesta {{form}} on julkaistu"
 
 #: models.py:644
-msgid "Default resend email to participant"
+msgid "Default resend email to participation"
 msgstr "Sähköposti vastaanottajalle, uudelleenlähetys (oletus)"
 
 #: models.py:646
@@ -972,7 +972,7 @@ msgid "Your participation to form {{form}}"
 msgstr "Osallistujatietosi lomakkeelle {{form}}"
 
 #: models.py:650
-msgid "Default invite email to participants"
+msgid "Default invite email to participations"
 msgstr "Kutsusähköposti osallistujille (oletus)"
 
 #: models.py:652
@@ -988,7 +988,7 @@ msgid "Your report in {{form}}"
 msgstr "Raporttisi lomakkeelle {{form}}"
 
 #: models.py:662
-msgid "Default verification email to participant"
+msgid "Default verification email to participation"
 msgstr "Sähköpostiosoitteen varmennusviesti osallistujalle (oletus)"
 
 #: models.py:664
@@ -1064,7 +1064,7 @@ msgid "Level 2 categories"
 msgstr "Tason 2 kategoriat"
 
 #: models.py:859 templates/serviceform/participation/preview_view.html:33
-#: templates/serviceform/reports/view_participant.html:25
+#: templates/serviceform/reports/view_participation.html:25
 msgid "Activity"
 msgstr "Tehtävä"
 
@@ -1098,7 +1098,7 @@ msgstr "Vaihtoehdot"
 
 #: models.py:930 models.py:947
 #: templates/serviceform/participation/preview_view.html:73
-#: templates/serviceform/reports/view_participant.html:60
+#: templates/serviceform/reports/view_participation.html:60
 msgid "Question"
 msgstr "Kysymys"
 
@@ -1200,7 +1200,7 @@ msgstr "Sähköpostiosoite varmennettu"
 #: templates/serviceform/participation/preview_view.html:89
 #: templates/serviceform/reports/contents/_all_questions.html:13
 #: templates/serviceform/reports/contents/_responsible_contents.html:62
-#: templates/serviceform/reports/view_participant.html:76
+#: templates/serviceform/reports/view_participation.html:76
 msgid "No"
 msgstr "Ei"
 
@@ -1208,7 +1208,7 @@ msgstr "Ei"
 #: templates/serviceform/participation/preview_view.html:87
 #: templates/serviceform/reports/contents/_all_questions.html:11
 #: templates/serviceform/reports/contents/_responsible_contents.html:60
-#: templates/serviceform/reports/view_participant.html:74
+#: templates/serviceform/reports/view_participation.html:74
 msgid "Yes"
 msgstr "Kyllä"
 
@@ -1254,7 +1254,7 @@ msgstr ""
 "Jos tämä on ensimmäinen kerta kun täytät tämän lomakkeen, sinun pitää antaa "
 "salasana jatkaaksesi"
 
-#: templates/serviceform/login/send_participant_auth_link.html:5
+#: templates/serviceform/login/send_participation_auth_link.html:5
 msgid ""
 "If you have filled this form already in the past, please give your email\n"
 "  below so we can send you a personal link to update your participation "
@@ -1274,11 +1274,11 @@ msgstr ""
 "sähköpostiosoitteesi, niin lähetämme sinulle henkilökohtaisen linkin, jolla "
 "voit tarkastella raporttiasi."
 
-#: templates/serviceform/login/unsubscribe_participant.html:4
-msgid "You won't be getting any emails (as participant for "
+#: templates/serviceform/login/unsubscribe_participation.html:4
+msgid "You won't be getting any emails (as participation for "
 msgstr "Et saa enää sähköposteja (osallistujana lomakkeelle "
 
-#: templates/serviceform/login/unsubscribe_participant.html:4
+#: templates/serviceform/login/unsubscribe_participation.html:4
 #: templates/serviceform/login/unsubscribe_responsible.html:4
 msgid ") from this system any more."
 msgstr ") tästä järjestelmästä tämän jälkeen."
@@ -1359,7 +1359,7 @@ msgstr "Puhelin"
 
 #: templates/serviceform/participation/participation_form/snippets/responsible_tooltip.html:7
 #: templates/serviceform/participation/preview_view.html:8
-#: templates/serviceform/reports/view_participant.html:6 urls.py:73
+#: templates/serviceform/reports/view_participation.html:6 urls.py:73
 msgid "Contact details"
 msgstr "Yhteystiedot"
 
@@ -1418,13 +1418,13 @@ msgid "Change contact details"
 msgstr "Muuta yhteystietoja"
 
 #: templates/serviceform/participation/preview_view.html:30
-#: templates/serviceform/reports/view_participant.html:22
+#: templates/serviceform/reports/view_participation.html:22
 msgid "I am wishing to participate in the following activities"
 msgstr "Haluan osallistua seuraaviin toimintamuotoihin"
 
 #: templates/serviceform/participation/preview_view.html:36
-#: templates/serviceform/reports/snippets/_participant_row.html:59
-#: templates/serviceform/reports/view_participant.html:28
+#: templates/serviceform/reports/snippets/_participation_row.html:59
+#: templates/serviceform/reports/view_participation.html:28
 msgid "Additional info"
 msgstr "Lisätietoja"
 
@@ -1435,12 +1435,12 @@ msgstr "Muuta osallistumistietoja"
 #: templates/serviceform/participation/preview_view.html:70
 #: templates/serviceform/reports/contents/_all_questions.html:2
 #: templates/serviceform/reports/contents/_responsible_contents.html:50
-#: templates/serviceform/reports/view_participant.html:57
+#: templates/serviceform/reports/view_participation.html:57
 msgid "Answers to questions"
 msgstr "Vastaukset kysymyksiin"
 
 #: templates/serviceform/participation/preview_view.html:76
-#: templates/serviceform/reports/view_participant.html:63
+#: templates/serviceform/reports/view_participation.html:63
 msgid "Answer"
 msgstr "Vastaus"
 
@@ -1498,8 +1498,8 @@ msgstr "Raportit lomakkeelle"
 msgid "All activities"
 msgstr "Kaikki tehtävät"
 
-#: templates/serviceform/reports/contents/_all_participants.html:2
-msgid "All participants"
+#: templates/serviceform/reports/contents/_all_participations.html:2
+msgid "All participations"
 msgstr "Kaikki osallistujat"
 
 #: templates/serviceform/reports/contents/_all_responsibles.html:2
@@ -1547,7 +1547,7 @@ msgid "Settings"
 msgstr "Asetukset"
 
 #: templates/serviceform/reports/snippets/_help.html:3
-msgid "Each participant rows contains the following data"
+msgid "Each participation rows contains the following data"
 msgstr "Kunkin osallistujan rivi sisältää seuraavat tiedot"
 
 #: templates/serviceform/reports/snippets/_help.html:7
@@ -1578,20 +1578,20 @@ msgstr "Osallistuja on jättänyt lisätietoja osallistumisesta"
 msgid "Notes have been entered"
 msgstr "Osallistujasta on jätetty muistiinpanoja"
 
-#: templates/serviceform/reports/snippets/_participant_row.html:32
+#: templates/serviceform/reports/snippets/_participation_row.html:32
 msgid "Number of activities"
 msgstr "Tehtävien lukumäärä"
 
-#: templates/serviceform/reports/snippets/_participant_row.html:64
-#: templates/serviceform/reports/view_participant.html:104
+#: templates/serviceform/reports/snippets/_participation_row.html:64
+#: templates/serviceform/reports/view_participation.html:104
 msgid "Log"
 msgstr "Muistiinpanot"
 
-#: templates/serviceform/reports/view_participant.html:88
+#: templates/serviceform/reports/view_participation.html:88
 msgid "Other information"
 msgstr "Muita tietoja"
 
-#: templates/serviceform/reports/view_participant.html:113
+#: templates/serviceform/reports/view_participation.html:113
 msgid "Add entry"
 msgstr "Lisää muistiinpano"
 
@@ -1832,7 +1832,7 @@ msgstr "Olet kirjautunut ulos"
 #~ msgstr "Yhteyshenkilö"
 
 #~ msgid ""
-#~ "Send email to responsible person whenever a participant fills and sends a "
+#~ "Send email to responsible person whenever a participation fills and sends a "
 #~ "form"
 #~ msgstr ""
 #~ "Lähetä sähköpostia vastuuhenkilölle aina kun uusi lomake on täytetty"

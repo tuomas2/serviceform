@@ -405,15 +405,15 @@ ul.participation-flow {
   margin-left: 20px;
 }
 
-$indent-participant: 25pt;
+$indent-participation: 25pt;
 
 .row-report {
   @extend .row;
 }
 
-.row-report-participant {
+.row-report-participation {
   @extend .row-report;
-  margin-left: $indent-participant;
+  margin-left: $indent-participation;
 
 }
 
@@ -424,7 +424,7 @@ $indent-participant: 25pt;
 
 .row-report-extra {
   @extend .row, .panel, .panel-body;
-  //margin-left: $indent-participant;
+  //margin-left: $indent-participation;
   background: rgba(203, 0, 255, 0.06);
 }
 /*
@@ -448,7 +448,7 @@ $indent-participant: 25pt;
   @extend .col-md-1;
 }
 
-.col-report-participant {
+.col-report-participation {
   @extend .col-xs-6;
   @extend .col-md-3;
 }
@@ -516,7 +516,7 @@ $indent-participant: 25pt;
   @extend .col-xs-1;
 }
 
-.col-report-old-participant {
+.col-report-old-participation {
   @extend .col-xs-2;
 }
 

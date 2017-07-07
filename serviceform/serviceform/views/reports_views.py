@@ -27,7 +27,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.translation import gettext_lazy as _
 
 from .. import models, forms
-from ..utils import user_has_serviceform_permission, fetch_participants, expire_auth_link, decode, \
+from ..utils import user_has_serviceform_permission, fetch_participations, expire_auth_link, decode, \
     RevisionOptions, get_authenticated_member
 from .decorators import require_serviceform, require_authenticated_member
 
@@ -91,49 +91,49 @@ def all_responsibles(request: HttpRequest, service_form: models.ServiceForm) -> 
                   {'service_form': service_form})
 
 
-@require_serviceform(check_form_permission=True, fetch_participants=True)
-def all_participants(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
-    return render(request, 'serviceform/reports/all_participants.html',
+@require_serviceform(check_form_permission=True, fetch_participations=True)
+def all_participations(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
+    return render(request, 'serviceform/reports/all_participations.html',
                   {'service_form': service_form})
 
 
-@require_serviceform(check_form_permission=True, init_counters=True, fetch_participants=True)
+@require_serviceform(check_form_permission=True, init_counters=True, fetch_participations=True)
 def all_activities(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     return render(request, 'serviceform/reports/all_activities.html',
                   {'service_form': service_form})
 
 
-@require_serviceform(check_form_permission=True, init_counters=True, fetch_participants=True)
+@require_serviceform(check_form_permission=True, init_counters=True, fetch_participations=True)
 def all_questions(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
     return render(request, 'serviceform/reports/all_questions.html',
                   {'service_form': service_form})
 
 
 @require_authenticated_member
-def view_participant(request: HttpRequest, responsible: models.Member,
-                     participant_id: int) -> HttpResponse:
-    participant = get_object_or_404(models.Participation.objects, pk=participant_id)
+def view_participation(request: HttpRequest, responsible: models.Member,
+                     participation_id: int) -> HttpResponse:
+    participation = get_object_or_404(models.Participation.objects, pk=participation_id)
     anonymous = False
 
     if request.user.pk:
-        user_has_serviceform_permission(request.user, participant.form)
+        user_has_serviceform_permission(request.user, participation.form)
         user = request.user
     else:
-        if responsible.form != participant.form:
+        if responsible.form != participation.form:
             raise PermissionDenied
         user = responsible
         anonymous = True
 
     if request.method == 'POST':
-        form = forms.LogForm(participant, user, request.POST)
+        form = forms.LogForm(participation, user, request.POST)
         if form.is_valid():
             form.save()
-        return HttpResponseRedirect(reverse('view_user', args=(participant_id,)))
+        return HttpResponseRedirect(reverse('view_user', args=(participation_id,)))
 
-    form = forms.LogForm(participant, user)
-    service_form = participant.form
-    return render(request, 'serviceform/reports/view_participant.html',
-                  {'service_form': service_form, 'participant': participant, 'log_form': form,
+    form = forms.LogForm(participation, user)
+    service_form = participation.form
+    return render(request, 'serviceform/reports/view_participation.html',
+                  {'service_form': service_form, 'participation': participation, 'log_form': form,
                    'anonymous': anonymous})
 
 
@@ -151,7 +151,7 @@ def view_responsible(request: HttpRequest, auth_responsible: models.Member,
     # TODO why do we do this?
     request.service_form = service_form
     service_form.init_counters()
-    fetch_participants(service_form, revision_name=RevisionOptions.ALL)
+    fetch_participations(service_form, revision_name=RevisionOptions.ALL)
     return render(request, 'serviceform/reports/responsible.html',
                   {'service_form': service_form, 'responsible': responsible,
                    'show_report_btn': True})
@@ -202,7 +202,7 @@ def responsible_report(request: HttpRequest,
         raise PermissionDenied
     service_form = get_object_or_404(models.ServiceForm.objects, slug=serviceform_slug)
     service_form.init_counters(all_responsibles=True)
-    fetch_participants(service_form, revision_name=RevisionOptions.ALL)
+    fetch_participations(service_form, revision_name=RevisionOptions.ALL)
     return render(request, 'serviceform/reports/responsible_anonymous.html',
                   {'service_form': service_form, 'responsible': responsible})
 

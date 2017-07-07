@@ -115,7 +115,7 @@ class EmailTemplate(models.Model):
     subject = models.CharField(_('Subject'), max_length=256)
     content = models.TextField(_('Content'), help_text=_(
         'Following context may (depending on topic) be available for both subject and content: '
-        '{{responsible}}, {{participant}}, {{last_modified}}, {{form}}, {{url}}, {{contact}}'))
+        '{{responsible}}, {{participation}}, {{last_modified}}, {{form}}, {{url}}, {{contact}}'))
 
     organization = models.ForeignKey('serviceform.Organization', null=True, on_delete=models.CASCADE)
    # TODO: attributes that are named as 'form' should be renamed to 'serviceform'

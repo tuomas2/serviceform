@@ -36,11 +36,11 @@ def test_hit_admin_reports(db, report_settings, responsible, admin_client: Clien
     #r = models.Member.objects.filter(form__slug=SLUG).first()
     pages = [
                 f"/report/{SLUG}/",
-                f"/report/{SLUG}/all_participants/",
+                f"/report/{SLUG}/all_participations/",
                 f"/report/{SLUG}/all_activities/",
                 f"/report/{SLUG}/settings/",
                 f"/report/{SLUG}/all_questions/",
-                f"/report/participant/{p.pk}/",
+                f"/report/participation/{p.pk}/",
                 f"/report/responsible/{responsible.pk}/{SLUG}/",
                 f"/invite/{SLUG}/",
                 f"/preview/{SLUG}/",
@@ -117,7 +117,7 @@ class Pages:
     EMAIL_VERIFICATION = rp('email_verification')
     PARTICIPATION = rp('participation')
     #PARTICIPATIONX = rp('participation', '%d')
-    #'/participant/participation/%d/'
+    #'/participation/participation/%d/'
 
     PARTICIPATION0 = rp('participation', 0)
     PARTICIPATION1 = rp('participation', 1)
@@ -128,9 +128,9 @@ class Pages:
     PARTICIPATION6 = rp('participation', 6)
 
 
-    QUESTIONS = rp('questions') #'/participant/questions/'
-    PREVIEW = rp('preview') #'/participant/preview/'
-    SUBMITTED = rp('submitted') #'/participant/submitted/'
+    QUESTIONS = rp('questions') #'/participation/questions/'
+    PREVIEW = rp('preview') #'/participation/preview/'
+    SUBMITTED = rp('submitted') #'/participation/submitted/'
 
     PARTICIPATION_PAGES = [CONTACT, EMAIL_VERIFICATION] + \
                           [rp('participation', d) for d in range(7)] + \
@@ -138,7 +138,7 @@ class Pages:
 
     REPORT_RESPONSIBLE = rp('responsible_report') # "/for_responsible/"
 
-    DELETE_PARTICIPATION = rp('delete_participation') #'/participant/delete/'
+    DELETE_PARTICIPATION = rp('delete_participation') #'/participation/delete/'
     MEMBER_MAIN = r('member_main')
     RESPONSIBLE_REPORT = rp('responsible_report') #'/member/forms/{SLUG}/responsibilities/'
     RESPONSIBLE_EDIT = r('edit_responsible') #'/for_responsible/edit_details/'
@@ -146,14 +146,14 @@ class Pages:
     RESPONSIBLE_RESEND_LINK = rp('send_responsible_email') #f'/{SLUG}/send_auth_link/'
     RESPONSIBLE_TO_FULL_RAPORT = rp('to_full_report') #'/for_responsible/to_full_report/'
     FULL_REPORT_RESPONSIBLES = rp('report') #f'/report/{SLUG}/'
-    FULL_REPORT_PARTICIPANTS = rp('all_participants') #f"/report/{SLUG}/all_participants/"
+    FULL_REPORT_PARTICIPANTS = rp('all_participations') #f"/report/{SLUG}/all_participations/"
     FULL_REPORT_ACTIVITIES = rp('all_activities') #f"/report/{SLUG}/all_activities/"
     FULL_REPORT_QUESTIONS = rp('all_questions') #f"/report/{SLUG}/all_questions/"
     FULL_REPORT_SETTINGS = rp('settings') #f"/report/{SLUG}/settings/"
     LOGOUT = r('logout') #f'/logout/'
 
     INVITE = rp('invite') # f"/invite/{SLUG}/"
-    UNSUBSCRIBE_PARTICIPANT = '/email/unsubscribe_participant/%s/'
+    UNSUBSCRIBE_PARTICIPANT = '/email/unsubscribe_participation/%s/'
     UNSUBSCRIBE_RESPONSIBLE = '/email/unsubscribe_responsible/%s/'
 
     REPORT_PAGES = [
@@ -224,7 +224,7 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
 
     def check_responsible_reports(emails: QuerySet, resps: List[models.Member], num_responsibles: int):
         assert len(resps) == num_responsibles
-        assert len(emails) == num_responsibles + 1 - 1 # +1 to participant. -1 because 1 does not want email notifications.
+        assert len(emails) == num_responsibles + 1 - 1 # +1 to participation. -1 because 1 does not want email notifications.
         _full_report_hit = False
         _no_full_report_hit = False
         _no_email_hit = False
@@ -271,7 +271,7 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
     s.save()
 
     FULL_REPORT = r('report', s.slug) #f"/report/{s.slug}/"
-    ALL_PARTICIPANTS = r('all_participants', s.slug) #f"/report/{s.slug}/all_participants/"
+    ALL_PARTICIPANTS = r('all_participations', s.slug) #f"/report/{s.slug}/all_participations/"
     ALL_ACTIVITIES = r('all_activities', s.slug) #f"/report/{s.slug}/all_activities/"
     ALL_QUESTIONS = r('all_questions', s.slug) #f"/report/{s.slug}/all_questions/"
     REPORT_PAGES = [FULL_REPORT, ALL_ACTIVITIES, ALL_PARTICIPANTS, ALL_QUESTIONS]
@@ -291,7 +291,7 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
     res = client.get(Pages.CONTACT)
     assert res.status_code == Http.OK
 
-    #p = models.Participation.objects.get(pk=participant_id)
+    #p = models.Participation.objects.get(pk=participation_id)
 
     user_data_without_email = dict(forenames='Forenames',
                                    surname='Surname',
@@ -300,16 +300,16 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
                                    city='City',
                                    email='',
                                    phone_number='041434434434',
-                                   allow_participant_email='on')
+                                   allow_participation_email='on')
     if not send_email_allowed:
-        del user_data_without_email['allow_participant_email']
+        del user_data_without_email['allow_participation_email']
 
     user_data_earlier_email = user_data_without_email.copy()
     user_data = user_data_without_email.copy()
 
     user_data_earlier_email['email'] = earlier_p.member.email
 
-    user_data_without_email.pop('allow_participant_email', None)
+    user_data_without_email.pop('allow_participation_email', None)
     user_data['email'] = EMAIL_ADDRESS
 
     # Email missing
@@ -330,7 +330,7 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
     res = client.get(f'/send_auth_link/{earlier_p.member.email}')
     assert res.status_code == Http.REDIR
     assert res.url == Pages.CONTACT
-    assert earlier_p.member.allow_participant_email
+    assert earlier_p.member.allow_participation_email
 
     email = models.EmailMessage.objects.get(created_at__gt=timestamp)
     assert email.to_address == earlier_p.member.email
@@ -386,7 +386,7 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
 
     p.refresh_from_db()
     assert len(p.participationactivity_set.all()) == 1
-    pacs = models.ParticipationActivityChoice.objects.filter(activity__participant=p)
+    pacs = models.ParticipationActivityChoice.objects.filter(activity__participation=p)
     assert len(pacs) == 1
     assert pacs[0].additional_info == 'Testing testing'
 
@@ -430,7 +430,7 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
                            ))
         check_responsible_reports(emails, resps, 4) # 1 from q1, 2 from cat2, 1 from choice1
     else:
-        assert len(emails) == 1 #just participant
+        assert len(emails) == 1 #just participation
 
     p.refresh_from_db()
     assert p.status == models.Participation.STATUS_FINISHED
@@ -481,7 +481,7 @@ def test_participation_flow(db, client: Client, client1: Client, client2: Client
     pa2 = pas.get(activity=second_activity)
     assert pa2.additional_info == 'Testing testing 2'
 
-    pac = models.ParticipationActivityChoice.objects.filter(activity__participant=p).get()
+    pac = models.ParticipationActivityChoice.objects.filter(activity__participation=p).get()
     assert pac.additional_info == 'Testing testing'
 
     res = client.post(Pages.QUESTIONS, {
@@ -653,15 +653,15 @@ def test_invite_success(serviceform, admin_client: Client, emails, send_existing
     res = admin_client.get(Pages.INVITE)
     assert res.status_code == Http.OK
     part_email = 'timo.ahlroth@email.com'
-    participant = models.Participation.objects.get(member__email=part_email)
+    participation = models.Participation.objects.get(member__email=part_email)
     revision = models.FormRevision.objects.create(name='old', form=serviceform)
 
-    participant.form_revision = revision
-    participant.save()
+    participation.form_revision = revision
+    participation.save()
 
     post_data = {'email_addresses': emails + f' {part_email}'}
     if send_existing:
-        post_data.update({'old_participants': 'on'})
+        post_data.update({'old_participations': 'on'})
     timestamp = timezone.now()
     res = admin_client.post(Pages.INVITE, post_data)
     assert res.status_code == Http.REDIR
@@ -669,13 +669,13 @@ def test_invite_success(serviceform, admin_client: Client, emails, send_existing
     assert len(models.EmailMessage.objects.filter(created_at__gt=timestamp)) == (3 if send_existing else 2)
 
 
-def test_unsubscribe_participant(client: Client, participant: models.Participation):
+def test_unsubscribe_participation(client: Client, participation: models.Participation):
     from serviceform.serviceform.utils import encode
-    assert participant.member.allow_participant_email
-    res = client.get(Pages.UNSUBSCRIBE_PARTICIPANT % encode(participant.pk))
+    assert participation.member.allow_participation_email
+    res = client.get(Pages.UNSUBSCRIBE_PARTICIPANT % encode(participation.pk))
     assert res.status_code == Http.OK
-    participant.member.refresh_from_db()
-    assert not participant.member.allow_participant_email
+    participation.member.refresh_from_db()
+    assert not participation.member.allow_participation_email
 
 
 def test_unsubscribe_responsible(client: Client, responsible: models.Member):
