@@ -151,12 +151,6 @@ class Member(models.Model):
     def secret_id(self) -> str:
         return utils.encode(self.id)
 
-    # TODO: change view name
-    @property
-    def list_unsubscribe_link(self) -> str:
-        return settings.SERVER_URL + reverse('unsubscribe_participation', args=(self.secret_id,))
-
-
     @cached_property
     def age(self) -> Union[int, str]:
         return timezone.now().year - self.year_of_birth if self.year_of_birth else '-'
@@ -243,7 +237,7 @@ class Member(models.Model):
     # TODO: common unsubscribe -- rename view
     @property
     def list_unsubscribe_link(self) -> str:
-        return settings.SERVER_URL + reverse('unsubscribe_responsible', args=(self.secret_id,))
+        return settings.SERVER_URL + reverse('unsubscribe_member', args=(self.secret_id,))
 
     # TODO: rename to 'send_auth_link'
     def resend_auth_link(self) -> 'EmailMessage':

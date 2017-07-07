@@ -160,10 +160,8 @@ urlpatterns = [u for u in
                       participation_views.authenticate_member_mock,
                       name='authenticate_mock'),
 
-                  url(r'^email/unsubscribe_participation/(\w+)/$', participation_views.unsubscribe,
-                      name='unsubscribe_participation'),
-                  url(r'^email/unsubscribe_responsible/(\w+)/$', reports_views.unsubscribe,
-                      name='unsubscribe_responsible'),
+                  url(r'^email/unsubscribe_member/(\w+)/$', reports_views.unsubscribe,
+                      name='unsubscribe_member'),
 
                   # Report views
                   url(r'^report/participation/(\d+)/$', reports_views.view_participation,

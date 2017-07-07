@@ -1104,11 +1104,11 @@ msgid "You won't be getting any emails (as participation for "
 msgstr ""
 
 #: templates/serviceform/login/unsubscribe_participation.html:4
-#: templates/serviceform/login/unsubscribe_responsible.html:4
+#: templates/serviceform/login/unsubscribe_member.html:4
 msgid ") from this system any more."
 msgstr ""
 
-#: templates/serviceform/login/unsubscribe_responsible.html:4
+#: templates/serviceform/login/unsubscribe_member.html:4
 msgid "You won't be getting any emails (as responsible for "
 msgstr ""
 

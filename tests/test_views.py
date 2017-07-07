@@ -153,8 +153,8 @@ class Pages:
     LOGOUT = r('logout') #f'/logout/'
 
     INVITE = rp('invite') # f"/invite/{SLUG}/"
-    UNSUBSCRIBE_PARTICIPANT = '/email/unsubscribe_participation/%s/'
-    UNSUBSCRIBE_RESPONSIBLE = '/email/unsubscribe_responsible/%s/'
+    UNSUBSCRIBE_RESPONSIBLE = '/email/unsubscribe_member/%s/'
+    UNSUBSCRIBE_PARTICIPANT = UNSUBSCRIBE_RESPONSIBLE
 
     REPORT_PAGES = [
                 FULL_REPORT_RESPONSIBLES,
@@ -669,22 +669,14 @@ def test_invite_success(serviceform, admin_client: Client, emails, send_existing
     assert len(models.EmailMessage.objects.filter(created_at__gt=timestamp)) == (3 if send_existing else 2)
 
 
-def test_unsubscribe_participation(client: Client, participation: models.Participation):
-    from serviceform.serviceform.utils import encode
-    assert participation.member.allow_participation_email
-    res = client.get(Pages.UNSUBSCRIBE_PARTICIPANT % encode(participation.pk))
-    assert res.status_code == Http.OK
-    participation.member.refresh_from_db()
-    assert not participation.member.allow_participation_email
-
-
-def test_unsubscribe_responsible(client: Client, responsible: models.Member):
+def test_unsubscribe_member(client: Client, responsible: models.Member):
     from serviceform.serviceform.utils import encode
     assert responsible.allow_responsible_email
     res = client.get(Pages.UNSUBSCRIBE_RESPONSIBLE % encode(responsible.pk))
     assert res.status_code == Http.OK
     responsible.refresh_from_db()
     assert not responsible.allow_responsible_email
+    assert not responsible.allow_participation_email
 
 
 # TODO:

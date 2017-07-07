@@ -304,15 +304,6 @@ def delete_participation(request: HttpRequest, participation: models.Participati
                    'bootstrap_checkbox_disabled': True})
 
 
-def unsubscribe(request: HttpRequest, secret_id: str) -> HttpResponse:
-    participation = get_object_or_404(models.Participation.objects, pk=utils.decode(secret_id))
-    participation.member.allow_participation_email = False
-    participation.member.save(update_fields=['allow_participation_email'])
-    return render(request, 'serviceform/login/unsubscribe_participation.html',
-                  {'participation': participation,
-                   'service_form': participation.form})
-
-
 # see update_participation...
 #@require_authenticated_member
 #def member_update_form(request: HttpRequest, member: models.Member,

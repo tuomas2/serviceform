@@ -1279,11 +1279,11 @@ msgid "You won't be getting any emails (as participation for "
 msgstr "Et saa enää sähköposteja (osallistujana lomakkeelle "
 
 #: templates/serviceform/login/unsubscribe_participation.html:4
-#: templates/serviceform/login/unsubscribe_responsible.html:4
+#: templates/serviceform/login/unsubscribe_member.html:4
 msgid ") from this system any more."
 msgstr ") tästä järjestelmästä tämän jälkeen."
 
-#: templates/serviceform/login/unsubscribe_responsible.html:4
+#: templates/serviceform/login/unsubscribe_member.html:4
 msgid "You won't be getting any emails (as responsible for "
 msgstr "Et saa enää sähköposteja (vastuuhenkilönä lomakkeelle "
 

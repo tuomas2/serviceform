@@ -247,8 +247,9 @@ def to_full_report(request: HttpRequest, member: models.Member,
 def unsubscribe(request: HttpRequest, secret_id: str) -> HttpResponse:
     responsible: models.Member = get_object_or_404(models.Member.objects, pk=decode(secret_id))
     responsible.allow_responsible_email = False
-    responsible.save(update_fields=['allow_responsible_email'])
-    return render(request, 'serviceform/login/unsubscribe_responsible.html',
+    responsible.allow_participation_email = False
+    responsible.save(update_fields=['allow_responsible_email', 'allow_participation_email'])
+    return render(request, 'serviceform/login/unsubscribe_member.html',
                   {'responsible': responsible})
 
 
