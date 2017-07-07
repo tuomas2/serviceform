@@ -97,9 +97,10 @@ class Participation(models.Model):
         yield _('Participation created in system'), self.created_at
         yield _('Last finished'), self.last_finished
         yield _('Last modified'), self.last_modified
-        # TODO: these need to be shown in Member view
-        #yield _('Email address verified'), (_('No'), _('Yes'))[self.email_verified]
-        #yield _('Emails allowed'), (_('No'), _('Yes'))[self.send_email_allowed]
+        # TODO: these should be to be shown (also) in Member view, when it is created
+        yield _('Email address verified'), (_('No'), _('Yes'))[self.member.email_verified]
+        yield (_('Participation emails allowed'),
+               (_('No'), _('Yes'))[self.member.allow_participation_email])
         yield _('Form status'), self.STATUS_DICT[self.status]
 
     @cached_property

@@ -102,7 +102,7 @@ class Member(models.Model):
 
     year_of_birth = models.SmallIntegerField(_('Year of birth'), null=True, blank=True)
 
-    # TODO: set unique constraint
+    # TODO: set unique constraint... with the exception if email is not available
     email = models.EmailField(blank=True, verbose_name=_('Email'), db_index=True)
     email_verified = models.BooleanField(_('Email verified'), default=False)
 
@@ -145,8 +145,7 @@ class Member(models.Model):
 
     # TODO: rename: allow_showing_contact_details_in_forms etc.
     hide_contact_details = models.BooleanField(_('Hide contact details in form'), default=False)
-    # TODO: this should be per-form (grant access to 1 form only). Or could it be per-organization?
-    show_full_report = models.BooleanField(_('Grant access to full reports'), default=False)
+    show_full_report = models.BooleanField(_('Grant access to full reports (whole organization)'), default=False)
 
     # TODO change view name
     def personal_link(self) -> str:
