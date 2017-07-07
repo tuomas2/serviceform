@@ -147,14 +147,6 @@ class Member(models.Model):
     hide_contact_details = models.BooleanField(_('Hide contact details in form'), default=False)
     show_full_report = models.BooleanField(_('Grant access to full reports (whole organization)'), default=False)
 
-    # TODO change view name
-    def personal_link(self) -> str:
-        return format_html('<a href="{}">{}</a>',
-                           reverse('authenticate_participation_mock', args=(self.pk,)),
-                           self.pk)
-
-    personal_link.short_description = _('Link to personal report')
-
     @property
     def secret_id(self) -> str:
         return utils.encode(self.id)

@@ -391,8 +391,8 @@ class OrganizationAdmin(ExtendedLogMixin, NestedModelAdminMixin, GuardedModelAdm
 class ParticipationAdmin(ExtendedLogMixin, admin.ModelAdmin):
     list_display = (
         'id', '__str__', 'form_display', 'form_revision', 'status', 'activities_display',
-        'created_at', 'last_modified')
-    fields = ('forenames', 'surname')
+        'created_at', 'last_modified',)
+    fields = ('member',)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).select_related('form_revision__form')
