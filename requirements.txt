@@ -41,9 +41,9 @@ pip-tools==1.9.0
 prompt-toolkit==1.0.14    # via ipython
 psycopg2==2.7.1
 ptyprocess==0.5.2         # via pexpect
-pycparser==2.17           # via cffi
+pycparser==2.18           # via cffi
 pygments==2.2.0           # via ipython
-python-http-client==2.3.0  # via sendgrid
+python-http-client==2.4.0  # via sendgrid
 python-monkey-business==1.0.0  # via django-nested-admin
 pytz==2017.2              # via celery, django
 raven==6.1.0
