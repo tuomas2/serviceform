@@ -463,6 +463,66 @@
   }
 },
 {
+  "model": "serviceform.emailtemplate",
+  "pk": 41,
+  "fields": {
+    "name": "Default email to participation, on finish",
+    "subject": "P\u00e4ivityksesi lomakkeelle {{form}}",
+    "content": "Dear {{participation}},\n\nYou submitted form \"{{ form }}\" on {{ last_modified }}.\nIf you wish to change any of the details you gave, you can go to {{ url }}.\n\nBest regards,\nService form system administrators\n\nContact person:\n{{contact}}",
+    "organization": 1
+  }
+},
+{
+  "model": "serviceform.emailtemplate",
+  "pk": 42,
+  "fields": {
+    "name": "Default email to participation, on update",
+    "subject": "P\u00e4ivitt\u00e4m\u00e4si osallistujatietosi lomakkeelle {{form}}",
+    "content": "Dear {{participation}},\n\nYou submitted update to your data on form \"{{ form }}\" on {{ last_modified }}.\nIf you wish to change any of the details you gave, you can go to {{ url }}.\n\nBest regards,\nService form system administrators\n\nContact person:\n{{contact}}",
+    "organization": 1
+  }
+},
+{
+  "model": "serviceform.emailtemplate",
+  "pk": 43,
+  "fields": {
+    "name": "Default email to former participations",
+    "subject": "Uusi versio lomakkeesta {{form}} on julkaistu",
+    "content": "Dear {{participation}},\n\nNew form revision to \"{{ form }}\" has been published.\nPlease update your participation information at {{ url }}.\n\nBest regards,\nService form system administrators\n\nContact person:\n{{contact}}",
+    "organization": 1
+  }
+},
+{
+  "model": "serviceform.emailtemplate",
+  "pk": 44,
+  "fields": {
+    "name": "Default resend email to participation",
+    "subject": "Osallistujatietosi lomakkeelle {{form}}",
+    "content": "Dear {{participation}},\n\nYou submitted form \"{{ form }}\" on {{ last_modified }}.\nIf you wish to change any of the details you gave, you can go to {{ url }}.\n\nBest regards,\nService form system administrators\n\nContact person:\n{{contact}}",
+    "organization": 1
+  }
+},
+{
+  "model": "serviceform.emailtemplate",
+  "pk": 45,
+  "fields": {
+    "name": "Default verification email to participation",
+    "subject": "Sinun pit\u00e4\u00e4 varmentaa s\u00e4hk\u00f6postiosoiteesi lomakkeessa {{form}}",
+    "content": "Dear {{participation}},\n\nYour email address needs to be verified. Please do so by clicking link below. Then you can\ncontinue filling the form.\n\n{{url}}\n\nBest regards,\nService form system administrators\n\nContact person:\n{{contact}}",
+    "organization": 1
+  }
+},
+{
+  "model": "serviceform.emailtemplate",
+  "pk": 46,
+  "fields": {
+    "name": "Default auth link to member email",
+    "subject": "Your authentication link to access your data in {{organization}}",
+    "content": "Dear {{member}},\n\nHere is your link to access your data in {{organization}}:\n{{url}}\n\nBest regards,\nService form system administrators\n\nContact person:\n{{contact}}",
+    "organization": 2
+  }
+},
+{
   "model": "serviceform.participation",
   "pk": 70,
   "fields": {
@@ -9048,7 +9108,7 @@
   "pk": 2,
   "fields": {
     "name": "Matin Myyr\u00e4nty\u00f6 OY",
-    "email_to_member_auth_link": null
+    "email_to_member_auth_link": 46
   }
 },
 {
@@ -17475,19 +17535,19 @@
     "name": "Palvelulomake Testidataa",
     "slug": "jklvapis",
     "created_at": "2016-05-15T15:13:20.076Z",
-    "last_updated": "2017-05-26T08:19:56.581Z",
+    "last_updated": "2017-07-07T07:28:06.223Z",
     "last_editor": 1,
     "organization": 1,
     "responsible": 96,
     "require_email_verification": true,
-    "verification_email_to_participation": null,
+    "verification_email_to_participation": 45,
     "email_to_responsibles": 16,
     "bulk_email_to_responsibles": 15,
     "email_to_responsible_auth_link": 33,
-    "email_to_participation": null,
-    "email_to_participation_on_update": null,
-    "resend_email_to_participation": null,
-    "email_to_former_participations": null,
+    "email_to_participation": 41,
+    "email_to_participation_on_update": 42,
+    "resend_email_to_participation": 44,
+    "email_to_former_participations": 43,
     "email_to_invited_users": 18,
     "current_revision": 6,
     "password": "asdf",
