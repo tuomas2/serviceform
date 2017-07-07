@@ -372,55 +372,55 @@ class ServiceForm(AbstractServiceFormItem):
         if not self.bulk_email_to_responsibles:
             commit = True
             self.bulk_email_to_responsibles = EmailTemplate.make(
-                _('Default bulk email to responsibles'), self,
+                _('Default bulk email to responsibles'), self.organization,
                 emails.bulk_email_to_responsibles,
                 _('Participations can be now viewed for form {{form}}'))
         if not self.email_to_responsibles:
             commit = True
             self.email_to_responsibles = EmailTemplate.make(
                 _('Default email to responsibles'),
-                self, emails.message_to_responsibles,
+                self.organization, emails.message_to_responsibles,
                 _('New participation arrived for form {{form}}'))
         if not self.email_to_participation:
             commit = True
             self.email_to_participation = EmailTemplate.make(
-                _('Default email to participation, on finish'), self,
+                _('Default email to participation, on finish'), self.organization,
                 emails.participation_on_finish,
                 _('Your update to form {{form}}'))
         if not self.email_to_participation_on_update:
             commit = True
             self.email_to_participation_on_update = EmailTemplate.make(
-                _('Default email to participation, on update'), self,
+                _('Default email to participation, on update'), self.organization,
                 emails.participation_on_update,
                 _('Your updated participation to form {{form}}'))
         if not self.email_to_former_participations:
             commit = True
             self.email_to_former_participations = EmailTemplate.make(
-                _('Default email to former participations'), self,
+                _('Default email to former participations'), self.organization,
                 emails.participation_new_form_revision,
                 _('New form revision to form {{form}} has been published'))
         if not self.resend_email_to_participation:
             commit = True
             self.resend_email_to_participation = EmailTemplate.make(
-                _('Default resend email to participation'), self,
+                _('Default resend email to participation'), self.organization,
                 emails.resend_email_to_participations,
                 _('Your participation to form {{form}}'))
         if not self.email_to_invited_users:
             commit = True
             self.email_to_invited_users = EmailTemplate.make(
-                _('Default invite email to participations'), self,
+                _('Default invite email to participations'), self.organization,
                 emails.invite,
                 _('Invitation to fill participation in {{form}}'))
         if not self.email_to_responsible_auth_link:
             commit = True
             self.email_to_responsible_auth_link = EmailTemplate.make(
-                _('Default request responsible auth link email'), self,
+                _('Default request responsible auth link email'), self.organization,
                 emails.request_responsible_auth_link,
                 _('Your report in {{form}}'))
         if not self.verification_email_to_participation:
             commit = True
             self.verification_email_to_participation = EmailTemplate.make(
-                _('Default verification email to participation'), self,
+                _('Default verification email to participation'), self.organization,
                 emails.verification_email_to_participation,
                 _('Please verify your email in {{form}}'))
         if commit:
