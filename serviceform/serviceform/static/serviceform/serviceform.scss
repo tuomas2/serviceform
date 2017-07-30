@@ -22,6 +22,14 @@ body {
   font-size: 12pt;
 }
 
+.page-footer-text {
+  text-align: center;
+  font-size: 12pt;
+  img {
+    width: 50pt;
+  }
+}
+
 // COMMON STYLES
 
 .checkbox, .radio {
