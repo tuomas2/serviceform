@@ -19,7 +19,8 @@
 import time
 from django.core.management import BaseCommand
 from django.utils import timezone
-
+from django.utils.translation import activate
+from django.conf import settings
 from serviceform.tasks.models import Task
 from serviceform.serviceform.utils import DelayedKeyboardInterrupt
 
@@ -29,6 +30,7 @@ class Command(BaseCommand):
     help = 'Process tasks'
 
     def handle(self, *args, **kwargs):
+        activate(settings.LANGUAGE_CODE)
         while True:
             tasks = Task.objects.filter(status=Task.REQUESTED, scheduled_time__lte=timezone.now())
             for t in tasks:
