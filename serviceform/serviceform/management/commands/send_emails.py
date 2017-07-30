@@ -18,12 +18,16 @@
 
 
 import time
+import logging
+
 from django.core.management import BaseCommand
 from django.utils.translation import activate
 from django.conf import settings
-
 from serviceform.serviceform.models import EmailMessage
 from serviceform.serviceform.utils import DelayedKeyboardInterrupt
+
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
