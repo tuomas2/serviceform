@@ -1,0 +1,27 @@
+# External requirements for project to be run locally in development environment
+
+version: "2"
+
+volumes:
+  dev-db-master:
+
+services:
+  redis:
+    image: redis:3.2.8-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - /data
+
+  dev-db:
+     image: postgres:9.6.2
+     container_name: serviceform-dev-db-master
+     ports:
+        - "5432:5432"
+     volumes:
+      - dev-db-master:/var/lib/postgresql
+      #- ./init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+     environment:
+      - POSTGRES_USER=serviceform
+      - POSTGRES_DB=serviceform
+      - POSTGRES_PASSWORD=django
