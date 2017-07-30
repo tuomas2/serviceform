@@ -448,7 +448,9 @@ class ServiceForm(SubitemMixin, models.Model):
         for p in Participant.objects.filter(send_email_allowed=True,
                                             form_revision__send_bulk_email_to_participants=True,
                                             form_revision__form=self,
-                                            form_revision__valid_to__lt=timezone.now()).distinct():
+                                            form_revision__valid_to__lt=timezone.now(),
+                                            status__in=Participant.READY_STATUSES
+                                            ).distinct():
             p.send_participant_email(Participant.EmailIds.NEW_FORM_REVISION)
 
     def reschedule_bulk_email(self) -> None:
