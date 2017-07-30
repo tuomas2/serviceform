@@ -85,9 +85,9 @@ class EmailMessage(models.Model):
         mail.attach_alternative(html_body, 'text/html')
         try:
             emails = mail.send()
-        except HTTPError:
+        except Exception:
             client.captureException()
-            logger.exception('Problem in email sending. Will try again later')
+            logger.exception('Problem in email sending to %s. Will try again later', self.to_address)
             emails = 0
 
         if emails == 1:
