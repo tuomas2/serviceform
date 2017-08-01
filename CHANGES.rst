@@ -1,4 +1,4 @@
-0.9.8 (unreleased)
+0.9.8 (2017-08-01)
 ------------------
 
 - Fix MANIFEST.in to include translation files
