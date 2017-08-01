@@ -40,7 +40,14 @@ setup(
     zip_safe=False,
     classifiers=[
         'Natural Language :: English',
+        'Natural Language :: Finnish',
+        'Framework :: Django',
+        'Intended Audience :: Religion',
+        'Intended Audience :: Education',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Environment :: Web Environment',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3 :: Only',
     ],
 )
