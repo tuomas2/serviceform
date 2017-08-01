@@ -7,17 +7,18 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe, SafeString
 from django.utils.translation import gettext_lazy as _
 
-from ..models import Participant
+from ..models import Participation
 from ..utils import safe_join, ColorStr
 from .. import utils
-from ..urls import participant_flow_urls, menu_urls, Requires
+from ..urls import participation_flow_urls, menu_urls, Requires
 from ..utils import lighter_color as lighter_color_util, darker_color
 
 register = template.Library()
 if TYPE_CHECKING:
-    from ..models import (AbstractServiceFormItem, ResponsibilityPerson, SubitemMixin, Activity,
+    from ..models import (Member, SubitemMixin, Activity,
                           ActivityChoice, ParticipationActivity, ParticipationActivityChoice,
                           Question, QuestionAnswer)
+    from ..models.serviceform import AbstractServiceFormItem
 
 
 class FlowItem(NamedTuple):
@@ -45,13 +46,16 @@ def responsible_link(context: Context, item: 'AbstractServiceFormItem') -> SafeS
     Used in category captions in report views, for example
     """
     responsible = context.get('responsible')
+    service_form = context.get('service_form')
     item_responsibles = item.responsibles.all()
     links = []
     for item_responsible in item_responsibles:
         if responsible != item_responsible:
-            links.append(format_html('<a class="responsible-link" href="{}">{}</a>',
-                                     reverse('view_responsible', args=(item_responsible.pk,)),
-                                     item_responsible))
+            links.append(
+                format_html('<a class="responsible-link" href="{}">{}</a>',
+                            reverse('view_responsible',
+                                    args=(item_responsible.pk, service_form.slug)),
+                            item_responsible))
         else:
             links.append(mark_safe(responsible))
 
@@ -60,72 +64,81 @@ def responsible_link(context: Context, item: 'AbstractServiceFormItem') -> SafeS
 
 
 @register.assignment_tag
-def has_responsible(item: 'SubitemMixin', responsible: 'ResponsibilityPerson') -> bool:
+def has_responsible(item: 'AbstractServiceFormItem', responsible: 'Member') -> bool:
     return item.has_responsible(responsible)
 
 
 @register.assignment_tag(takes_context=True)
 def participation_items(context: Context, item: 'Union[Activity, ActivityChoice]')\
         -> 'Sequence[ParticipationActivity, ParticipationActivityChoice]':
-    revision_name = utils.get_report_settings(context['request'], 'revision')
+    revision_name = utils.get_report_settings(context['request'], context['service_form'],
+                                              'revision')
     return item.participation_items(revision_name)
 
 
 @register.assignment_tag(takes_context=True)
 def questionanswers(context: Context, item: 'Question') -> 'Sequence[QuestionAnswer]':
-    revision_name = utils.get_report_settings(context['request'], 'revision')
+    revision_name = utils.get_report_settings(context['request'], context['service_form'],
+                                              'revision')
     return item.questionanswers(revision_name)
 
 
 @register.assignment_tag(takes_context=True)
 def all_revisions(context: Context) -> bool:
-    revision_name = utils.get_report_settings(context['request'], 'revision')
+    revision_name = utils.get_report_settings(context['request'], context['service_form'],
+                                              'revision')
     return revision_name == utils.RevisionOptions.ALL
 
 
 @register.assignment_tag(takes_context=True)
-def participants(context: Context) -> 'Sequence[Participant]':
-    revision_name = utils.get_report_settings(context['request'], 'revision')
+def participations(context: Context) -> 'Sequence[Participation]':
     service_form = context.get('service_form')
+    revision_name = utils.get_report_settings(context['request'], service_form, 'revision')
 
-    qs = Participant.objects.filter(form_revision__form=service_form,
-                                    status__in=Participant.READY_STATUSES).order_by('surname')
+    qs = Participation.objects.filter(
+        form_revision__form=service_form,
+        status__in=Participation.READY_STATUSES).order_by('member__surname')
     if revision_name == utils.RevisionOptions.CURRENT:
         qs = qs.filter(form_revision__id=service_form.current_revision_id)
     elif revision_name == utils.RevisionOptions.ALL:
         pass
     else:
         qs = qs.filter(form_revision__name=revision_name)
-    return [utils.get_participant(i) for i, in qs.values_list('pk')]
+    return [utils.get_participation(i) for i, in qs.values_list('pk')]
 
 
 @register.assignment_tag(takes_context=True)
-def participant_flow_menu_items(context: Context) -> List[FlowItem]:
+def participation_flow_menu_items(context: Context) -> List[FlowItem]:
     current_view = context['request'].resolver_match.view_name
-    participant = context['request'].participant
+    # TODO: rename participation -> participation everywhere
+    # TODO: fix menu for contact_details_creation (+ possibly all others)
+
+    request = context['request']
+    participation = getattr(request, 'participation', None)
+    service_form = context['service_form']
     cat_num = context.get('cat_num', 0)
     lst = []
 
-    for idx, f_item in enumerate(participant_flow_urls):
-        if f_item.name not in participant.flow:
+    for idx, f_item in enumerate(participation_flow_urls):
+        if participation and f_item.name not in participation.flow:
             continue
         if current_view == f_item.name:
             attrs = {'current': True, 'disabled': True}
-        elif not participant.can_access_view(f_item.name):
+        elif not participation or not participation.can_access_view(f_item.name):
             attrs = {'greyed': True, 'disabled': True}
         else:
             attrs = {}
         if f_item.name == 'participation':
-            url = reverse(f_item.name, args=(cat_num,))
+            url = reverse(f_item.name, args=(service_form.slug, cat_num))
         else:
-            url = reverse(f_item.name)
+            url = reverse(f_item.name, args=(service_form.slug,))
         flv = FlowItem(f_item.name, f_item.default_args.get('title', ''), url, attrs)
         lst.append(flv)
     return lst
 
 
 @register.assignment_tag(takes_context=True)
-def participant_flow_categories(context: Context) -> List[FlowItem]:
+def participation_flow_categories(context: Context) -> List[FlowItem]:
     current_view = 'participation'
     service_form = context['service_form']
     cat_num = context.get('cat_num', 0)
@@ -139,7 +152,7 @@ def participant_flow_categories(context: Context) -> List[FlowItem]:
         else:
             attrs = {}
         attrs['category'] = category
-        url = reverse(current_view, args=(idx,))
+        url = reverse(current_view, args=(service_form.slug, idx,))
         flv = FlowItem(idx, category.name, url, attrs)
         lst.append(flv)
     return lst
@@ -154,7 +167,7 @@ def menu_items(context: Context, menu_name: str) -> MenuItems:
     """
     current_view = context['request'].resolver_match.view_name
     service_form = context['service_form']
-    responsible = utils.get_responsible(context['request'])
+    responsible = utils.get_authenticated_member(context['request'])
 
     def _check_requires(requires):
         for r in requires:

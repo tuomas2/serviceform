@@ -19,7 +19,7 @@
 from django.core.management import BaseCommand
 from django.utils.translation import activate
 from django.conf import settings
-from serviceform.serviceform.models import ServiceForm
+from serviceform.serviceform.models import ServiceForm, Organization
 
 
 class Command(BaseCommand):
@@ -30,3 +30,5 @@ class Command(BaseCommand):
         activate(settings.LANGUAGE_CODE)
         for s in ServiceForm.objects.all():
             s.create_email_templates()
+        for o in Organization.objects.all():
+            o.create_email_templates()

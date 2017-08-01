@@ -8,9 +8,9 @@
         {% if pq.answer %}
                  {% all_revisions as ar%}
           <li>{% if ar %}
-          {{pq.participant.form_revision}}
+          {{pq.participation.form_revision}}
           {% endif %}
-          <a href="{% url "view_user" pq.participant.pk %}">{{ pq.cached_participant }}</a>:
+          <a href="{% url "view_user" pq.participation.pk %}">{{ pq.cached_participation.member }}</a>:
           {% if pq.question.answer_type == 'boolean' %}
             {% if pq.answer %}
               {% trans "Yes" %}

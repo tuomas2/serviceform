@@ -3,8 +3,8 @@
 {%block content %}
 {{ block.super}}
 <div class="helptext">
-{% if participant.is_updating %}
-<li>  {% trans "You can delete your participation from the system by clicking"%} <a href="{% url "delete_participation"%}">{% trans "here"%}</a>.
+{% if participation %}
+<li>  {% trans "You can delete your participation from the system by clicking"%} <a href="{% url "delete_participation" service_form.slug %}">{% trans "here"%}</a>.
 <li>{% trans "Otherwise, please check if the information is correct and update it if necessary. " %}
 {% else %}
   {% trans "Please fill in your contact details"%}

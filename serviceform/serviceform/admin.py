@@ -177,26 +177,11 @@ class QuestionInline(ResponsibleMixin, GrappelliSortableHiddenMixin, NestedTabul
     fields = ('question', 'responsibles', 'answer_type', 'required', 'order')
 
 
-class EmailTemplateInline(NestedStackedInline):
-    fields = ('name', 'subject', 'content')
-    model = models.EmailTemplate
-    extra = 0
-
-
 class RevisionInline(NestedStackedInline):
     fields = ('name', ('valid_from', 'valid_to'), 'send_emails_after',
-              'send_bulk_email_to_participants')
+              'send_bulk_email_to_participations')
     model = models.FormRevision
     extra = 0
-
-
-class ResponsibilityPersonInline(NestedStackedInline):
-    model = models.ResponsibilityPerson
-    extra = 0
-    fields = (('forenames', 'surname'), ('email', 'phone_number'), 'street_address',
-              ('postal_code', 'city'), 'send_email_notifications', 'hide_contact_details',
-              'show_full_report', 'personal_link')
-    readonly_fields = ('personal_link',)
 
 
 @admin.register(models.ServiceForm)
@@ -205,10 +190,9 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
     class Media:
         css = {'all': ('serviceform/serviceform_admin.css',)}
 
-    inlines = [RevisionInline, EmailTemplateInline, ResponsibilityPersonInline,
-               Level1CategoryInline, QuestionInline]
+    inlines = [RevisionInline, Level1CategoryInline, QuestionInline]
 
-    superuser_actions = ['bulk_email_former_participants', 'bulk_email_responsibles']
+    superuser_actions = ['bulk_email_former_participations', 'bulk_email_responsibles']
     if settings.DEBUG:
         superuser_actions.append('shuffle_data')
 
@@ -227,15 +211,15 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
 
     email_settings = (
         'require_email_verification',
-        'verification_email_to_participant',
+        'verification_email_to_participation',
         'email_to_responsibles',
         'email_to_invited_users',
 
-        'email_to_participant',
-        'resend_email_to_participant',
+        'email_to_participation',
+        'resend_email_to_participation',
 
-        'email_to_participant_on_update',
-        'email_to_former_participants',
+        'email_to_participation_on_update',
+        'email_to_former_participations',
 
         'bulk_email_to_responsibles',
         'email_to_responsible_auth_link',
@@ -262,8 +246,8 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
                  (_('Ownership'), {'fields': ownership}),
                  (_('Email settings'), {'fields': email_settings}),
                  (_('Customization'), {'fields': customization}),
-                 (_('Ask details from participants'), {'fields': visible_contact_details}),
-                 (_('Require details from participants'), {'fields': required_contact_details}),
+                 (_('Ask details from participations'), {'fields': visible_contact_details}),
+                 (_('Require details from participations'), {'fields': required_contact_details}),
                  )
 
     new_fieldsets = ((_('Basic information'), {'fields': basic}),)
@@ -282,12 +266,12 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
                 actions.pop(a, None)
         return actions
 
-    def bulk_email_former_participants(self, request: HttpRequest,
+    def bulk_email_former_participations(self, request: HttpRequest,
                                        queryset: Iterable[models.ServiceForm]) -> None:
         for serviceform in queryset:
-            serviceform.bulk_email_former_participants()
+            serviceform.bulk_email_former_participations()
 
-    bulk_email_former_participants.short_description = _('Bulk email former participants now!')
+    bulk_email_former_participations.short_description = _('Bulk email former participations now!')
 
     def bulk_email_responsibles(self, request: HttpRequest,
                                 queryset: Iterable[models.ServiceForm]) -> None:
@@ -301,7 +285,7 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
         for serviceform in queryset:
             utils.shuffle_person_data(serviceform)
 
-    shuffle_data.short_description = _('Shuffle participant data')
+    shuffle_data.short_description = _('Shuffle participation data')
 
     def get_queryset(self, request: HttpRequest):
         qs = super().get_queryset(request)
@@ -311,13 +295,13 @@ class ServiceFormAdmin(OwnerSaveMixin, ExtendedLogMixin, NestedModelAdminMixin,
     def get_form(self, request: HttpRequest, obj: models.ServiceForm=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         if obj:
-            request._responsibles = responsibles = models.ResponsibilityPerson.objects.filter(
-                form=obj)
+            request._responsibles = responsibles = models.Member.objects.filter(
+                organization_id=obj.organization_id)
             form.base_fields['responsible'].queryset = responsibles
             form.base_fields['current_revision'].queryset = models.FormRevision.objects.filter(
                 form=obj)
 
-            emailtemplates = models.EmailTemplate.objects.filter(form=obj)
+            emailtemplates = models.EmailTemplate.objects.filter(organization=obj.organization)
 
             for name, field in form.base_fields.items():
                 if 'email_to' in name:
@@ -353,12 +337,62 @@ class EmailMessageAdmin(ExtendedLogMixin, admin.ModelAdmin):
                     'content_display',)
 
 
-@admin.register(models.Participant)
-class ParticipantAdmin(ExtendedLogMixin, admin.ModelAdmin):
+class MemberInline(NestedStackedInline):
+    model = models.Member
+    extra = 0
+    fields = (('forenames', 'surname'), ('email', 'phone_number'), 'street_address',
+              ('postal_code', 'city'), 'allow_responsible_email',
+              'allow_participation_email', 'hide_contact_details',
+              'show_full_report', 'personal_link')
+    readonly_fields = ('personal_link',)
+
+
+class EmailTemplateInline(NestedStackedInline):
+    fields = ('name', 'subject', 'content')
+    model = models.EmailTemplate
+    extra = 0
+
+
+@admin.register(models.Organization)
+class OrganizationAdmin(ExtendedLogMixin, NestedModelAdminMixin, GuardedModelAdminMixin,
+                        admin.ModelAdmin):
+    list_display = ('name',)
+    inlines = [MemberInline, EmailTemplateInline]
+    basic = ('name', )
+    new_fieldsets = ((_('Basic information'), {'fields': basic}),)
+
+    def get_form(self, request: HttpRequest, obj: models.Organization=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if obj:
+            emailtemplates = models.EmailTemplate.objects.filter(organization=obj)
+
+            for name, field in form.base_fields.items():
+                if 'email_to' in name:
+                    field.queryset = emailtemplates
+                    if obj and field.queryset:
+                        field.required = True
+
+        return form
+
+    def save_model(self, request: HttpRequest, obj: models.Organization, form, change: bool):
+        rv = super().save_model(request, obj, form, change)
+        if not change:
+            obj.create_initial_data()
+        return rv
+
+    def get_fieldsets(self, request: HttpRequest, obj: models.Organization=None):
+        return self.new_fieldsets if obj is None else super().get_fieldsets(request, obj)
+
+    def get_inline_instances(self, request: HttpRequest, obj: models.Organization=None):
+        return super().get_inline_instances(request, obj) if obj else []
+
+
+@admin.register(models.Participation)
+class ParticipationAdmin(ExtendedLogMixin, admin.ModelAdmin):
     list_display = (
         'id', '__str__', 'form_display', 'form_revision', 'status', 'activities_display',
-        'created_at', 'last_modified', 'personal_link')
-    fields = ('forenames', 'surname')
+        'created_at', 'last_modified',)
+    fields = ('member',)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).select_related('form_revision__form')

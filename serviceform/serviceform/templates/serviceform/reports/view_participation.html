@@ -5,7 +5,7 @@
   <div class="preview-contactdetails">
     <h3>{% blocktrans %}Contact details{% endblocktrans %}:</h3>
 
-    {% for detail, data in participant.contact_details %}
+    {% for detail, data in participation.member.contact_details %}
       <div class="row activity-preview-row">
         <div class="col-xs-4">
           {{ detail }}
@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    {% for a in participant.activities %}
+    {% for a in participation.activities %}
       <div class="row activity-preview-row">
         <div class="col-xs-4">
           {{ a.activity.name }}
@@ -63,7 +63,7 @@
           {% trans "Answer" %}
         </div>
       </div>
-      {% for q in participant.questions %}
+      {% for q in participation.questions %}
         <div class="row activity-preview-row">
           <div class="col-xs-4">
             {{ q.question.question }}
@@ -87,7 +87,7 @@
   <div class="preview-otherdata">
     <h3>{% blocktrans %}Other information{% endblocktrans %}:</h3>
 
-    {% for detail, data in participant.additional_data %}
+    {% for detail, data in participation.additional_data %}
       <div class="row activity-preview-row">
         <div class="col-xs-4">
           {{ detail }}
@@ -103,7 +103,7 @@
   <div class="preview-log">
     <h3>{% trans "Log" %}</h3>
     <ul>
-      {% for l in participant.log %}
+      {% for l in participation.log %}
         <li>{{ l.created_at }} {{ l.written_by }}: {{ l.message }}</li>
       {% endfor %}
     </ul>

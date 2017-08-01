@@ -32,17 +32,17 @@ logger = logging.getLogger('serviceform.tasks')
 @shared_task
 def cleanup_abandoned_participations():
     logger.info('Deleting abandoned participations')
-    models.Participant.objects.filter(last_modified__lt=timezone.now() - timedelta(days=1),
-                                      status=models.Participant.STATUS_ONGOING).delete()
+    models.Participation.objects.filter(last_modified__lt=timezone.now() - timedelta(days=1),
+                                        status=models.Participation.STATUS_ONGOING).delete()
 
 
 @shared_task
 def finish_abandoned_updating_participations():
-    for p in models.Participant.objects.filter(
+    for p in models.Participation.objects.filter(
             last_modified__lt=timezone.now() - timedelta(days=1),
-            status=models.Participant.STATUS_UPDATING):
+            status=models.Participation.STATUS_UPDATING):
         logger.info('Finishing abandoned updating participations %s', p)
-        p.finish(email_participant=False)
+        p.finish(email_participation=False)
 
 
 def test_task():

@@ -23,12 +23,12 @@
                 ({{ p_items|length }}{%if c.people_needed%}/{{ c.people_needed }}{%endif%})
               </div>
               {% for pc in p_items %}
-                {% include "serviceform/reports/snippets/_participant_row.html" with item=pc participant=pc.cached_participant %}
+                {% include "serviceform/reports/snippets/_participation_row.html" with item=pc participation=pc.cached_participation %}
               {% endfor %}
             {% endfor %}
           {% else %}
             {% for pa in p_items %}
-              {% include "serviceform/reports/snippets/_participant_row.html" with item=pa participant=pa.cached_participant %}
+              {% include "serviceform/reports/snippets/_participation_row.html" with item=pa participation=pa.cached_participation %}
             {% endfor %}
           {% endif %}
         {% endfor %}

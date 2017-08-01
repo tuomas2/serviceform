@@ -3,9 +3,9 @@
 {% block content %}
   {{ block.super }}
   {% include "serviceform/reports/contents/_all_responsibles.html" %}
-  {% participants as ps %}
+  {% participations as ps %}
 
-  {% include "serviceform/reports/contents/_all_participants.html"%}
+  {% include "serviceform/reports/contents/_all_participations.html"%}
   {% include "serviceform/reports/contents/_all_activities.html"%}
   {% include "serviceform/reports/contents/_all_questions.html"%}
 

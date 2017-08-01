@@ -63,7 +63,7 @@ class ReportSettingsForm(Form):
                  request: HttpRequest, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.request = request
-        self.instance = service_form
+        self.instance: models.ServiceForm = service_form
 
         helper = self.helper = MyFormHelper(self)
         rev_choices = [(rev.name, rev.name) for rev in service_form.formrevision_set.all()]
@@ -77,14 +77,14 @@ class ReportSettingsForm(Form):
         helper.layout.append(Submit('submit', _('Save settings')))
 
     def set_initial_data(self) -> None:
-        report_settings = utils.get_report_settings(self.request)
+        report_settings = utils.get_report_settings(self.request, self.instance)
         for name, f in self.fields.items():
             val = report_settings.get(name)
             f.initial = val
 
     def save(self) -> None:
         report_settings = {name: self.cleaned_data[name] for name in self.fields.keys()}
-        utils.set_report_settings(self.request, report_settings)
+        utils.set_report_settings(self.request, self.instance, report_settings)
 
 
 class PasswordForm(Form):
@@ -108,7 +108,8 @@ class PasswordForm(Form):
         return self.cleaned_data
 
 
-class ParticipantSendEmailForm(Form):
+#TODO: deprecated, remove
+class ParticipationSendEmailForm(Form):
     email = fields.EmailField(max_length=128, label=_('Email'))
 
     def __init__(self, service_form, request, *args, **kwargs):
@@ -122,28 +123,28 @@ class ParticipantSendEmailForm(Form):
     def clean_email(self):
         email = self.cleaned_data['email']
         if email and 'email' in self.changed_data:
-            participant = models.Participant.objects.filter(
+            participation = models.Participation.objects.filter(
                 email=email,
                 form_revision__form=self.instance).first()
-            if not participant:
+            if not participation:
                 raise ValidationError(
                     _('There were no participation with email address {}').format(email))
         return email
 
     def save(self):
-        participant = models.Participant.objects.filter(email=self.cleaned_data['email'],
-                                                        form_revision__form=self.instance).first()
-        success = participant.send_participant_email(models.Participant.EmailIds.RESEND)
+        participation = models.Participation.objects.filter(email=self.cleaned_data['email'],
+                                                          form_revision__form=self.instance).first()
+        success = participation.send_participation_email(models.Participation.EmailIds.RESEND)
         if success:
             messages.info(self.request,
-                          _('Access link sent to email address {}').format(participant.email))
+                          _('Access link sent to email address {}').format(participation.email))
         else:
             messages.error(self.request, _('Email could not be sent to email address {}').format(
-                participant.email))
+                participation.email))
         return success
 
 
-class ResponsibleSendEmailForm(Form):
+class MemberSendEmailForm(Form):
     email = fields.EmailField(max_length=128, label=_('Email'))
 
     def __init__(self, service_form: models.ServiceForm, request: HttpRequest,
@@ -158,43 +159,44 @@ class ResponsibleSendEmailForm(Form):
     def clean_email(self) -> str:
         email = self.cleaned_data['email']
         if email and 'email' in self.changed_data:
-            responsible = models.ResponsibilityPerson.objects.filter(email=email,
-                                                                     form=self.instance).first()
-            if not responsible:
+            member = models.Member.objects.filter(
+                email=email, organization=self.instance.organization).first()
+            if not member:
                 raise ValidationError(
-                    _('There were no responsible with email address {}').format(email))
+                    _('There were no user with email address {}').format(email))
         return email
 
     def save(self) -> Optional[models.EmailMessage]:
-        responsible = models.ResponsibilityPerson.objects.filter(email=self.cleaned_data['email'],
-                                                                 form=self.instance).first()
-        success = responsible.resend_auth_link()
+        member = models.Member.objects.filter(
+            email=self.cleaned_data['email'], organization=self.instance.organization).first()
+        success = member.resend_auth_link()
         if success:
             messages.info(self.request,
-                          _('Access link sent to email address {}').format(responsible.email))
+                          _('Access link sent to email address {}').format(member.email))
         else:
             messages.error(self.request, _('Email could not be sent to email address {}').format(
-                responsible.email))
+                member.email))
         return success
 
 
 class ContactForm(ModelForm):
     class Meta:
-        model = models.Participant
+        model = models.Member
         fields = ('forenames', 'surname', 'year_of_birth', 'street_address',
-                  'postal_code', 'city', 'email', 'phone_number', 'send_email_allowed')
+                  'postal_code', 'city', 'email', 'phone_number', "allow_participation_email")
 
-    def __init__(self, *args, user: 'AbstractUser'=None, **kwargs) -> None:
+    def __init__(self, *args, serviceform: models.ServiceForm=None, user: 'AbstractUser'=None,
+                 **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.participant = self.instance
-        self.service_form = self.participant.form
+        self.member = self.instance
+        self.serviceform = serviceform
         self.user = user
         self.helper = helper = MyFormHelper(self)
         self._fix_fields()
 
         helper.form_id = 'contactform'
 
-        if self.service_form.is_published:
+        if self.serviceform.is_published:
             helper.layout.append(
                 Submit('submit', _('Continue'), css_class='btn-participation-continue'))
         else:
@@ -202,29 +204,30 @@ class ContactForm(ModelForm):
                 Submit('submit', _('Save details'), css_class='btn-participation-continue'))
 
     def _fix_fields(self) -> None:
-        req = self.service_form.required_street_address
+        req = self.serviceform.required_street_address
         self.fields['street_address'].required = req
         self.fields['postal_code'].required = req
         self.fields['city'].required = req
 
-        if not self.service_form.visible_street_address:
+        if not self.serviceform.visible_street_address:
             del self.fields['street_address']
             del self.fields['postal_code']
             del self.fields['city']
 
-        req = self.service_form.required_year_of_birth
+        req = self.serviceform.required_year_of_birth
         if not req:
             self.fields['year_of_birth'].help_text = _('Optional')
         self.fields['year_of_birth'].required = req
 
-        if not self.service_form.visible_year_of_birth:
+        if not self.serviceform.visible_year_of_birth:
             del self.fields['year_of_birth']
 
-        self.fields['phone_number'].required = self.service_form.required_phone_number
-        if not self.service_form.visible_phone_number:
+        self.fields['phone_number'].required = self.serviceform.required_phone_number
+        if not self.serviceform.visible_phone_number:
             del self.fields['phone_number']
 
-        if utils.user_has_serviceform_permission(self.user, self.service_form,
+        self.fields['email'].required = True
+        if utils.user_has_serviceform_permission(self.user, self.serviceform,
                                                  raise_permissiondenied=False):
             self.fields['email'].required = False
 
@@ -240,37 +243,43 @@ class ContactForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        if ('email' not in self.errors and not self.fields['email'].required and cleaned_data.get(
-                'send_email_allowed')
-            and not cleaned_data.get('email')):
+        if ('email' not in self.errors
+                and not self.fields['email'].required
+                and cleaned_data.get('allow_participation_email')
+                and not cleaned_data.get('email')):
             raise ValidationError(_('If sending email is allowed email address need to be given'))
         return cleaned_data
 
     def clean_email(self):
         email = self.cleaned_data['email']
-        if email and 'email' in self.changed_data and \
-                models.Participant.objects.filter(email=email,
-                                                  form_revision__form=self.service_form) \
-                        .exclude(pk=self.participant.pk):
+        if (email and 'email' in self.changed_data
+            and models.Member.objects.filter(email=email,
+                                             organization_id=self.serviceform.organization_id)
+                                     .exclude(pk=self.member.pk)):
             logger.info('User tried to enter same email address %s again.', email)
             email_link = '<a href="{}">{}</a>'.format(reverse('send_auth_link', args=(email,)),
                                                       _('resend auth link to your email!'))
+            # TODO: make sure user can enter participation even if there is only member but no
+            # participation for the form. Email should contain some postfix that identifies
+            # the form from which this was sent.
             raise ValidationError(
-                mark_safe(_('There is already participation with this email address. '
-                            'To edit earlier participation, {}').format(email_link)))
+                mark_safe(_('There is already member with this email address in the system. '
+                            'To proceed in entering participation '
+                            'details, {}').format(email_link)))
         return email
 
     def save(self, commit: bool=True):
         if 'email' in self.changed_data:
             self.instance.email_verified = False
+        self.instance.organization_id = self.serviceform.organization_id
         return super().save(commit=commit)
 
 
 class ResponsibleForm(ModelForm):
     class Meta:
-        model = models.ResponsibilityPerson
+        model = models.Member
         fields = ('forenames', 'surname', 'street_address',
-                  'postal_code', 'city', 'email', 'phone_number', 'send_email_notifications')
+                  'postal_code', 'city', 'email', 'phone_number', "allow_responsible_email")
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -282,13 +291,13 @@ class ResponsibleForm(ModelForm):
 
 class LogForm(ModelForm):
     class Meta:
-        model = models.ParticipantLog
+        model = models.ParticipationLog
         fields = ('message',)
 
-    def __init__(self, participant: models.Participant, user: 'AbstractUser',
+    def __init__(self, participation: models.Participation, user: 'AbstractUser',
                  *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.instance.participant = participant
+        self.instance.participation = participation
         self.instance.written_by = user
 
 
@@ -308,10 +317,10 @@ class ParticipationForm:
     Not any standard Django form.
     """
 
-    def __init__(self, request: HttpRequest, participant: models.Participant,
+    def __init__(self, request: HttpRequest, participation: models.Participation,
                  category: models.Level1Category=None, post_data: 'QueryDict'=None,
                  service_form: models.ServiceForm=None) -> None:
-        self.instance = participant
+        self.instance = participation
         self.request = request
         self.post_data = post_data
         self.all_activities = {}
@@ -324,12 +333,12 @@ class ParticipationForm:
                        None), 'Counters are not yet initialized!'
         self.category = category
         self._fetch_instances()
-        if participant and not post_data:
+        if participation and not post_data:
             self.load()
 
     def load(self) -> None:
-        participant = self.instance
-        for pact in participant.participationactivity_set.all():
+        participation = self.instance
+        for pact in participation.participationactivity_set.all():
             act = self.all_activities.get(pact.activity_id)
             if not act:
                 continue
@@ -344,23 +353,23 @@ class ParticipationForm:
                 self.selected_choices.add(choice)
 
     def save(self) -> None:
-        participant = self.instance
+        participation = self.instance
         with transaction.atomic():
             for choice in self.selected_choices:
                 self.selected_activities.add(choice.activity)
-            participant.participationactivity_set.filter(
+            participation.participationactivity_set.filter(
                 activity_id__in=self.all_activities.keys()).exclude(
                 activity__in=self.selected_activities).delete()
             for act in self.selected_activities:
                 pact, created = models.ParticipationActivity.objects.get_or_create(
-                    participant=participant, activity=act)
+                    participation=participation, activity=act)
                 pact.additional_info = getattr(act, 'extra', None)
                 pact.save(update_fields=['additional_info'])
-            models.ParticipationActivityChoice.objects.filter(activity__participant=participant) \
+            models.ParticipationActivityChoice.objects.filter(activity__participation=participation) \
                 .filter(activity_choice_id__in=self.all_choices.keys()) \
                 .exclude(activity_choice__in=self.selected_choices).delete()
             for choice in self.selected_choices:
-                pact = participant.participationactivity_set.get(activity_id=choice.activity_id)
+                pact = participation.participationactivity_set.get(activity_id=choice.activity_id)
                 pchoice, created = models.ParticipationActivityChoice.objects.get_or_create(
                     activity=pact,
                     activity_choice=choice)
@@ -454,9 +463,9 @@ class QuestionForm:
     Not any standard Django form.
     """
 
-    def __init__(self, request: HttpRequest, participant: models.Participant,
+    def __init__(self, request: HttpRequest, participation: models.Participation,
                  post_data: 'QueryDict'=None) -> None:
-        self.instance = participant
+        self.instance = participation
         self.request = request
         self.data = post_data
         self.questions = {}
@@ -471,18 +480,18 @@ class QuestionForm:
             self.questions[q.pk] = q
 
     def load(self):
-        participant = self.instance
-        for q in participant.questionanswer_set.all():
+        participation = self.instance
+        for q in participation.questionanswer_set.all():
             question = self.questions[q.question_id]
             question.answer = q.answer
 
     def save(self):
-        participant = self.instance
+        participation = self.instance
         with transaction.atomic():
             with_answer = {q for q in self.questions.values() if getattr(q, 'answer', None)}
-            participant.questionanswer_set.exclude(question__in=with_answer).delete()
+            participation.questionanswer_set.exclude(question__in=with_answer).delete()
             for q in with_answer:
-                q_a, created = models.QuestionAnswer.objects.get_or_create(participant=participant,
+                q_a, created = models.QuestionAnswer.objects.get_or_create(participation=participation,
                                                                            question=q)
                 answer = getattr(q, 'answer', '')
                 if q_a.answer != answer:
@@ -527,12 +536,12 @@ class QuestionForm:
 
     def __str__(self):
         return render_to_string('serviceform/participation/question_form/question_form.html',
-                                {'participant': self.instance}, request=self.request)
+                                {'participation': self.instance}, request=self.request)
 
 
 class InviteForm(Form):
-    old_participants = fields.BooleanField(required=False, label=_(
-        'Send invitations also to participants that have participated in older form versions '
+    old_participations = fields.BooleanField(required=False, label=_(
+        'Send invitations also to participations that have participated in older form versions '
         'but not yet this form'))
     email_addresses = fields.CharField(widget=widgets.Textarea, required=True, label=_(
         'Email addresses, separated by comma, space or enter'))
@@ -566,10 +575,10 @@ class InviteForm(Form):
 
     def save(self, request: HttpRequest=None) -> None:
         addresses = self.address_list(self.cleaned_data.get('email_addresses', ''))
-        old_participants = self.cleaned_data.get('old_participants')
+        old_participations = self.cleaned_data.get('old_participations')
         for a in addresses:
             InviteUserResponse = models.ServiceForm.InviteUserResponse
-            response = self.service_form.invite_user(a, old_participants=old_participants)
+            response = self.service_form.invite_user(a, old_participations=old_participations)
             if response == InviteUserResponse.EMAIL_SENT:
                 messages.info(request, _('Invitation sent to {}').format(a))
             elif response == InviteUserResponse.USER_EXISTS:

@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Serviceform.  If not, see <http://www.gnu.org/licenses/>.
+
 import json
 import logging
 from typing import TYPE_CHECKING
@@ -30,10 +31,10 @@ from django.utils.translation import ugettext_lazy as _
 from raven.contrib.django.raven_compat.models import client
 
 logger = logging.getLogger(__name__)
-from .mixins import CopyMixin
 
 if TYPE_CHECKING:
-    from .serviceform import ServiceForm
+    from .people import Organization
+
 
 class EmailMessage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -109,7 +110,7 @@ class EmailMessage(models.Model):
         return msg
 
 
-class EmailTemplate(CopyMixin, models.Model):
+class EmailTemplate(models.Model):
     class Meta:
         verbose_name = _('Email template')
         verbose_name_plural = _('Email templates')
@@ -121,9 +122,15 @@ class EmailTemplate(CopyMixin, models.Model):
     subject = models.CharField(_('Subject'), max_length=256)
     content = models.TextField(_('Content'), help_text=_(
         'Following context may (depending on topic) be available for both subject and content: '
-        '{{responsible}}, {{participant}}, {{last_modified}}, {{form}}, {{url}}, {{contact}}'))
-    form = models.ForeignKey('serviceform.ServiceForm', on_delete=models.CASCADE)
+        '{{responsible}}, {{participation}}, {{last_modified}}, {{form}}, {{url}}, {{contact}}'))
+
+    organization = models.ForeignKey('serviceform.Organization', null=True, on_delete=models.CASCADE)
+   # TODO: attributes that are named as 'form' should be renamed to 'serviceform'
 
     @classmethod
-    def make(cls, name: str, form: 'ServiceForm', content: str, subject: str):
-        return cls.objects.create(name=name, form=form, subject=subject, content=content)
+    def make(cls, name: str, organization: 'Organization', content: str, subject: str) \
+            -> 'EmailTemplate':
+        return cls.objects.create(name=name,
+                                  organization=organization,
+                                  subject=subject,
+                                  content=content)

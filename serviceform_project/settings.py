@@ -11,6 +11,7 @@ PRODUCTION = bool(os.environ.get('PRODUCTION', False))
 STAGING = bool(os.environ.get('STAGING', False))
 TESTS_RUNNING = os.environ.get('TESTS_RUNNING', False)
 DEBUG = bool(os.environ.get('DEBUG', False))
+DOCKER_BUILD = bool(os.environ.get('DOCKER_BUILD', False))
 
 EMAIL_BACKEND = "sgbackend.SendGridBackend"
 # SMTP based backend
@@ -41,6 +42,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Application definition
 
 INSTALLED_APPS = [
+    #'debug_toolbar',
     'raven.contrib.django.raven_compat',
     'grappelli',
     'django.contrib.admin',
@@ -65,35 +67,16 @@ INSTALLED_APPS = [
 
 CACHALOT_ENABLED = IS_WEB and not DEBUG
 
-if DEBUG:
-    INSTALLED_APPS += [
-        'debug_toolbar',
-        ]
-
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend', # default
     'guardian.backends.ObjectPermissionBackend',
 )
 
-DEBUG_TOOLBAR_PANELS = [
-    'debug_toolbar.panels.versions.VersionsPanel',
-    'debug_toolbar.panels.timer.TimerPanel',
-    'debug_toolbar.panels.settings.SettingsPanel',
-    'debug_toolbar.panels.headers.HeadersPanel',
-    'debug_toolbar.panels.request.RequestPanel',
-    'debug_toolbar.panels.sql.SQLPanel',
-    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-    'debug_toolbar.panels.templates.TemplatesPanel',
-    'debug_toolbar.panels.cache.CachePanel',
-    'debug_toolbar.panels.signals.SignalsPanel',
-    'debug_toolbar.panels.logging.LoggingPanel',
-    'debug_toolbar.panels.redirects.RedirectsPanel',
-    'cachalot.panels.CachalotPanel'
-]
 
 GRAPPELLI_CLEAN_INPUT_TYPES = False
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 MIDDLEWARE_CLASSES = [
+#    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -103,12 +86,33 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'serviceform.serviceform.utils.ClearParticipantCacheMiddleware',
+    'serviceform.serviceform.utils.ClearParticipationCacheMiddleware',
     'serviceform.serviceform.utils.InvalidateCachalotAfterEachRequestMiddleware'
 ]
 
 if DEBUG:
-    MIDDLEWARE_CLASSES += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+    INSTALLED_APPS = [
+        'debug_toolbar',
+        ] + INSTALLED_APPS
+    INTERNAL_IPS = ['127.0.0.1']
+    MIDDLEWARE_CLASSES = ['debug_toolbar.middleware.DebugToolbarMiddleware'] \
+                         + MIDDLEWARE_CLASSES
+
+    DEBUG_TOOLBAR_PANELS = [
+        'debug_toolbar.panels.versions.VersionsPanel',
+        'debug_toolbar.panels.timer.TimerPanel',
+        'debug_toolbar.panels.settings.SettingsPanel',
+        'debug_toolbar.panels.headers.HeadersPanel',
+        'debug_toolbar.panels.request.RequestPanel',
+        'debug_toolbar.panels.sql.SQLPanel',
+        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+        'debug_toolbar.panels.templates.TemplatesPanel',
+        'debug_toolbar.panels.cache.CachePanel',
+        'debug_toolbar.panels.signals.SignalsPanel',
+        'debug_toolbar.panels.logging.LoggingPanel',
+        'debug_toolbar.panels.redirects.RedirectsPanel',
+        'cachalot.panels.CachalotPanel',
+        ]
 
 ROOT_URLCONF = 'serviceform_project.urls'
 
@@ -129,14 +133,14 @@ TEMPLATES = [
     },
 ]
 
-if not DEBUG:
-    TEMPLATES[0]['OPTIONS'].update(
-        {
-            'loaders': [
-                ('django.template.loaders.cached.Loader', [
-                    'django.template.loaders.filesystem.Loader',
-                    'django.template.loaders.app_directories.Loader',
-                ])]})
+if any((STAGING, PRODUCTION, TESTS_RUNNING, DOCKER_BUILD)):
+    cache_loader_options = {'loaders': [
+            ('django.template.loaders.cached.Loader', [
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ])]}
+
+    TEMPLATES[0]['OPTIONS'].update(cache_loader_options)
 
 WSGI_APPLICATION = 'serviceform_project.wsgi.application'
 
@@ -234,8 +238,14 @@ if TESTS_RUNNING:
     LOGGING['loggers']['django.template']['handlers'].append('warningcrash')
     LOGGING['loggers']['django']['handlers'].append('crash')
 
-dictConfig(LOGGING)
+#if DEBUG:
+#    LOGGING['loggers']['']['handlers'].append('crash')
+#    LOGGING['loggers']['celery']['handlers'].append('crash')
+#    LOGGING['loggers']['django.template']['handlers'].append('warningcrash')
+#    LOGGING['loggers']['django']['handlers'].append('crash')
+#    LOGGING['loggers']['django.template']['level'] = 'DEBUG'
 
+dictConfig(LOGGING)
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -327,7 +337,7 @@ CACHES = {
     }
 }
 
-if os.getenv('DOCKER_BUILD'):  # Disable redis while running docker build command
+if DOCKER_BUILD:  # Disable redis while running docker build command
     CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',

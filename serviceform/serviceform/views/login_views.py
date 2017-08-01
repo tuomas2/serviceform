@@ -21,52 +21,36 @@ from django.http import HttpResponseRedirect, HttpRequest, HttpResponse
 from django.shortcuts import render
 
 from .. import forms, models
-from ..utils import clean_session
-from ..views.decorators import serviceform
+from .. import utils
+from ..views.decorators import require_serviceform
 
 
-@serviceform
+@require_serviceform
 def password_login(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
-    clean_session(request)
+    utils.clean_session(request)
     password_form = forms.PasswordForm(service_form)
 
     if request.method == 'POST':
         password_form = forms.PasswordForm(service_form, request.POST)
         if password_form.is_valid():
-            participant = models.Participant.objects.create(
-                form_revision=service_form.current_revision)
-            request.session['authenticated_participant'] = participant.pk
-            return HttpResponseRedirect(reverse('contact_details'))
+            # mark anonymous user logged in for contact details input
+            utils.authenticate_to_serviceform(request, service_form)
+            return HttpResponseRedirect(reverse('contact_details', args=(service_form.slug,)))
 
     return render(request, 'serviceform/login/password_login.html',
                   {'password_form': password_form, 'service_form': service_form})
 
 
-@serviceform
-def send_participant_email(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
-    email_form = forms.ParticipantSendEmailForm(service_form, request)
+@require_serviceform
+def send_member_email(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
+    email_form = forms.MemberSendEmailForm(service_form, request)
 
     if request.method == 'POST':
-        email_form = forms.ParticipantSendEmailForm(service_form, request, request.POST)
-        if email_form.is_valid():
-            email_form.save()
-            return HttpResponseRedirect(
-                reverse('send_participant_email', args=(service_form.slug,)))
-
-    return render(request, 'serviceform/login/send_participant_auth_link.html',
-                  {'email_form': email_form, 'service_form': service_form})
-
-
-@serviceform
-def send_responsible_email(request: HttpRequest, service_form: models.ServiceForm) -> HttpResponse:
-    email_form = forms.ResponsibleSendEmailForm(service_form, request)
-
-    if request.method == 'POST':
-        email_form = forms.ResponsibleSendEmailForm(service_form, request, request.POST)
+        email_form = forms.MemberSendEmailForm(service_form, request, request.POST)
         if email_form.is_valid():
             email_form.save()
             return HttpResponseRedirect(
                 reverse('send_responsible_email', args=(service_form.slug,)))
 
-    return render(request, 'serviceform/login/send_responsible_auth_link.html',
+    return render(request, 'serviceform/login/send_member_auth_link.html',
                   {'email_form': email_form, 'service_form': service_form})

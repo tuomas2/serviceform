@@ -21,7 +21,7 @@ from django.utils.translation import gettext_lazy as _
 bulk_email_to_responsibles = _("""Dear {{responsible}},
 
 Participation results for {{form}} are now available for you to view.
-You can see all participants for the activities you are responsible of in the following URL:
+You can see all participations for the activities you are responsible of in the following URL:
 {{url}}
 From now on, you will also receive a notification message, if a new participation submitted to
 the areas you are responsible of.You can also adjust your contact details and email notification
@@ -34,7 +34,7 @@ Contact person:
 {{contact}}""")
 
 
-invite = _("""Dear {{participant}},
+invite = _("""Dear {{participation}},
 
 You are invited to participate in "{{ form }}".
 You can fill in your participation details at {{ url }}.
@@ -47,8 +47,8 @@ Contact person:
 
 message_to_responsibles = _("""Dear {{responsible}},
 
-New participation from {{participant}} has just been submitted to {{form}}.
-You can see all participants for the activities you are responsible of in the following URL:
+New participation from {{participation}} has just been submitted to {{form}}.
+You can see all participations for the activities you are responsible of in the following URL:
 {{url}}
 You can also adjust your contact details and email notification preferences from that URL.
 
@@ -58,7 +58,7 @@ Service form system administrators
 Contact person:
 {{contact}}""")
 
-participant_new_form_revision = _("""Dear {{participant}},
+participation_new_form_revision = _("""Dear {{participation}},
 
 New form revision to "{{ form }}" has been published.
 Please update your participation information at {{ url }}.
@@ -69,7 +69,7 @@ Service form system administrators
 Contact person:
 {{contact}}""")
 
-participant_on_finish = _("""Dear {{participant}},
+participation_on_finish = _("""Dear {{participation}},
 
 You submitted form "{{ form }}" on {{ last_modified }}.
 If you wish to change any of the details you gave, you can go to {{ url }}.
@@ -80,7 +80,7 @@ Service form system administrators
 Contact person:
 {{contact}}""")
 
-resend_email_to_participants = _("""Dear {{participant}},
+resend_email_to_participations = _("""Dear {{participation}},
 
 You submitted form "{{ form }}" on {{ last_modified }}.
 If you wish to change any of the details you gave, you can go to {{ url }}.
@@ -91,7 +91,7 @@ Service form system administrators
 Contact person:
 {{contact}}""")
 
-participant_on_update = _("""Dear {{participant}},
+participation_on_update = _("""Dear {{participation}},
 
 You submitted update to your data on form "{{ form }}" on {{ last_modified }}.
 If you wish to change any of the details you gave, you can go to {{ url }}.
@@ -105,7 +105,7 @@ Contact person:
 
 request_responsible_auth_link = _("""Dear {{responsible}},
 
-You can see all participants for the activities you are responsible of in the following URL:
+You can see all participations for the activities you are responsible of in the following URL:
 {{url}}
 
 Best regards,
@@ -115,11 +115,24 @@ Contact person:
 {{contact}}""")
 
 
-verification_email_to_participant = _("""Dear {{participant}},
+verification_email_to_participation = _("""Dear {{participation}},
 
 Your email address needs to be verified. Please do so by clicking link below. Then you can
 continue filling the form.
 
+{{url}}
+
+Best regards,
+Service form system administrators
+
+Contact person:
+{{contact}}""")
+
+
+# TODO: check this email content
+email_to_member_auth_link = _("""Dear {{member}},
+
+Here is your link to access your data in {{organization}}:
 {{url}}
 
 Best regards,

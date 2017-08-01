@@ -1,5 +1,5 @@
 {% load i18n %}
   <h2>{% trans "Responsible contact persons" %} ({{service_form.responsibilityperson_set.all|length}})</h2>
-  {% for p in service_form.responsibilityperson_set.all %}
-    {% include "serviceform/reports/snippets/_participant_row.html" with participant=p is_responsible=1 %}
+  {% for p in service_form.all_responsibles %}
+    {% include "serviceform/reports/snippets/_participation_row.html" with participation=p is_responsible=1 %}
   {% endfor %}

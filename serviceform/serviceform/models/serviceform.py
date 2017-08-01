@@ -15,17 +15,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Serviceform.  If not, see <http://www.gnu.org/licenses/>.
-import datetime
-import string
-import logging
-from enum import Enum
-from typing import Tuple, Set, Optional, Sequence, Iterator, Iterable, TYPE_CHECKING
 
-from colorful.fields import RGBColorField
+import datetime
+import logging
+import string
+from enum import Enum
+from typing import Tuple, Set, Sequence, Iterator, Iterable, TYPE_CHECKING, List, Optional
+
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.db.models import Prefetch
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
@@ -37,13 +39,13 @@ from select2 import fields as select2_fields
 
 from serviceform.tasks.models import Task
 
+from ..fields import ColorField
 from .. import emails, utils
-from ..utils import ColorStr
+from ..utils import ColorStr, django_cache, invalidate_cache
 
-from .mixins import SubitemMixin, NameDescriptionMixin, CopyMixin
-from .people import Participant, ResponsibilityPerson
 from .email import EmailTemplate
-from .participation import QuestionAnswer
+from .participation import QuestionAnswer, Participation
+from .people import Member, Organization
 
 if TYPE_CHECKING:
     from .participation import ParticipationActivity, ParticipationActivityChoice
@@ -52,18 +54,86 @@ local_tz = timezone.get_default_timezone()
 logger = logging.getLogger(__name__)
 
 
-class ColorField(RGBColorField):
-    def get_prep_value(self, value: 'ColorStr') -> 'Optional[ColorStr]':
-        rv = super().get_prep_value(value)
-        if rv == '#000000':
-            rv = None
-        return rv
+class AbstractServiceFormItem(models.Model):
+    subitem_name: str = None
+    parent_name: str
 
-    def from_db_value(self, value: 'Optional[ColorStr]', *args):
-        if value is None:
-            return '#000000'
-        return value
+    _counter: int
+    _responsibles: Set[Member]
 
+    class Meta:
+        abstract = True
+        ordering = ('order',)
+
+    def __str__(self):
+        return self.name
+
+    name = models.CharField(max_length=256, verbose_name=_('Name'))
+    description = models.TextField(blank=True, verbose_name=_('Description'))
+
+    order = models.PositiveIntegerField(default=0, blank=False, null=False, db_index=True,
+                                        verbose_name=_('Order'))
+    skip_numbering = models.BooleanField(_('Skip'), default=False)
+    responsibles = select2_fields.ManyToManyField(Member, blank=True,
+                                                  verbose_name=_('Responsible persons'),
+                                                  related_name='%(class)s_responsibles',
+                                                  overlay=_('Choose responsibles'),
+                                                  )
+
+    def __init__(self, *args, **kwargs) -> None:
+        self._responsibles = set()
+        super().__init__(*args, **kwargs)
+
+    # TODO: change this dirty caching to something more clever
+    def has_responsible(self, r: 'Member') -> bool:
+        return r in self._responsibles
+
+    @property
+    def real_responsibles(self) -> List[Member]:
+        """All responsibles of this item + its parents """
+        rs = set(self.responsibles.all())
+        parent = self.parent
+        if parent:
+            rs.update(parent.real_responsibles)
+        return sorted(rs, key=lambda x: (x.surname, x.forenames))
+
+    @property
+    def all_responsibles(self) -> List[Member]:
+        """Collect recursively get all responsibles of this item + all its subitems"""
+        rs = set(self.responsibles.all())
+
+        for subitem in self.sub_items:
+            rs.update(subitem.all_responsibles)
+
+        return sorted(rs, key=lambda x: (x.surname, x.forenames))
+
+    @property
+    def parent(self) -> 'Optional[AbstractServiceFormItem]':
+        return getattr(self, self.parent_name, None)
+
+    @cached_property
+    def sub_items(self) -> 'Sequence[AbstractServiceFormItem]':
+        if not self.subitem_name:
+            return []
+
+        return getattr(self, self.subitem_name + '_set').all()
+
+    @cached_property
+    def responsibles_display(self) -> str:
+        first_resp = ''
+        responsibles = self.responsibles.all()
+        if responsibles:
+            first_resp = str(self.responsibles.first())
+        if len(responsibles) > 1:
+            return _('{} (and others)').format(first_resp)
+        else:
+            return first_resp
+
+    def background_color_display(self) -> 'ColorStr':
+        raise NotImplementedError
+
+    def id_display(self):
+        return ''
 
 
 class FormRevision(models.Model):
@@ -79,9 +149,9 @@ class FormRevision(models.Model):
                                       default=datetime.datetime(3000, 1, 1, tzinfo=local_tz))
     valid_to = models.DateTimeField(verbose_name=_('Valid to'),
                                     default=datetime.datetime(3000, 1, 1, tzinfo=local_tz))
-    send_bulk_email_to_participants = models.BooleanField(
-        _('Send bulk email to participants'),
-        help_text=_('Send email to participants that filled the form when this revision was '
+    send_bulk_email_to_participations = models.BooleanField(
+        _('Send bulk email to participations'),
+        help_text=_('Send email to participations that filled the form when this revision was '
                     'active. Email is sent when new current revision is published.'),
         default=True)
     send_emails_after = models.DateTimeField(
@@ -95,7 +165,7 @@ class FormRevision(models.Model):
         return self.name
 
 
-class ServiceForm(SubitemMixin, models.Model):
+class ServiceForm(AbstractServiceFormItem):
     subitem_name = 'level1category'
 
     class Meta:
@@ -118,18 +188,21 @@ class ServiceForm(SubitemMixin, models.Model):
                                     on_delete=models.SET_NULL)
 
     # Ownership
-    responsible = models.ForeignKey(ResponsibilityPerson, null=True, blank=True,
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+
+    #TODO: migrate to .responsibles and remove field
+    responsible = models.ForeignKey(Member, null=True, blank=True,
                                     verbose_name=_('Responsible'), on_delete=models.SET_NULL)
 
     # Email settings
     require_email_verification = models.BooleanField(_('Require email verification'), default=True)
 
-    verification_email_to_participant = models.ForeignKey(
+    verification_email_to_participation = models.ForeignKey(
         EmailTemplate, null=True, blank=True,
         related_name='+',
-        verbose_name=_('Verification email to participant'),
+        verbose_name=_('Verification email to participation'),
         help_text=_(
-            'Email verification message that is sent to participant when filling form, '
+            'Email verification message that is sent to participation when filling form, '
             'if email verification is enabled'),
         on_delete=models.SET_NULL)
 
@@ -147,6 +220,7 @@ class ServiceForm(SubitemMixin, models.Model):
         related_name='+',
         on_delete=models.SET_NULL)
 
+    # TODO: moved to Organization
     email_to_responsible_auth_link = models.ForeignKey(
         EmailTemplate, null=True, blank=True,
         related_name='+',
@@ -155,34 +229,34 @@ class ServiceForm(SubitemMixin, models.Model):
         help_text=_('Email that is sent to responsible when he requests auth link'),
         on_delete=models.SET_NULL)
 
-    # Participant emails:
+    # Participation emails:
 
     # on_finish
-    email_to_participant = models.ForeignKey(
+    email_to_participation = models.ForeignKey(
         EmailTemplate, null=True, blank=True,
         related_name='+',
-        verbose_name=_('Email to participant, on finish'),
-        help_text=_('Email that is sent to participant after he has fulfilled his participation'),
+        verbose_name=_('Email to participation, on finish'),
+        help_text=_('Email that is sent to participation after he has fulfilled his participation'),
         on_delete=models.SET_NULL)
     # on update
-    email_to_participant_on_update = models.ForeignKey(EmailTemplate, null=True, blank=True,
+    email_to_participation_on_update = models.ForeignKey(EmailTemplate, null=True, blank=True,
                                                        related_name='+', verbose_name=_(
-            'Email to participant, on update'), help_text=_(
-            'Email that is sent to participant after he has updated his participation'),
+            'Email to participation, on update'), help_text=_(
+            'Email that is sent to participation after he has updated his participation'),
                                                        on_delete=models.SET_NULL)
     # resend
-    resend_email_to_participant = models.ForeignKey(
+    resend_email_to_participation = models.ForeignKey(
         EmailTemplate, null=True, blank=True,
         related_name='+',
-        verbose_name=_('Resend email to participant'),
-        help_text=_('Email that is sent to participant if he requests resending email'),
+        verbose_name=_('Resend email to participation'),
+        help_text=_('Email that is sent to participation if he requests resending email'),
         on_delete=models.SET_NULL)
     # new_form_revision
-    email_to_former_participants = models.ForeignKey(
+    email_to_former_participations = models.ForeignKey(
         EmailTemplate, null=True, blank=True,
         related_name='+',
-        verbose_name=_('Bulk email to former participants'),
-        help_text=_('Email that is sent to former participants when form is published'),
+        verbose_name=_('Bulk email to former participations'),
+        help_text=_('Email that is sent to former participations when form is published'),
         on_delete=models.SET_NULL)
     # invite
     email_to_invited_users = models.ForeignKey(
@@ -204,7 +278,7 @@ class ServiceForm(SubitemMixin, models.Model):
 
     password = models.CharField(
         _('Password'), max_length=32, blank=True,
-        help_text=_('Password that is asked from participants'),
+        help_text=_('Password that is asked from participations'),
         default='')
 
     hide_contact_details = models.BooleanField(
@@ -259,6 +333,11 @@ class ServiceForm(SubitemMixin, models.Model):
 
     can_access.short_description = _('Can access')
 
+    @property
+    @django_cache('all_responsibles')
+    def all_responsibles(self):
+        return super().all_responsibles
+
     @cached_property
     def sub_items(self) -> 'Sequence[AbstractServiceFormItem]':
         lvl2s = Prefetch('level2category_set',
@@ -275,11 +354,12 @@ class ServiceForm(SubitemMixin, models.Model):
         self.create_email_templates()
         self.current_revision = FormRevision.objects.create(name='%s' % timezone.now().year,
                                                             form=self)
-        self.responsible = ResponsibilityPerson.objects.create(
+        self.responsible = Member.objects.create(
             forenames=_('Default'),
             surname=_('Responsible'),
             email=_('defaultresponsible@email.com'),
-            form=self)
+            organization_id=self.organization_id
+            )
         self.save()
 
     def create_email_templates(self) -> None:
@@ -292,61 +372,61 @@ class ServiceForm(SubitemMixin, models.Model):
         if not self.bulk_email_to_responsibles:
             commit = True
             self.bulk_email_to_responsibles = EmailTemplate.make(
-                _('Default bulk email to responsibles'), self,
+                _('Default bulk email to responsibles'), self.organization,
                 emails.bulk_email_to_responsibles,
                 _('Participations can be now viewed for form {{form}}'))
         if not self.email_to_responsibles:
             commit = True
             self.email_to_responsibles = EmailTemplate.make(
                 _('Default email to responsibles'),
-                self, emails.message_to_responsibles,
+                self.organization, emails.message_to_responsibles,
                 _('New participation arrived for form {{form}}'))
-        if not self.email_to_participant:
+        if not self.email_to_participation:
             commit = True
-            self.email_to_participant = EmailTemplate.make(
-                _('Default email to participant, on finish'), self,
-                emails.participant_on_finish,
+            self.email_to_participation = EmailTemplate.make(
+                _('Default email to participation, on finish'), self.organization,
+                emails.participation_on_finish,
                 _('Your update to form {{form}}'))
-        if not self.email_to_participant_on_update:
+        if not self.email_to_participation_on_update:
             commit = True
-            self.email_to_participant_on_update = EmailTemplate.make(
-                _('Default email to participant, on update'), self,
-                emails.participant_on_update,
+            self.email_to_participation_on_update = EmailTemplate.make(
+                _('Default email to participation, on update'), self.organization,
+                emails.participation_on_update,
                 _('Your updated participation to form {{form}}'))
-        if not self.email_to_former_participants:
+        if not self.email_to_former_participations:
             commit = True
-            self.email_to_former_participants = EmailTemplate.make(
-                _('Default email to former participants'), self,
-                emails.participant_new_form_revision,
+            self.email_to_former_participations = EmailTemplate.make(
+                _('Default email to former participations'), self.organization,
+                emails.participation_new_form_revision,
                 _('New form revision to form {{form}} has been published'))
-        if not self.resend_email_to_participant:
+        if not self.resend_email_to_participation:
             commit = True
-            self.resend_email_to_participant = EmailTemplate.make(
-                _('Default resend email to participant'), self,
-                emails.resend_email_to_participants,
+            self.resend_email_to_participation = EmailTemplate.make(
+                _('Default resend email to participation'), self.organization,
+                emails.resend_email_to_participations,
                 _('Your participation to form {{form}}'))
         if not self.email_to_invited_users:
             commit = True
             self.email_to_invited_users = EmailTemplate.make(
-                _('Default invite email to participants'), self,
+                _('Default invite email to participations'), self.organization,
                 emails.invite,
                 _('Invitation to fill participation in {{form}}'))
         if not self.email_to_responsible_auth_link:
             commit = True
             self.email_to_responsible_auth_link = EmailTemplate.make(
-                _('Default request responsible auth link email'), self,
+                _('Default request responsible auth link email'), self.organization,
                 emails.request_responsible_auth_link,
                 _('Your report in {{form}}'))
-        if not self.verification_email_to_participant:
+        if not self.verification_email_to_participation:
             commit = True
-            self.verification_email_to_participant = EmailTemplate.make(
-                _('Default verification email to participant'), self,
-                emails.verification_email_to_participant,
+            self.verification_email_to_participation = EmailTemplate.make(
+                _('Default verification email to participation'), self.organization,
+                emails.verification_email_to_participation,
                 _('Please verify your email in {{form}}'))
         if commit:
             self.save()
 
-    def invite_user(self, email: str, old_participants: bool=False) -> InviteUserResponse:
+    def invite_user(self, email: str, old_participations: bool=False) -> InviteUserResponse:
         """
             Create new participations to current form version and send invites
 
@@ -354,19 +434,22 @@ class ServiceForm(SubitemMixin, models.Model):
         """
         logger.info('Invite user %s %s', self, email)
 
-        participant = Participant.objects.filter(email=email, form_revision__form=self).first()
-        if participant:
-            if old_participants and participant.form_revision != self.current_revision:
-                rv = participant.send_participant_email(Participant.EmailIds.INVITE)
+        participation = Participation.objects.filter(
+            member__email=email, form_revision__form=self).first()
+        if participation:
+            if old_participations and participation.form_revision != self.current_revision:
+                rv = participation.send_participation_email(Participation.EmailIds.INVITE)
                 return (self.InviteUserResponse.EMAIL_SENT
                         if rv else self.InviteUserResponse.USER_DENIED_EMAIL)
             else:
                 return self.InviteUserResponse.USER_EXISTS
         else:
-            participant = Participant.objects.create(email=email,
-                                                     form_revision=self.current_revision,
-                                                     status=Participant.STATUS_INVITED)
-            participant.send_participant_email(Participant.EmailIds.INVITE)
+            member, created = Member.objects.get_or_create(organization=self.organization,
+                                                           email=email)
+            participation = Participation.objects.create(member=member,
+                                                       form_revision=self.current_revision,
+                                                       status=Participation.STATUS_INVITED)
+            participation.send_participation_email(Participation.EmailIds.INVITE)
             return self.InviteUserResponse.EMAIL_SENT
 
     @cached_property
@@ -425,10 +508,10 @@ class ServiceForm(SubitemMixin, models.Model):
     def participation_count(self) -> str:
         if self.current_revision:
             old_time = timezone.now() - datetime.timedelta(minutes=20)
-            ready = self.current_revision.participant_set.filter(
-                status__in=Participant.READY_STATUSES)
-            recent_ongoing = self.current_revision.participant_set.filter(
-                status__in=[Participant.STATUS_ONGOING],
+            ready = self.current_revision.participation_set.filter(
+                status__in=Participation.READY_STATUSES)
+            recent_ongoing = self.current_revision.participation_set.filter(
+                status__in=[Participation.STATUS_ONGOING],
                 last_modified__gt=old_time)
 
             return '%s + %s' % (ready.count(), recent_ongoing.count())
@@ -440,18 +523,18 @@ class ServiceForm(SubitemMixin, models.Model):
     def bulk_email_responsibles(self) -> None:
         logger.info('Bulk email responsibles %s', self)
 
-        for r in self.responsibilityperson_set.all():
+        for r in self.all_responsibles:
             r.send_bulk_mail()
 
-    def bulk_email_former_participants(self) -> None:
-        logger.info('Bulk email former participants %s', self)
-        for p in Participant.objects.filter(send_email_allowed=True,
-                                            form_revision__send_bulk_email_to_participants=True,
-                                            form_revision__form=self,
-                                            form_revision__valid_to__lt=timezone.now(),
-                                            status__in=Participant.READY_STATUSES
-                                            ).distinct():
-            p.send_participant_email(Participant.EmailIds.NEW_FORM_REVISION)
+    def bulk_email_former_participations(self) -> None:
+        logger.info('Bulk email former participations %s', self)
+        for p in Participation.objects.filter(member__allow_participation_email=True,
+                                              form_revision__send_bulk_email_to_participations=True,
+                                              form_revision__form=self,
+                                              form_revision__valid_to__lt=timezone.now(),
+                                              status__in=Participant.READY_STATUSES
+                                              ).distinct():
+            p.send_participation_email(Participation.EmailIds.NEW_FORM_REVISION)
 
     def reschedule_bulk_email(self) -> None:
         now = timezone.now()
@@ -466,42 +549,17 @@ class ServiceForm(SubitemMixin, models.Model):
             tr = Task.make(self.bulk_email_responsibles,
                            scheduled_time=self.current_revision.send_emails_after)
         if self.current_revision.valid_from > now:
-            tp = Task.make(self.bulk_email_former_participants,
+            tp = Task.make(self.bulk_email_former_participations,
                            scheduled_time=self.current_revision.valid_from)
 
 
-class AbstractServiceFormItem(models.Model):
-    _responsibles: Set[ResponsibilityPerson]
-    sub_items: 'Iterable[AbstractServiceFormItem]'
-
-    class Meta:
-        abstract = True
-        ordering = ('order',)
-
-    order = models.PositiveIntegerField(default=0, blank=False, null=False, db_index=True,
-                                        verbose_name=_('Order'))
-    responsibles = select2_fields.ManyToManyField(ResponsibilityPerson, blank=True,
-                                                  verbose_name=_('Responsible persons'),
-                                                  related_name='%(class)s_related',
-                                                  overlay=_('Choose responsibles'),
-                                                  )
-
-    @cached_property
-    def responsibles_display(self) -> str:
-        first_resp = ''
-        responsibles = self.responsibles.all()
-        if responsibles:
-            first_resp = str(self.responsibles.first())
-        if len(responsibles) > 1:
-            return _('{} (and others)').format(first_resp)
-        else:
-            return first_resp
-
-    def background_color_display(self) -> 'ColorStr':
-        raise NotImplementedError
+@receiver(post_save, sender=ServiceForm)
+def invalidate_serviceform_caches(sender: ServiceForm, **kwargs):
+    invalidate_cache(sender, 'all_responsibles')
 
 
-class Level1Category(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem):
+class Level1Category(AbstractServiceFormItem):
+    parent_name = 'form'
     subitem_name = 'level2category'
     background_color = ColorField(_('Background color'), blank=True, null=True)
 
@@ -516,7 +574,8 @@ class Level1Category(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem
         return utils.not_black(self.background_color) or utils.not_black(self.form.level1_color)
 
 
-class Level2Category(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem):
+class Level2Category(AbstractServiceFormItem):
+    parent_name = 'category'
     subitem_name = 'activity'
     background_color = ColorField(_('Background color'), blank=True, null=True)
 
@@ -535,8 +594,9 @@ class Level2Category(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem
                 utils.not_black(self.category.form.level2_color))
 
 
-class Activity(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem):
+class Activity(AbstractServiceFormItem):
     subitem_name = 'activitychoice'
+    parent_name = 'category'
 
     class Meta(AbstractServiceFormItem.Meta):
         verbose_name = _('Activity')
@@ -546,7 +606,6 @@ class Activity(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem):
                                  on_delete=models.CASCADE)
     multiple_choices_allowed = models.BooleanField(default=True, verbose_name=_('Multichoice'))
     people_needed = models.PositiveIntegerField(_('Needed'), default=0)
-    skip_numbering = models.BooleanField(_('Skip'), default=False)
 
     @property
     def has_choices(self) -> bool:
@@ -560,14 +619,14 @@ class Activity(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem):
         current_revision = self.category.category.form.current_revision
 
         qs = self.participationactivity_set.filter(
-            participant__status__in=Participant.READY_STATUSES)
+            participation__status__in=Participation.READY_STATUSES)
 
         if revision_name == utils.RevisionOptions.ALL:
-            qs = qs.order_by('participant__form_revision')
+            qs = qs.order_by('participation__form_revision')
         elif revision_name == utils.RevisionOptions.CURRENT:
-            qs = qs.filter(participant__form_revision=current_revision)
+            qs = qs.filter(participation__form_revision=current_revision)
         else:
-            qs = qs.filter(participant__form_revision__name=revision_name)
+            qs = qs.filter(participation__form_revision__name=revision_name)
         return qs
 
     @property
@@ -581,14 +640,14 @@ class Activity(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem):
             self.category.background_color_display)
 
 
-class ActivityChoice(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem):
+class ActivityChoice(AbstractServiceFormItem):
+    parent_name = 'activity'
     class Meta(AbstractServiceFormItem.Meta):
         verbose_name = _('Activity choice')
         verbose_name_plural = _('Activity choices')
 
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     people_needed = models.PositiveIntegerField(_('Needed'), default=0)
-    skip_numbering = models.BooleanField(_('Skip'), default=False)
 
     @property
     def id_display(self) -> str:
@@ -603,14 +662,14 @@ class ActivityChoice(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem
         current_revision = self.activity.category.category.form.current_revision
 
         qs = self.participationactivitychoice_set.filter(
-            activity__participant__status__in=Participant.READY_STATUSES)
+            activity__participation__status__in=Participation.READY_STATUSES)
 
         if revision_name == utils.RevisionOptions.ALL:
-            qs = qs.order_by('activity__participant__form_revision')
+            qs = qs.order_by('activity__participation__form_revision')
         elif revision_name == utils.RevisionOptions.CURRENT:
-            qs = qs.filter(activity__participant__form_revision=current_revision)
+            qs = qs.filter(activity__participation__form_revision=current_revision)
         else:
-            qs = qs.filter(activity__participant__form_revision__name=revision_name)
+            qs = qs.filter(activity__participation__form_revision__name=revision_name)
         return qs
 
     @cached_property
@@ -619,7 +678,7 @@ class ActivityChoice(SubitemMixin, NameDescriptionMixin, AbstractServiceFormItem
             self.activity.category.background_color_display)
 
 
-class Question(CopyMixin, AbstractServiceFormItem):
+class Question(AbstractServiceFormItem):
     class Meta(AbstractServiceFormItem.Meta):
         verbose_name = _('Question')
         verbose_name_plural = _('Questions')
@@ -650,17 +709,22 @@ class Question(CopyMixin, AbstractServiceFormItem):
 
     def questionanswers(self, revision_name: str) -> 'Sequence[QuestionAnswer]':
         qs = QuestionAnswer.objects.filter(question=self,
-                                           participant__status__in=Participant.READY_STATUSES)
+                                           participation__status__in=Participation.READY_STATUSES)
 
         current_revision = self.form.current_revision
 
         if revision_name == utils.RevisionOptions.ALL:
-            qs = qs.order_by('-participant__form_revision')
+            qs = qs.order_by('-participation__form_revision')
         elif revision_name == utils.RevisionOptions.CURRENT:
-            qs = qs.filter(participant__form_revision=current_revision)
+            qs = qs.filter(participation__form_revision=current_revision)
         else:
-            qs = qs.filter(participant__form_revision__name=revision_name)
+            qs = qs.filter(participation__form_revision__name=revision_name)
         return qs
+
+    @property
+    def id_display(self):
+        # TODO: perhaps we could implement also here some kind of numbering
+        return ''
 
     def __str__(self):
         return self.question

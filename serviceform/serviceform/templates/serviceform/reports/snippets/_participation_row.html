@@ -1,49 +1,50 @@
 {% load serviceform_tags i18n %}
-<div class="row-report-participant">
+{# Note: participation here is either Participation or Member #}
+<div class="row-report-participation">
   {% all_revisions as is_all_revisions %}
   {% if is_all_revisions and not is_responsible %}
   <div class="col-report-revision">
-    {{ participant.form_revision }}
+    {{ participation.form_revision }}
   </div>
   {% endif %}
-  <div class="col-report-participant">
+  <div class="col-report-participation">
     {% if anonymous_hide_details %}
-      {{ participant }}
+      {{ participation.member }}
     {% else %}
       {% if is_responsible %}
-        <a href="{% url "view_responsible" participant.pk %}">{{ participant }}</a>
+        <a href="{% url "view_responsible" participation.pk service_form.slug %}">{{ participation.member }}</a>
       {% else %}
-      <a href="{% url "view_user" participant.pk %}">{{ participant }}</a>
+      <a href="{% url "view_user" participation.pk %}">{{ participation.member }}</a>
       {% endif %}
     {% endif %}
   </div>
   <div class="col-report-phone">
-    {{ participant.phone_number }}
+    {{ participation.member.phone_number }}
   </div>
   <div class="col-report-email">
-    {{ participant.email }}
+    {{ participation.member.email }}
   </div>
   <div class="col-items">
     <div class="row">
     <div class="col-age">
-        {{ participant.age }}
+        {{ participation.member.age }}
     </div>
     <div class="col-report-count">
       <a class="tooltip-only" data-toggle="tooltip" title="{% trans "Number of activities" %}">
-      {{ participant.item_count|count_color }}
+      {{ participation.item_count|count_color }}
       </a>
     </div>
 
     <div class="col-report-extra-link">
-      {% if item.additional_info or participant.address or participant.log %}
-        <a href="#item-{{participant.pk}}-{{ item.pk }}-extra" data-toggle="collapse">
+      {% if item.additional_info or participation.member.address or participation.log %}
+        <a href="#item-{{participation.pk}}-{{ item.pk }}-extra" data-toggle="collapse">
         {% if item.additional_info %}
           <span class="fa fa-info"></span>
         {% endif %}
-        {% if participant.address %}
+        {% if participation.address %}
           <span class="fa fa-at"></span>
         {% endif %}
-        {% if participant.log %}
+        {% if participation.log %}
           <span class="fa fa-list"></span>
         {% endif %}
         </a>
@@ -52,25 +53,25 @@
     </div>
   </div>
 </div>
-{% if item.additional_info or participant.address or participant.log %}
-  <div id="item-{{participant.pk}}-{{ item.pk }}-extra" class="row-report-extra collapse">
+{% if item.additional_info or participation.address or participation.log %}
+  <div id="item-{{participation.pk}}-{{ item.pk }}-extra" class="row-report-extra collapse">
     <div class="col-report-extra">
       {% if item.additional_info %}
         <b>{% trans "Additional info" %}</b><br>
         {{ item.additional_info|linebreaksbr }}
         <br>
       {% endif %}
-      {% if participant.log %}
+      {% if participation.log %}
         <b>{% trans "Log" %}</b>
         <ul>
-          {% for l in participant.log %}
+          {% for l in participation.log %}
             <li>{{ l.created_at }} {{ l.written_by }}: {{ l.message }}</li>
           {% endfor %}
         </ul>
       {% endif %}
     </div>
   <div class="col-report-address">
-    {{ participant.address|linebreaks }}
+    {{ participation.address|linebreaks }}
   </div>
   </div>
 {% endif %}

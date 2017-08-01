@@ -49,10 +49,10 @@ case "$1" in
     pip install -r requirements-tests.txt
     wait_redis
     cd $2
+    export TESTS_RUNNING=1
     ./manage.py collectstatic --noinput
     ./manage.py compress
     ./manage.py compilemessages
-    export TESTS_RUNNING=1
     py.test -v --cov serviceform/ --cov tasks/ tests/
   ;;
   'bash')

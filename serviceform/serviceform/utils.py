@@ -23,15 +23,19 @@ import uuid
 import random
 import string
 import logging
+from functools import wraps
 from itertools import chain
-from typing import Match, Optional, TYPE_CHECKING, Iterable, Union
+from typing import Optional, TYPE_CHECKING, Iterable, Union
+
+from django.core.serializers import serialize, deserialize
+from django.db.models import Model
 
 if TYPE_CHECKING:
-    from .models import ServiceForm, Participant, ResponsibilityPerson, AbstractServiceFormItem
+    from .models import ServiceForm, Participation, Member
+    from .models.serviceform import AbstractServiceFormItem
 
-from colorful.forms import RGB_REGEX
 from django.contrib import messages
-from django.core.cache import caches
+from django.core.cache import caches, BaseCache
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.utils.safestring import mark_safe
@@ -44,7 +48,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils import translation
 from django.conf import settings
 
-from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -66,19 +69,14 @@ class DelayedKeyboardInterrupt(object):
             raise KeyboardInterrupt()
 
 
-def _get_ident(request: HttpRequest) -> str:
-    service_form = getattr(request, 'service_form', '')
-    if not service_form:
-        logger.error('No serviceform in _get_ident!?')
-
+def _get_ident(request: HttpRequest, serviceform: 'ServiceForm') -> str:
     if request.user.pk:
         ident = 'user_%s' % request.user.pk
     else:
-        resp = get_responsible(request)
-        ident = 'responsible_%s' % resp.pk if resp else 'anonymous'
-        service_form = resp.form if resp else None
+        member = get_authenticated_member(request)
+        ident = 'responsible_%s' % member.pk if member else 'anonymous'
 
-    return f"{ident}_serviceform_{getattr(service_form, 'pk', '')}"
+    return f"{ident}_serviceform_{getattr(serviceform, 'pk', '')}"
 
 
 class RevisionOptions:
@@ -89,17 +87,20 @@ class RevisionOptions:
 settings_defaults = {'revision': RevisionOptions.CURRENT}
 
 
-def get_report_settings(request: HttpRequest, parameter: str=None) -> Union[dict, str]:
+def get_report_settings(request: HttpRequest, serviceform: 'ServiceForm',
+                        parameter: str=None) -> Union[dict, str]:
     cache = caches['persistent']
-    report_settings = cache.get('settings_for_%s' % _get_ident(request), settings_defaults.copy())
+    report_settings = cache.get('settings_for_%s' % _get_ident(request, serviceform),
+                                settings_defaults.copy())
     if parameter:
         return report_settings.get(parameter)
     return report_settings
 
 
-def set_report_settings(request: HttpRequest, report_settings: dict) -> None:
+def set_report_settings(request: HttpRequest, serviceform: 'ServiceForm',
+                        report_settings: dict) -> None:
     cache = caches['persistent']
-    cache.set('settings_for_%s' % _get_ident(request), report_settings)
+    cache.set('settings_for_%s' % _get_ident(request, serviceform), report_settings)
 
 
 def user_has_serviceform_permission(user: settings.AUTH_USER_MODEL, service_form: 'ServiceForm',
@@ -113,38 +114,38 @@ def user_has_serviceform_permission(user: settings.AUTH_USER_MODEL, service_form
             return False
 
 
-_participants = {}
+_participations = {}
 
 
-def get_participant(_id: int) -> 'Participant':
-    p = _participants.get(_id)
+def get_participation(_id: int) -> 'Participation':
+    p = _participations.get(_id)
     if p is None:
-        logger.error('Participant %d was not in cache!', _id)
+        logger.error('Participation %d was not in cache!', _id)
     return p
 
 
-def fetch_participants(service_form: 'ServiceForm', revision_name: str) -> None:
-    global _participants
-    from .models import Participant
+def fetch_participations(service_form: 'ServiceForm', revision_name: str) -> None:
+    global _participations
+    from .models import Participation
     is_all_revisions = revision_name == RevisionOptions.ALL
     is_current_revision = revision_name == RevisionOptions.CURRENT
 
-    qs = Participant.objects.prefetch_related('participantlog_set__written_by')
+    qs = Participation.objects.prefetch_related('participationlog_set__written_by')
     if is_all_revisions:
         qs = qs.select_related('form_revision')
-        participants = qs.filter(form_revision__form=service_form).distinct()
+        participations = qs.filter(form_revision__form=service_form).distinct()
     elif is_current_revision:
-        participants = qs.filter(form_revision=service_form.current_revision)
+        participations = qs.filter(form_revision=service_form.current_revision)
     else:
-        participants = qs.filter(form_revision__name=revision_name)
+        participations = qs.filter(form_revision__name=revision_name)
 
-    _participants = {itm.pk: itm for itm in participants}
+    _participations = {itm.pk: itm for itm in participations}
     return
 
 
-class ClearParticipantCacheMiddleware:
+class ClearParticipationCacheMiddleware:
     def process_request(self, request: HttpRequest):
-        _participants.clear()
+        _participations.clear()
         _responsible_counts.clear()
 
 
@@ -177,7 +178,7 @@ def init_serviceform_counters(service_form: 'ServiceForm', all_responsibles: boo
     cat1_counter = 0
     _responsible_counts.clear()
 
-    def _add_responsible(responsibles: 'Iterable[ResponsibilityPerson]',
+    def _add_responsible(responsibles: 'Iterable[Member]',
                          *targets: 'AbstractServiceFormItem',
                          resp_count: bool=False) -> None:
         if resp_count:
@@ -222,13 +223,14 @@ def init_serviceform_counters(service_form: 'ServiceForm', all_responsibles: boo
 
 
 def shuffle_person_data(service_form: 'ServiceForm') -> None:
-    from .models import Participant, ResponsibilityPerson, Question
+    raise NotImplementedError('This needs to be fixed')
+    from .models import Participation, Member, Question
     letters = len(string.ascii_letters)
     forenames = set()
     surnames = set()
-    participants = Participant.objects.filter(form_revision__form=service_form)
-    responsibles = ResponsibilityPerson.objects.filter(form=service_form)
-    for p in chain(participants, responsibles):
+    participations = Participation.objects.filter(form_revision__form=service_form)
+    responsibles = Member.objects.filter(form=service_form)
+    for p in chain(participations, responsibles):
         for n in p.forenames.split(' '):
             if n:
                 forenames.add(n.title())
@@ -276,10 +278,10 @@ def shuffle_person_data(service_form: 'ServiceForm') -> None:
             p.city = 'Hemilä'
         p.save()
 
-    for p in chain(participants, responsibles):
+    for p in chain(participations, responsibles):
         shuffle_contact_details(p)
 
-    for p in participants:
+    for p in participations:
         for a in p.activities:
             shuffle(a, 'additional_info')
             for c in a.choices:
@@ -288,12 +290,15 @@ def shuffle_person_data(service_form: 'ServiceForm') -> None:
             shuffle_question(q)
 
 
-def count_for_responsible(resp: 'ResponsibilityPerson') -> int:
+def count_for_responsible(resp: 'Member') -> int:
     return _responsible_counts[resp.pk]
 
 
 def generate_uuid() -> str:
     return str(uuid.uuid4())
+
+
+# TODO: move to color_utils
 
 ColorStr = str  # TODO: Type validation against RGB_REGEX.pattern?
 
@@ -337,20 +342,6 @@ def update_serviceform_default_emails() -> None:
         s.create_email_templates()
 
 
-def clean_session(request: HttpRequest):
-    keys = ['max_category', 'authenticated_participant', 'authenticated_responsibility',
-            'verification_sent']
-    for key in keys:
-        request.session.pop(key, None)
-        # request.session.clear()
-
-
-def get_responsible(request: HttpRequest):
-    from .models import ResponsibilityPerson
-    responsible_pk = request.session.get('authenticated_responsibility')
-    return ResponsibilityPerson.objects.filter(pk=responsible_pk).first()
-
-
 def safe_join(sep: str, args_generator: Iterable[str]):
     sep = mark_safe(sep)
     result = mark_safe('')
@@ -362,19 +353,13 @@ def safe_join(sep: str, args_generator: Iterable[str]):
     return result
 
 
-def expire_auth_link(request: HttpRequest, obj: 'Union[Participant, ResponsibilityPerson]') \
-        -> HttpResponse:
-    """
-
-    :param request: WSGI request
-    :param obj: either Participant or ResponsibilityPerson
-    :return: HttpResponse
-    """
+def expire_auth_link(request: HttpRequest, obj: 'Member') -> HttpResponse:
     obj.resend_auth_link()
     messages.info(request,
                   _('Your authentication URL was expired. New link has been sent to {}').format(
                       obj.email))
-    return redirect('password_login', obj.form.slug)
+    # TODO: organization_main page
+    return redirect('organization_main', obj.organization_id)
 
 
 def encode(number: int) -> str:
@@ -400,3 +385,81 @@ def decode(number: str) -> Optional[int]:
         result = None
     return result
 
+
+def django_cache(key, cache_name='default'):
+    """
+    Decorator that caches list of django models into Django cache.
+    
+    Decorated function must return an iterable of django models.
+    
+    """
+    cache: BaseCache = caches[cache_name]
+
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(obj: Model, *args, **kwargs) -> Iterable[Model]:
+            cache_key = f'{obj.__class__.__name__}_{obj.pk}_{key}'
+            result_json = cache.get(cache_key)
+
+            if result_json:
+                result = (i.object for i in deserialize('json', result_json))
+            else:
+                result = fn(obj, *args, **kwargs)
+                cache.set(cache_key, serialize('json', result))
+
+            return result
+        return wrapper
+
+    return decorator
+
+
+def invalidate_cache(obj, key, cache_name='default'):
+    cache: BaseCache = caches[cache_name]
+    cache_key = f'{obj.__class__.__name__}_{obj.pk}_{key}'
+    cache.delete(cache_key)
+
+def clean_session(request: HttpRequest):
+    keys = ['max_category', 'serviceform_pk', 'authenticated_member', 'verification_sent']
+    for key in keys:
+        request.session.pop(key, None)
+        # request.session.clear()
+
+
+## TODO: create authentication module and move these there.
+#def mark_as_authenticated_participation(request: HttpRequest,
+#                                      participation: 'Participation') -> None:
+#    request.session['authenticated_participation'] = participation.pk
+
+
+#def get_authenticated_participation(request: HttpRequest) -> 'Optional[Participation]':
+#    # TODO: remove participation-only authentication, or rename to active participation etc.
+#    from .models import Participation
+#    participation_pk = request.session.get('authenticated_participation')
+#    return participation_pk and Participation.objects.get(pk=participation_pk)
+
+
+def get_authenticated_member(request: HttpRequest) -> 'Optional[Member]':
+    # TODO check that this is being used everywhere
+    from .models import Member
+    member_pk = request.session.get('authenticated_member')
+    return member_pk and Member.objects.get(pk=member_pk)
+
+
+def mark_as_authenticated_member(request: HttpRequest, member: 'Member') -> None:
+    request.session['authenticated_member'] = member.pk
+
+
+def authenticate_to_serviceform(request: HttpRequest, serviceform: 'ServiceForm') -> None:
+    request.session['serviceform_pk'] = serviceform.pk
+
+
+def get_authenticated_serviceform(request: HttpRequest):
+    from .models import ServiceForm
+    serviceform_pk = request.session.get('serviceform_pk')
+    # TODO: if None -> crash? Should it be 404 then or something?
+    return ServiceForm.objects.get(pk=serviceform_pk)
+
+
+def is_serviceform_password_authenticated(request: HttpRequest, serviceform: 'ServiceForm') -> bool:
+    serviceform_pk = request.session.get('serviceform_pk')
+    return serviceform_pk == serviceform.pk

@@ -27,20 +27,21 @@ from django.shortcuts import get_object_or_404
 
 from .. import models, utils
 
-
-def serviceform(function=None, check_form_permission=False, init_counters=False,
-                all_responsibles=True, fetch_participants=False):
+# TODO: perhaps still bad name
+def require_serviceform(function=None, check_form_permission=False, init_counters=False,
+                        all_responsibles=True, fetch_participations=False):
     def actual_decorator(func):
         @wraps(func)
         def wrapper(request: HttpRequest, slug: str,
                     *args, **kwargs) -> HttpResponse:
             service_form = get_object_or_404(models.ServiceForm.objects, slug=slug)
             request.service_form = service_form
+            # TODO: serviceform document loading form cache (-> no more init_counters etc.)
             if init_counters:
                 service_form.init_counters(all_responsibles)
-            if fetch_participants:
-                revision_name = utils.get_report_settings(request, 'revision')
-                utils.fetch_participants(service_form, revision_name=revision_name)
+            if fetch_participations:
+                revision_name = utils.get_report_settings(request, service_form, 'revision')
+                utils.fetch_participations(service_form, revision_name=revision_name)
             func_ = require_form_permissions(func) if check_form_permission else func
             return func_(request, service_form, *args)
 
@@ -51,48 +52,72 @@ def serviceform(function=None, check_form_permission=False, init_counters=False,
     return actual_decorator
 
 
-def require_authenticated_responsible(func):
+def serviceform_from_session(function=None):
+    """
+    When filling form is started, particular serviceform needs to be
+    registered into session with utils.authenticate_to_serviceform.
+    This decorator gives serviceform as second positional argument to
+    the function.
+    """
+    def actual_decorator(func):
+        @wraps(func)
+        def wrapper(request: HttpRequest, *args, **kwargs):
+            serviceform = utils.get_authenticated_serviceform(request)
+            return func(request, serviceform, *args, **kwargs)
+        return wrapper
+    if function:
+        return actual_decorator(function)
+    return actual_decorator
+
+
+def require_authenticated_member(func):
     @wraps(func)
     def wrapper(request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        responsible = utils.get_responsible(request)
-        if responsible:
-            request.service_form = responsible.form
-        if request.user.pk or responsible:
-            return func(request, responsible, *args)
+        member = utils.get_authenticated_member(request)
+        if request.user.pk or member:
+            return func(request, member, *args)
         else:
             raise PermissionDenied
 
     return wrapper
 
 
-def require_authenticated_participant(function=None, check_flow=True):
+def require_authenticated_participation(function=None, check_flow=True, accept_anonymous=False):
+    """
+    These urls in contain serviceform_slug as first argument.
+    They require that member is authenticated, and because a member can have
+    only 1 participation in a serviceform, we can identify participation from that.
+    View itself takes participation as first argument.
+    """
     def actual_decorator(func):
         @wraps(func)
-        def wrapper(request: HttpRequest, *args, title: str='', **kwargs) -> HttpResponse:
+        def wrapper(request: HttpRequest, serviceform_slug, *args, title: str='',
+                    **kwargs) -> HttpResponse:
             current_view = request.resolver_match.view_name
 
-            participant_pk = request.session.get('authenticated_participant')
-            if participant_pk:
-                request.participant = participant = get_object_or_404(
-                    models.Participant.objects.all(),
-                    pk=participant_pk,
-                    status__in=models.Participant.EDIT_STATUSES)
-                if check_flow:
-                    # Check flow status
-                    participant._current_view = current_view
-                    if not participant.can_access_view(current_view, auth=True):
-                        return participant.redirect_last()
-                    rv = func(request, participant, *args, **kwargs)
-                    if isinstance(rv, HttpResponseRedirect):
-                        url = resolve(rv.url)
-                        next_view = url.view_name
-                        participant.proceed_to_view(next_view)
-                    return rv
-                else:
-                    return func(request, participant, *args, **kwargs)
-
-            else:
+            member = utils.get_authenticated_member(request)
+            if not member:
                 raise PermissionDenied
+
+            participation = get_object_or_404(member.participation_set,
+                                              form_revision__form__slug=serviceform_slug)
+
+            # TODO: rename request.participation
+            request.participation = participation
+            # TODO: should we check if this is in EDITING_STATUS or not?
+            if check_flow:
+                # Check flow status
+                participation._current_view = current_view
+                if not participation.can_access_view(current_view, auth=True):
+                    return participation.redirect_last()
+                rv = func(request, participation, *args, **kwargs)
+                if isinstance(rv, HttpResponseRedirect):
+                    url = resolve(rv.url)
+                    next_view = url.view_name
+                    participation.proceed_to_view(next_view)
+                return rv
+            else:
+                return func(request, participation, *args, **kwargs)
 
         return wrapper
 
@@ -103,11 +128,11 @@ def require_authenticated_participant(function=None, check_flow=True):
 
 def require_published_form(func):
     @wraps(func)
-    def wrapper(request: HttpRequest, participant: models.Participant,
+    def wrapper(request: HttpRequest, participation: models.Participation,
                 *args, **kwargs) -> HttpResponse:
-        if not participant.form.is_published:
+        if not participation.form.is_published:
             raise PermissionDenied
-        return func(request, participant, *args, **kwargs)
+        return func(request, participation, *args, **kwargs)
 
     return wrapper
 
@@ -119,7 +144,7 @@ def require_form_permissions(func):
         try:
             utils.user_has_serviceform_permission(request.user, service_form)
         except PermissionDenied:
-            responsible = utils.get_responsible(request)
+            responsible = utils.get_authenticated_member(request)
             if not responsible or not responsible.show_full_report:
                 return redirect_to_login(request.path, login_url=settings.LOGIN_URL)
 

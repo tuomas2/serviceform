@@ -1,0 +1,7 @@
+{% load i18n %}
+  <h2>{% trans "All participations" %} ({{ps|length}})</h2>
+  {% for p in ps %}
+    {% include "serviceform/reports/snippets/_participation_row.html" with participation=p %}
+  {% endfor %}
+
+
