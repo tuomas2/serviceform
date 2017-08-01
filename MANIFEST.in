@@ -1,6 +1,37 @@
 include README.rst
-include LICENCE.txt
-recursive-include serviceform *.html *.css *.scss fontawesome* *.js
-recursive-include * *.mo
-recursive-exclude * __pycache__
+recursive-include serviceform *.py *.html *.po .keep
+recursive-include serviceform/serviceform/static *.css *.scss *.js *.svg
+recursive-include serviceform/serviceform/static/Font-Awesome *.otf *.eot *.ttf *.woff *.woff2
+recursive-include serviceform/serviceform/static/assets/fonts/bootstrap *.eot *.ttf *.woff *.woff2
+recursive-exclude * *.mo
+recursive-exclude * __pycache__ .npmignore .bower.json bower.json
 recursive-exclude * *.py[co]
+exclude .codeclimate.yml
+exclude .coveragerc
+exclude .coveragerc
+exclude .dockerignore
+include CHANGES.rst
+exlude Dockerfile
+exclude Dockerfile-base
+include LICENSE.txt
+exclude Makefile
+exclude Dockerfile
+exclude docker-compose-master.yml
+exclude docker-compose-staging.yml
+exclude docker-compose-tests.yml
+exclude docker-compose-travis.yml
+exclude docker-compose.yml
+exclude entrypoint.sh
+recursive-exclude env *
+exclude env
+exclude manage.py
+exclude pytest.ini
+exclude requirements-base.in
+exclude requirements-base.txt
+exclude requirements-tests.txt
+exclude requirements.in
+exclude requirements.txt
+exclude tests
+recursive-exclude tests *
+recursive-exclude serviceform_project *
+exclude serviceform_project
