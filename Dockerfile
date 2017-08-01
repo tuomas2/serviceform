@@ -17,6 +17,8 @@ ARG VERSION
 ARG BUILD_DATE
 ENV SERVICEFORM_VERSION $VERSION
 ENV VCS_REF $VCS_REF
+# ensure we are being run by Makefile
+RUN test $VERSION
 LABEL org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.vcs-url="https://github.com/tuomas2/serviceform" \
       org.label-schema.version=$VERSION \

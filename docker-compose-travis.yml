@@ -12,7 +12,10 @@ services:
      - POSTGRES_DB=test_serviceform
      - POSTGRES_PASSWORD=django
   tests:
-    build: .
+    build:
+      context: .
+      args:
+        VERSION: tests
     image: serviceform
     user: root
     command: travis-tests ${CURRENT_DIR}
