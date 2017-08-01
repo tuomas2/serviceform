@@ -7,6 +7,7 @@ WORKDIR /code
 RUN mkdir /code/static
 RUN DOCKER_BUILD=1 ./manage.py collectstatic --noinput
 RUN DOCKER_BUILD=1 ./manage.py compress
+RUN DOCKER_BUILD=1 ./manage.py compilemessages
 ARG VCS_REF
 RUN echo $VCS_REF > .git_sha
 EXPOSE 8080

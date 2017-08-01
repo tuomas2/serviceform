@@ -10,12 +10,10 @@
 
       <div class="category-responsible-column">
         {% if cat.responsibles_display %}
-        {{cat.responsibles_display}}
-      <a href="#CAT-{{level}}_EXTRA_{{ cat.pk }}" data-toggle="collapse">
-        {% if cat.responsibles_display %}
-          <span class="fa fa-at"></span>
-        {% endif %}
-      </a>
+          {{cat.responsibles_display}}
+          <a href="#CAT-{{level}}_EXTRA_{{ cat.pk }}" data-toggle="collapse">
+            <span class="fa fa-at"></span>
+          </a>
         {% endif %}
       </div>
   </div>

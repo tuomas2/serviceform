@@ -531,7 +531,9 @@ class ServiceForm(AbstractServiceFormItem):
         for p in Participation.objects.filter(member__allow_participation_email=True,
                                               form_revision__send_bulk_email_to_participations=True,
                                               form_revision__form=self,
-                                              form_revision__valid_to__lt=timezone.now()).distinct():
+                                              form_revision__valid_to__lt=timezone.now(),
+                                              status__in=Participant.READY_STATUSES
+                                              ).distinct():
             p.send_participation_email(Participation.EmailIds.NEW_FORM_REVISION)
 
     def reschedule_bulk_email(self) -> None:

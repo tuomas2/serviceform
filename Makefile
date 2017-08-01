@@ -1,5 +1,6 @@
 default: image
 all: base image
+push: push-image
 
 base:
 	@docker build -f Dockerfile-base \
@@ -15,3 +16,7 @@ image:
 	    --build-arg VERSION=`python setup.py --version` \
 	    -t tuomasairaksinen/serviceform:latest \
      .
+push-base:
+	@docker push tuomasairaksinen/serviceform-base:latest
+push-image:
+	@docker push tuomasairaksinen/serviceform:latest

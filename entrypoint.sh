@@ -52,6 +52,7 @@ case "$1" in
     export TESTS_RUNNING=1
     ./manage.py collectstatic --noinput
     ./manage.py compress
+    ./manage.py compilemessages
     py.test -v --cov serviceform/ --cov tasks/ tests/
   ;;
   'bash')

@@ -28,6 +28,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
+from raven.contrib.django.raven_compat.models import client
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +83,13 @@ class EmailMessage(models.Model):
                                       headers=headers,
                                       to=[self.to_address])
         mail.attach_alternative(html_body, 'text/html')
-        emails = mail.send()
+        try:
+            emails = mail.send()
+        except Exception:
+            client.captureException()
+            logger.exception('Problem in email sending to %s. Will try again later', self.to_address)
+            emails = 0
+
         if emails == 1:
             self.sent_at = timezone.now()
             self.save(update_fields=['sent_at'])

@@ -26,6 +26,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
+
+from raven.contrib.django.raven_compat.models import client
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -82,8 +85,10 @@ class Task(models.Model):
             func = getattr(self.target, self.method_name)
             result = func(*args, **kwargs)
         except Exception as e:
-            logger.exception('Error in processing task %s', self)
             self.status = self.ERROR
+            logger.exception('Error in processing task %s', self)
+            if settings.RAVEN_DSN:
+                client.captureException()
         else:
             self.status = self.DONE
             self.result = json.dumps(result)

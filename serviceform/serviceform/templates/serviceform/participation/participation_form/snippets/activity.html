@@ -35,12 +35,10 @@
     </div>
     <div class="responsible-column">
       {% if activity.responsibles_display %}
-      {{ activity.responsibles_display }}
-        {% if activity.responsible %}
-          <a href="#ACTIVITY_EXTRA_{{ activity.pk }}" data-toggle="collapse">
-        <span class="fa fa-at"></span>
+        {{ activity.responsibles_display }}
+        <a href="#ACTIVITY_EXTRA_{{ activity.pk }}" data-toggle="collapse">
+          <span class="fa fa-at"></span>
         </a>
-        {% endif %}
       {% endif %}
     </div>
   </div>
