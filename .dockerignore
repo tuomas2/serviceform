@@ -1,5 +1,10 @@
 Dockerfile
 Dockerfile-base
+docker-compose*.yml
+*.in
+tests
+pytest.ini
+Makefile
 sql
 .idea
 static
