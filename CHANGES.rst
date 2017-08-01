@@ -1,4 +1,4 @@
-0.9.7 (unreleased)
+0.9.7 (2017-08-01)
 ------------------
 
 - Fix requirements in setup.py
