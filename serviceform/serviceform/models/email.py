@@ -27,7 +27,6 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
-from python_http_client import HTTPError
 from raven.contrib.django.raven_compat.models import client
 
 logger = logging.getLogger(__name__)

@@ -30,6 +30,7 @@ setup(
         "django-compressor",
         "django-guardian",
         "django-select2-forms",
+        "raven",
     ],
     extras_require={
         'cachalot': ['django-cachalot'],
