@@ -345,7 +345,7 @@ if RAVEN_DSN:
         'dsn': RAVEN_DSN,
         # If you are using git, you can also automatically configure the
         # release based on the git info.
-        'release': open('.git_sha').read(),
+        'release': os.getenv('VCS_REF', ''),
     }
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 20000

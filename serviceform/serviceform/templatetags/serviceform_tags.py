@@ -59,6 +59,11 @@ def responsible_link(context: Context, item: 'AbstractServiceFormItem') -> SafeS
     return rv
 
 
+@register.simple_tag()
+def version():
+    import serviceform
+    return serviceform.__version__
+
 @register.assignment_tag
 def has_responsible(item: 'SubitemMixin', responsible: 'ResponsibilityPerson') -> bool:
     return item.has_responsible(responsible)

@@ -1,4 +1,4 @@
-{% load static i18n compress %}
+{% load static i18n compress serviceform_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,9 +45,10 @@
   </div>
 </div>
 <div class="page-footer-text">
+  <img src="{%static "serviceform/OSI.svg"%}">
+  Powered by
   <a href="https://github.com/tuomas2/serviceform">
-    <img src="{%static "serviceform/OSI.svg"%}">
-    {%trans "Serviceform code is available at GitHub" %}
+    Serviceform {% version %}
   </a>
 </div>
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-30 15:20+0300\n"
+"POT-Creation-Date: 2017-08-01 16:54+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,18 +18,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: tasks/models.py:41
+#: serviceform/tasks/models.py:44
 msgid "Requested"
 msgstr "Pyydetty"
 
-#: tasks/models.py:42
+#: serviceform/tasks/models.py:45
 msgid "Done"
 msgstr "Valmis"
 
-#: tasks/models.py:43
+#: serviceform/tasks/models.py:46
 msgid "Error"
 msgstr "Virhe"
 
-#: tasks/models.py:44
+#: serviceform/tasks/models.py:47
 msgid "Canceled"
 msgstr "Peruutettu"
