@@ -15,6 +15,7 @@ setup(
     author="Tuomas Airaksinen",
     author_email="tuomas.airaksinen@gmail.com",
     url="https://github.com/tuomas2/serviceform",
+    keywords='django, church, volunteering, recruiting, reporting',
     packages=['serviceform.'+i for i in find_packages('serviceform')],
     include_package_data=True,
     install_requires=[
