@@ -12,7 +12,7 @@
     <div class="serviceform-description">
       {{ service_form.description|linebreaks }}
     </div>
-    {% if form.instructions %}{{ form.instructions|safe }}{% else %}
+    {% if service_form.instructions %}{{ service_form.instructions|safe }}{% else %}
       <span class="title">{% trans "Instructions" %}:</span>
       <ul>
         <li>
