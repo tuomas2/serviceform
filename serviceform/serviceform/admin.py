@@ -356,9 +356,9 @@ class EmailMessageAdmin(ExtendedLogMixin, admin.ModelAdmin):
 @admin.register(models.Participant)
 class ParticipantAdmin(ExtendedLogMixin, admin.ModelAdmin):
     list_display = (
-        'id', '__str__', 'form_display', 'form_revision', 'status', 'activities_display',
+        'id', '__str__', 'form_display', 'email', 'form_revision', 'status', 'activities_display',
         'created_at', 'last_modified', 'personal_link')
-    fields = ('forenames', 'surname')
+    fields = ('forenames', 'surname', 'email', 'form_revision')
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).select_related('form_revision__form')
