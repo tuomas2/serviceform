@@ -265,6 +265,7 @@ class Participant(ContactDetailsMixin, PasswordMixin, models.Model):
 
     def finish(self, email_participant: bool=True) -> None:
         updating = self.status == self.STATUS_UPDATING
+        self.form_revision = self.form_revision.form.current_revision
         self.status = self.STATUS_FINISHED
         if timezone.now() > self.form_revision.send_emails_after:
             self.send_email_to_responsibles()
@@ -272,7 +273,7 @@ class Participant(ContactDetailsMixin, PasswordMixin, models.Model):
             self.send_participant_email(
                 self.EmailIds.ON_UPDATE if updating else self.EmailIds.ON_FINISH)
         self.last_finished = timezone.now()
-        self.save(update_fields=['status', 'last_finished'])
+        self.save(update_fields=['status', 'form_revision', 'last_finished'])
 
     def send_participant_email(self, event: EmailIds,
                                extra_context: dict=None) -> 'Optional[EmailMessage]':

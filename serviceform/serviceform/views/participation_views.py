@@ -175,9 +175,8 @@ def auth_participant_common(request: HttpRequest, participant: models.Participan
         participant.status = models.Participant.STATUS_ONGOING
     if participant.form_revision != participant.form_revision.form.current_revision:
         participant.last_finished_view = ''
-    participant.form_revision = participant.form_revision.form.current_revision
     participant.save(
-        update_fields=['status', 'form_revision', 'last_finished_view', 'email_verified'])
+        update_fields=['status', 'last_finished_view', 'email_verified'])
     request.session['authenticated_participant'] = participant.pk
     return redirect(next_view)
 
