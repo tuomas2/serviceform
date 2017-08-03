@@ -68,6 +68,7 @@ def version():
     ref = os.getenv('VCS_REF', '')[:8]
     return f'{ver} ({ref})' if 'dev' in ver and ref else ver
 
+
 @register.assignment_tag
 def has_responsible(item: 'SubitemMixin', responsible: 'ResponsibilityPerson') -> bool:
     return item.has_responsible(responsible)
