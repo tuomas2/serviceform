@@ -6,6 +6,7 @@ from django.template import Context
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe, SafeString
 from django.utils.translation import gettext_lazy as _
+import os
 
 from ..models import Participant
 from ..utils import safe_join, ColorStr
@@ -15,7 +16,8 @@ from ..utils import lighter_color as lighter_color_util, darker_color
 
 register = template.Library()
 if TYPE_CHECKING:
-    from ..models import (AbstractServiceFormItem, ResponsibilityPerson, SubitemMixin, Activity,
+    from ..models.serviceform import AbstractServiceFormItem
+    from ..models import (ResponsibilityPerson, SubitemMixin, Activity,
                           ActivityChoice, ParticipationActivity, ParticipationActivityChoice,
                           Question, QuestionAnswer)
 
@@ -62,7 +64,9 @@ def responsible_link(context: Context, item: 'AbstractServiceFormItem') -> SafeS
 @register.simple_tag()
 def version():
     import serviceform
-    return serviceform.__version__
+    ver = serviceform.__version__
+    ref = os.getenv('VCS_REF', '')[:8]
+    return f'{ver} ({ref})' if 'dev' in ver and ref else ver
 
 @register.assignment_tag
 def has_responsible(item: 'SubitemMixin', responsible: 'ResponsibilityPerson') -> bool:
