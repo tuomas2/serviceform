@@ -942,7 +942,7 @@
     "name": "Vuosi-2017",
     "form": 11,
     "valid_from": "2017-05-22T21:20:00Z",
-    "valid_to": "2018-05-31T21:20:00Z",
+    "valid_to": "3018-05-31T21:20:00Z",
     "send_bulk_email_to_participants": true,
     "send_emails_after": "2017-08-14T21:20:00Z"
   }
