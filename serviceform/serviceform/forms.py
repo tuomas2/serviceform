@@ -502,6 +502,7 @@ class QuestionForm:
         return self.question_errors
 
     def clean(self):
+        had_values = set()
         for key, value in self.data.items():
             if key.startswith('SRV_'):
                 parts = key.split('_')
@@ -519,8 +520,11 @@ class QuestionForm:
                         raise ValidationError(_('Invalid question input data'))
                     item = self.questions[_pk]
                     item.answer = value
+                    had_values.add(_pk)
 
         for q in self.questions.values():
+            if q.pk not in had_values:
+                q.answer = ""
             if q.required and not getattr(q, 'answer', ''):
                 q.error = _('Answer required')
                 self.question_errors.append(q)
