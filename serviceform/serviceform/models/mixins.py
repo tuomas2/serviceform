@@ -71,7 +71,10 @@ class ContactDetailsMixin(models.Model):
     city = models.CharField(max_length=32, blank=False, verbose_name=_('City'))
     email = models.EmailField(blank=False, verbose_name=_('Email'), db_index=True)
     phone_number = models.CharField(max_length=32, validators=[phone_regex], blank=False,
-                                    verbose_name=_('Phone number'))
+                                    verbose_name=_('Phone number'),
+                                    help_text=_('Contact details are needed so that church and its relevant leaders can keep in touch with you related '
+                                    'to your participation. Your <a href="http://data.consilium.europa.eu/doc/document/ST-5419-2016-INIT/fi/pdf#page=134">'
+                                    'GDPR rights</a>.'))
 
     @property
     def contact_details(self):

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-01 16:54+0300\n"
+"POT-Creation-Date: 2018-08-06 20:41+0300\n"
 "PO-Revision-Date: 2017-07-30 15:21+0300\n"
 "Last-Translator: Tuomas Airaksinen <tuomas.airaksinen@qvantel.com>\n"
 "Language-Team: \n"
@@ -358,7 +358,7 @@ msgstr "Virheellinen salasana"
 
 #: serviceform/serviceform/forms.py:112 serviceform/serviceform/forms.py:147
 #: serviceform/serviceform/models/mixins.py:72
-#: serviceform/serviceform/models/mixins.py:80
+#: serviceform/serviceform/models/mixins.py:83
 #: serviceform/serviceform/templates/serviceform/participation/participation_form/snippets/responsible_contact_person.html:7
 #: serviceform/serviceform/templates/serviceform/participation/participation_form/snippets/responsible_tooltip.html:10
 msgid "Email"
@@ -452,15 +452,15 @@ msgstr "Virhe"
 msgid "No choices selected!"
 msgstr "Valitse yksi (tai useampi) vaihtoehdoista."
 
-#: serviceform/serviceform/forms.py:519
+#: serviceform/serviceform/forms.py:520
 msgid "Invalid question input data"
 msgstr "Virhe"
 
-#: serviceform/serviceform/forms.py:525
+#: serviceform/serviceform/forms.py:529
 msgid "Answer required"
 msgstr "Vastaus on pakollinen"
 
-#: serviceform/serviceform/forms.py:535
+#: serviceform/serviceform/forms.py:539
 msgid ""
 "Send invitations also to participants that have participated in older form "
 "versions but not yet this form"
@@ -468,33 +468,33 @@ msgstr ""
 "Lähetä kutsu myös niille henkilöille jotka ovat täyttäneet lomakkeen "
 "aikaisemman version, mutta eivät vielä uusinta"
 
-#: serviceform/serviceform/forms.py:538
+#: serviceform/serviceform/forms.py:542
 msgid "Email addresses, separated by comma, space or enter"
 msgstr ""
 "Sähköpostiosoitteet, erotettuna pilkulla, välilyönnillä tai rivinvaihdolla"
 
-#: serviceform/serviceform/forms.py:546
+#: serviceform/serviceform/forms.py:550
 msgid "Send invites"
 msgstr "Lähetä kutsut"
 
-#: serviceform/serviceform/forms.py:555
+#: serviceform/serviceform/forms.py:559
 msgid "Form is not yet published, emails can't be sent"
 msgstr "Lomake ei ole avoinna tällä hetkellä, sähköposteja ei voi lähettää"
 
-#: serviceform/serviceform/forms.py:562
+#: serviceform/serviceform/forms.py:566
 msgid "Invalid email: {}"
 msgstr "Virheellinen sähköpostiosoite: {}"
 
-#: serviceform/serviceform/forms.py:574
+#: serviceform/serviceform/forms.py:578
 msgid "Invitation sent to {}"
 msgstr "Kutsu lähetetty osoitteeseen {}"
 
-#: serviceform/serviceform/forms.py:577
+#: serviceform/serviceform/forms.py:581
 msgid "Invitation was not sent to {} because user already exists"
 msgstr ""
 "Kutsua ei lähetetty osoitteeseen {} koska käyttäjä on jo järjestelmässä"
 
-#: serviceform/serviceform/forms.py:580
+#: serviceform/serviceform/forms.py:584
 msgid "Invitation was not sent to {} because user denied emailing"
 msgstr ""
 "Kutsua ei lähetetty osoitteeseen {} koska käyttäjä on kieltänyt sähköpostien "
@@ -568,33 +568,44 @@ msgid "City"
 msgstr "Kaupunki"
 
 #: serviceform/serviceform/models/mixins.py:74
-#: serviceform/serviceform/models/mixins.py:82
+#: serviceform/serviceform/models/mixins.py:85
 #: serviceform/serviceform/models/serviceform.py:244
 #: serviceform/serviceform/models/serviceform.py:248
 #: serviceform/serviceform/templates/serviceform/reports/snippets/_help.html:6
 msgid "Phone number"
 msgstr "Puhelinnumero"
 
-#: serviceform/serviceform/models/mixins.py:78
-#: serviceform/serviceform/models/mixins.py:108
+#: serviceform/serviceform/models/mixins.py:75
+msgid ""
+"Contact details are needed so that church and its relevant leaders can keep "
+"in touch with you related to your participation. Your <a href=\"http://data."
+"consilium.europa.eu/doc/document/ST-5419-2016-INIT/fi/pdf#page=134\">GDPR "
+"rights</a>."
+msgstr ""
+"Yhteystietoja tarvitaan että seurakunta ja ryhmien johtajat voivat olla "
+"sinuun yhteydessä liittyen valitsemiisi palvelutehtäviin. "
+"<a href=\"http://data.consilium.europa.eu/doc/document/ST-5419-2016-INIT/fi/pdf#page=134\">GDPR oikeutesi</a>."
+
+#: serviceform/serviceform/models/mixins.py:81
+#: serviceform/serviceform/models/mixins.py:111
 #: serviceform/serviceform/templates/serviceform/reports/snippets/_help.html:5
 msgid "Name"
 msgstr "Nimi"
 
-#: serviceform/serviceform/models/mixins.py:84
+#: serviceform/serviceform/models/mixins.py:87
 #: serviceform/serviceform/templates/serviceform/participation/participation_form/snippets/responsible_contact_person.html:14
 #: serviceform/serviceform/templates/serviceform/participation/participation_form/snippets/responsible_tooltip.html:13
 #: serviceform/serviceform/templates/serviceform/reports/snippets/_help.html:13
 msgid "Address"
 msgstr "Osoite"
 
-#: serviceform/serviceform/models/mixins.py:109
+#: serviceform/serviceform/models/mixins.py:112
 #: serviceform/serviceform/models/serviceform.py:232
 #: serviceform/serviceform/templates/serviceform/participation/participation_form/snippets/extra_info.html:6
 msgid "Description"
 msgstr "Kuvaus"
 
-#: serviceform/serviceform/models/mixins.py:161
+#: serviceform/serviceform/models/mixins.py:164
 msgid "Secret key"
 msgstr "Salainen avain"
 
@@ -746,7 +757,7 @@ msgstr "Tehtävät"
 msgid "Form"
 msgstr "Lomake"
 
-#: serviceform/serviceform/models/people.py:366
+#: serviceform/serviceform/models/people.py:367
 msgid ""
 "Updated information has been stored! Please proceed until the end of the "
 "form."
@@ -1625,11 +1636,11 @@ msgstr "Muita tietoja"
 msgid "Add entry"
 msgstr "Lisää muistiinpano"
 
-#: serviceform/serviceform/templatetags/serviceform_tags.py:239
+#: serviceform/serviceform/templatetags/serviceform_tags.py:244
 msgid "True"
 msgstr "Kyllä"
 
-#: serviceform/serviceform/templatetags/serviceform_tags.py:240
+#: serviceform/serviceform/templatetags/serviceform_tags.py:245
 msgid "False"
 msgstr "Ei"
 
@@ -1721,7 +1732,7 @@ msgstr ""
 msgid "Your email {} is now verified successfully!"
 msgstr "Sähköpostiosoitteesi {} on nyt varmennettu!"
 
-#: serviceform/serviceform/views/participation_views.py:204
+#: serviceform/serviceform/views/participation_views.py:203
 #: serviceform/serviceform/views/reports_views.py:51
 msgid ""
 "Given URL might be expired. Please give your email address and we'll send "
@@ -1730,7 +1741,7 @@ msgstr ""
 "Antamasi linkki voi olla vanhentunut tai muuten virheellinen. Anna "
 "sähköpostiosoitteesi niin lähetämme sinulle uuden linkin."
 
-#: serviceform/serviceform/views/participation_views.py:233
+#: serviceform/serviceform/views/participation_views.py:232
 msgid "Your participation was deleted"
 msgstr "Osallistumistietosi poistettiin"
 
