@@ -42,7 +42,7 @@ def finish_abandoned_updating_participations():
             last_modified__lt=timezone.now() - timedelta(days=1),
             status=models.Participant.STATUS_UPDATING):
         logger.info('Finishing abandoned updating participations %s', p)
-        p.finish(email_participant=False)
+        p.finish(from_user=False)
 
 
 def test_task():

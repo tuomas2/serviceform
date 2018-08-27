@@ -263,13 +263,14 @@ class Participant(ContactDetailsMixin, PasswordMixin, models.Model):
         for r in responsibles:
             r.send_responsibility_email(self)
 
-    def finish(self, email_participant: bool=True) -> None:
+    def finish(self, from_user: bool=True) -> None:
         updating = self.status == self.STATUS_UPDATING
-        self.form_revision = self.form_revision.form.current_revision
+        if from_user:
+            self.form_revision = self.form_revision.form.current_revision
         self.status = self.STATUS_FINISHED
         if timezone.now() > self.form_revision.send_emails_after:
             self.send_email_to_responsibles()
-        if email_participant:
+        if from_user:
             self.send_participant_email(
                 self.EmailIds.ON_UPDATE if updating else self.EmailIds.ON_FINISH)
         self.last_finished = timezone.now()
