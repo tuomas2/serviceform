@@ -1,7 +1,7 @@
 from typing import NamedTuple, Dict, List, TYPE_CHECKING, Union, Iterable, Sequence
 
 from django import template
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template import Context
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe, SafeString
@@ -69,31 +69,31 @@ def version():
     return f'{ver} ({ref})' if 'dev' in ver and ref else ver
 
 
-@register.assignment_tag
+@register.simple_tag()
 def has_responsible(item: 'SubitemMixin', responsible: 'ResponsibilityPerson') -> bool:
     return item.has_responsible(responsible)
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def participation_items(context: Context, item: 'Union[Activity, ActivityChoice]')\
         -> 'Sequence[ParticipationActivity, ParticipationActivityChoice]':
     revision_name = utils.get_report_settings(context['request'], 'revision')
     return item.participation_items(revision_name)
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def questionanswers(context: Context, item: 'Question') -> 'Sequence[QuestionAnswer]':
     revision_name = utils.get_report_settings(context['request'], 'revision')
     return item.questionanswers(revision_name)
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def all_revisions(context: Context) -> bool:
     revision_name = utils.get_report_settings(context['request'], 'revision')
     return revision_name == utils.RevisionOptions.ALL
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def participants(context: Context) -> 'Sequence[Participant]':
     revision_name = utils.get_report_settings(context['request'], 'revision')
     service_form = context.get('service_form')
@@ -109,7 +109,7 @@ def participants(context: Context) -> 'Sequence[Participant]':
     return [utils.get_participant(i) for i, in qs.values_list('pk')]
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def participant_flow_menu_items(context: Context) -> List[FlowItem]:
     current_view = context['request'].resolver_match.view_name
     participant = context['request'].participant
@@ -134,7 +134,7 @@ def participant_flow_menu_items(context: Context) -> List[FlowItem]:
     return lst
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def participant_flow_categories(context: Context) -> List[FlowItem]:
     current_view = 'participation'
     service_form = context['service_form']
@@ -155,7 +155,7 @@ def participant_flow_categories(context: Context) -> List[FlowItem]:
     return lst
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def menu_items(context: Context, menu_name: str) -> MenuItems:
     """
     This is used for:

@@ -1,4 +1,4 @@
-FROM python:3.6.1-alpine
+FROM python:3.7.5-alpine
 MAINTAINER Tuomas Airaksinen <tuomas.airaksinen@gmail.com>
 ENV PYTHONUNBUFFERED 1
 RUN apk update && apk upgrade && apk add --no-cache gettext postgresql-dev gcc g++ make \

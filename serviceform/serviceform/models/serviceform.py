@@ -74,7 +74,7 @@ class FormRevision(models.Model):
         unique_together = ('form', 'name')
 
     name = models.SlugField(max_length=32, verbose_name=_('Revision name'), db_index=True)
-    form = models.ForeignKey('ServiceForm', verbose_name=_('Service form'))
+    form = models.ForeignKey('ServiceForm', verbose_name=_('Service form'), on_delete=models.CASCADE)
     valid_from = models.DateTimeField(verbose_name=_('Valid from'),
                                       default=datetime.datetime(3000, 1, 1, tzinfo=local_tz))
     valid_to = models.DateTimeField(verbose_name=_('Valid to'),

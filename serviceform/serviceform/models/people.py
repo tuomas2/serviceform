@@ -46,7 +46,7 @@ class ResponsibilityPerson(CopyMixin, PasswordMixin, ContactDetailsMixinEmail, m
 
     AUTH_VIEW = 'authenticate_responsible_new'
 
-    form = models.ForeignKey('serviceform.ServiceForm', null=True)
+    form = models.ForeignKey('serviceform.ServiceForm', null=True, on_delete=models.CASCADE)
     send_email_notifications = models.BooleanField(
         default=True,
         verbose_name=_('Send email notifications'),

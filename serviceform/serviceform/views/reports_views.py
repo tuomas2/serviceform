@@ -15,13 +15,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Serviceform.  If not, see <http://www.gnu.org/licenses/>.
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect, Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.translation import gettext_lazy as _
@@ -30,6 +31,9 @@ from .. import models, forms
 from ..utils import user_has_serviceform_permission, fetch_participants, expire_auth_link, decode, \
     RevisionOptions
 from .decorators import serviceform, require_authenticated_responsible
+
+if TYPE_CHECKING:
+    from serviceform.serviceform.models import Participant
 
 
 def authenticate_responsible_old(request: HttpRequest, uuid: str) -> HttpResponse:
@@ -109,15 +113,36 @@ def all_questions(request: HttpRequest, service_form: models.ServiceForm) -> Htt
                   {'service_form': service_form})
 
 
+def participant_generate_new_auth_link(request: HttpRequest, participant_id: int) -> HttpResponse:
+    if not request.user.is_staff:
+        raise PermissionDenied
+
+    participant: Participant = get_object_or_404(models.Participant.objects, pk=participant_id)
+
+    p_id, auth_url = request.session.get('new_auth_url', (None, None))
+
+    if not auth_url or participant_id != p_id:
+        auth_url = participant.make_new_auth_url()
+        request.session['new_auth_url'] = (participant_id, auth_url)
+
+    return render(request, 'serviceform/reports/new_auth_link.html',
+                  {"participant": participant,
+                  "service_form": participant.form,
+                  'auth_url': auth_url})
+
+
+
 @require_authenticated_responsible
 def view_participant(request: HttpRequest, responsible: models.ResponsibilityPerson,
                      participant_id: int) -> HttpResponse:
     participant = get_object_or_404(models.Participant.objects, pk=participant_id)
     anonymous = False
+    is_staff = False
 
     if request.user.pk:
         user_has_serviceform_permission(request.user, participant.form)
         user = request.user
+        is_staff = user.is_staff
     else:
         if responsible.form != participant.form:
             raise PermissionDenied
@@ -134,7 +159,7 @@ def view_participant(request: HttpRequest, responsible: models.ResponsibilityPer
     service_form = participant.form
     return render(request, 'serviceform/reports/view_participant.html',
                   {'service_form': service_form, 'participant': participant, 'log_form': form,
-                   'anonymous': anonymous})
+                   'anonymous': anonymous, 'is_staff': is_staff})
 
 
 @require_authenticated_responsible

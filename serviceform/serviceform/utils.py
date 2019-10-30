@@ -27,7 +27,8 @@ from itertools import chain
 from typing import Match, Optional, TYPE_CHECKING, Iterable, Union
 
 if TYPE_CHECKING:
-    from .models import ServiceForm, Participant, ResponsibilityPerson, AbstractServiceFormItem
+    from .models import ServiceForm, Participant, ResponsibilityPerson
+    from .models.serviceform import AbstractServiceFormItem
 
 from colorful.forms import RGB_REGEX
 from django.contrib import messages
@@ -143,6 +144,13 @@ def fetch_participants(service_form: 'ServiceForm', revision_name: str) -> None:
 
 
 class ClearParticipantCacheMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        return self.get_response(request)
+
+
     def process_request(self, request: HttpRequest):
         _participants.clear()
         _responsible_counts.clear()
@@ -152,6 +160,12 @@ class InvalidateCachalotAfterEachRequestMiddleware(object):
     """
     This middleware clears the cachalot cache at the end of every request.
     """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        return self.get_response(request)
 
     def process_exception(self, request: HttpRequest, exception: Exception):
         if 'cachalot' in settings.INSTALLED_APPS:

@@ -3,3 +3,4 @@ django-libsass
 uwsgi
 psycopg2
 pip-tools
+Django<2.2

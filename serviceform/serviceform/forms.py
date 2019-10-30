@@ -22,7 +22,7 @@ from typing import Optional, TYPE_CHECKING, List
 
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.validators import validate_email
 from django.db import transaction
 from django.forms import ModelForm, Form, fields, PasswordInput, widgets
