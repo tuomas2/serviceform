@@ -16,9 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Serviceform.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpRequest, HttpResponse
 from django.shortcuts import render
+from django.urls import reverse
 
 from .. import forms, models
 from ..utils import clean_session

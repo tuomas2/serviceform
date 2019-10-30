@@ -21,9 +21,9 @@ from functools import wraps
 from django.conf import settings
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import resolve
 from django.http import Http404, HttpResponseRedirect, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
+from django.urls import resolve
 
 from .. import models, utils
 
