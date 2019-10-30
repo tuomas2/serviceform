@@ -8,7 +8,7 @@ with open('README.rst') as readme_file:
 
 setup(
     name="serviceform",
-    version='0.9.10.dev0',
+    version='0.9.10',
     description="Django web application to collect volunteering willingness "
                 "data and report to responsible people",
     long_description=readme,
