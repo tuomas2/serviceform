@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-06 22:09+0300\n"
+"POT-Creation-Date: 2019-10-30 13:39+0200\n"
 "PO-Revision-Date: 2017-07-30 15:21+0300\n"
 "Last-Translator: Tuomas Airaksinen <tuomas.airaksinen@qvantel.com>\n"
 "Language-Team: \n"
@@ -758,7 +758,7 @@ msgstr "Tehtävät"
 msgid "Form"
 msgstr "Lomake"
 
-#: serviceform/serviceform/models/people.py:367
+#: serviceform/serviceform/models/people.py:368
 msgid ""
 "Updated information has been stored! Please proceed until the end of the "
 "form."
@@ -1560,6 +1560,14 @@ msgstr "Muokkaa tietoja"
 msgid "Send invitations"
 msgstr "Lähetä kutsuja"
 
+#: serviceform/serviceform/templates/serviceform/reports/new_auth_link.html:4
+msgid "New auth link for "
+msgstr "Uusi autentikointilinkki käyttäjälle "
+
+#: serviceform/serviceform/templates/serviceform/reports/new_auth_link.html:6
+msgid "Copy and paste this for him/her"
+msgstr "Kopioi ja liitä tämä hänelle"
+
 #: serviceform/serviceform/templates/serviceform/reports/responsible.html:13
 #: serviceform/serviceform/templates/serviceform/reports/responsible_anonymous.html:12
 msgid "Responsible person contact details"
@@ -1637,6 +1645,14 @@ msgstr "Muita tietoja"
 msgid "Add entry"
 msgstr "Lisää muistiinpano"
 
+#: serviceform/serviceform/templates/serviceform/reports/view_participant.html:120
+msgid "Administrative functions (available for staff only)"
+msgstr "Toimintoja henkilökunnalle"
+
+#: serviceform/serviceform/templates/serviceform/reports/view_participant.html:122
+msgid "Generate a new login link"
+msgstr "Luo uusi login-linkki"
+
 #: serviceform/serviceform/templatetags/serviceform_tags.py:244
 msgid "True"
 msgstr "Kyllä"
@@ -1709,11 +1725,11 @@ msgstr "Aikaisemmat käyttäjät"
 msgid "Admin login"
 msgstr "Ylläpidon kirjautuminen"
 
-#: serviceform/serviceform/utils.py:111
+#: serviceform/serviceform/utils.py:112
 msgid "User is not allowed to access document"
 msgstr "Käyttäjällä ei ole pääsyä dokumenttiin"
 
-#: serviceform/serviceform/utils.py:375
+#: serviceform/serviceform/utils.py:389
 msgid "Your authentication URL was expired. New link has been sent to {}"
 msgstr "Avainlinkkisi on vanhentunut. Uusi linkki on lähetetty osoitteeseen {}"
 
@@ -1734,7 +1750,7 @@ msgid "Your email {} is now verified successfully!"
 msgstr "Sähköpostiosoitteesi {} on nyt varmennettu!"
 
 #: serviceform/serviceform/views/participation_views.py:203
-#: serviceform/serviceform/views/reports_views.py:51
+#: serviceform/serviceform/views/reports_views.py:55
 msgid ""
 "Given URL might be expired. Please give your email address and we'll send "
 "you a new link"
@@ -1746,19 +1762,19 @@ msgstr ""
 msgid "Your participation was deleted"
 msgstr "Osallistumistietosi poistettiin"
 
-#: serviceform/serviceform/views/reports_views.py:80
+#: serviceform/serviceform/views/reports_views.py:84
 msgid "Settings saved"
 msgstr "Asetukset tallennettu"
 
-#: serviceform/serviceform/views/reports_views.py:82
+#: serviceform/serviceform/views/reports_views.py:86
 msgid "Settings could not be saved"
 msgstr "Asetuksia ei voitu tallentaa"
 
-#: serviceform/serviceform/views/reports_views.py:190
+#: serviceform/serviceform/views/reports_views.py:215
 msgid "Saved contact details"
 msgstr "Yhteystiedot tallennettu"
 
-#: serviceform/serviceform/views/reports_views.py:210
+#: serviceform/serviceform/views/reports_views.py:235
 msgid "You have been logged out"
 msgstr "Olet kirjautunut ulos"
 

@@ -1,0 +1,9 @@
+{% extends "serviceform/reports/base/report_base.html" %}
+{% load i18n crispy_forms_tags l10n %}
+{% block content %}
+  <h3>{% trans "New auth link for " %} {{ participant }} ({{participant.email}})</h3>
+
+  {% trans "Copy and paste this for him/her" %}: {{ auth_url }}
+
+
+{% endblock %}

@@ -115,4 +115,12 @@
                                                                                         id="submit">
     </form>
     </div>
+    {% if is_staff %}
+      <div class="staff-functions">
+        <h3> {% trans "Administrative functions (available for staff only)" %}</h3>
+        <ul>
+          <li><a href="{% url "generate_new_auth_link" participant.id %}">{% trans "Generate a new login link"%}</a></li>
+        </ul>
+      </div>
+    {% endif %}
 {% endblock %}

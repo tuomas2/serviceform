@@ -174,6 +174,8 @@ urlpatterns = [u for u in
                   # Report views
                   url(r'^report/participant/(\d+)/$', reports_views.view_participant,
                       name='view_user'),
+                  url(r'^report/participant/(\d+)/generate_new_auth_link$', reports_views.participant_generate_new_auth_link,
+                      name='generate_new_auth_link'),
                   url(r'^report/responsible/(\d+)/$', reports_views.view_responsible,
                       name='view_responsible'),
 

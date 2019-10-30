@@ -357,6 +357,11 @@ a.tooltip-only {
   background: rgba(255, 0, 97, 0.07);
   padding-bottom:25px;
 }
+.staff-functions {
+  @extend .preview-box;
+  background: rgba(255, 0, 14, 0.38);
+  padding-bottom:25px;
+}
 
 ul.participation-flow {
   li {
