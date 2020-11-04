@@ -23,7 +23,7 @@ django-debug-toolbar==2.0
 django-grappelli==2.13.1
 django-guardian==2.1.0
 django-libsass==0.7
-django-nested-admin==3.2.4
+django-nested-admin==3.3.2
 django-redis-cache==2.1.0
 django-select2-forms==2.1.0
 django-sortedm2m==2.0.0   # via django-select2-forms
